@@ -54,7 +54,10 @@ function Navbar() {
         for (let key in form) {
             Data.append(key, form[key])
         }
-        axios.post("http://localhost:4000/post", Data).then((response) => {
+        const token = localStorage.getItem('token')
+        axios.post("http://localhost:4000/post", Data,{
+            headers: { "x-auth-token": token }
+        }).then((response) => {
             console.log(response);
             setIsOpen(false)
         })

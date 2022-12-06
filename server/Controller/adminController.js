@@ -8,28 +8,33 @@ module.exports = {
 
     //adminSignup
     doSignup: async (req, res) => {
-        const {email, password } = req.body
-        const Email = await adminSignUp.findOne({ email: email })
-        if (Email) {
-            return res
-                .status(200)
-                .json({ msg: "Email is already in use" });
-        }
-        const saltPassword = await bcrypt.genSalt(10)
-        const securePassword = await bcrypt.hash(password, saltPassword)
-        const signedUpUser = new adminSignUp({
-            email: email,
-            password: securePassword
-
-        })
-        signedUpUser.save()
-            .then(data => {
-                console.log(data);
-                res.json(data);
+        try{
+            const {email, password } = req.body
+            const Email = await adminSignUp.findOne({ email: email })
+            if (Email) {
+                return res
+                    .status(200)
+                    .json({ msg: "Email is already in use" });
+            }
+            const saltPassword = await bcrypt.genSalt(10)
+            const securePassword = await bcrypt.hash(password, saltPassword)
+            const signedUpUser = new adminSignUp({
+                email: email,
+                password: securePassword
+    
             })
-            .catch(err => {
-                res.json(err);
-            });
+            signedUpUser.save()
+                .then(data => {
+                    console.log(data);
+                    res.json(data);
+                })
+                .catch(err => {
+                    res.json(err);
+                });
+        }catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+      
     },
 
     doLogin: async (req, res) => {

@@ -80,7 +80,7 @@ module.exports = {
 
 
     },
-
+//userLogin
     doLogin: async (req, res) => {
         try {
             console.log(req.body);
@@ -138,10 +138,38 @@ module.exports = {
             }
       
         }, 
-        doPost:(req,res)=>{
+        doPost:async(req,res)=>{
         req.body.postImage = req.file.filename 
             console.log(req.body)
-            userHelpers.Posts(req.body)
+            console.log("user",req.user)
+
+           await userHelpers.Posts(req.body,req.user)
             res.json(req.body)
+        },
+        getPost:(req, res) => {
+             userHelpers.listPosts().then((response)=>{
+                res.json(response)
+             })
+
+        },
+        doLikePost:(req,res)=>{
+            console.log(req.body.id);
+            console.log(req.user);
+            const postId=req.body.id
+            const userId=req.user
+            userHelpers.doLikePost(postId,userId).then((response)=>{
+                res.json(response)
+            })
+            
+        },
+        doUnLikePost:(req,res)=>{
+            console.log(req.body.id);
+            console.log(req.user);
+            const postId=req.body.id
+            const userId=req.user
+            userHelpers.doUnLikePost(postId,userId).then((response)=>{
+                res.json(response)
+            })
+            
         }
 }

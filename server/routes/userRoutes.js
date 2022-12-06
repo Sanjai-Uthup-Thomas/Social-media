@@ -11,6 +11,12 @@ router.post('/login',controller.doLogin)
 router.post('/otpverify',controller.doOtpVerify)
 router.post('/tokenIsValid',auth,controller.doTokenIsValid)
 
-router.post('/post',upload.single("Posts"),controller.doPost)
+
+router.post('/post',auth,upload.single("Posts"),controller.doPost)
+router.get('/post',controller.getPost)
+router.patch('/likePost',auth,controller.doLikePost)
+router.patch('/unlikePost',auth,controller.doUnLikePost)
+
+
 
 module.exports = router
