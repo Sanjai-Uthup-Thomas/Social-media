@@ -10,22 +10,15 @@ import { FaRegCommentDots } from 'react-icons/fa';
 import { RiHeartLine } from 'react-icons/ri';
 import { GoSearch } from 'react-icons/go';
 import Modal from '../../modals/modal';
-import axios from 'axios';
+import {createPost} from '../../../api/userApi'
 
 function Navbar() {
-    // const { 
-    //     auth: { user },
-    //   } = useSelector(state => state);
-    //   console.log(user.username);
-    // const navigate = useNavigate();
     const dispatch = useDispatch()
     const logouthandel = () => {
-        console.log("hai");
         dispatch(logout())
     }
     const [isOpen, setIsOpen] = useState(false)
     const view = () => {
-        console.log("hai");
         setIsOpen(true)
     }
 
@@ -47,20 +40,16 @@ function Navbar() {
             Posts: img
         })
     }
-    const submit = (e) => {
+    const submit = async(e) => {
         e.preventDefault()
-        console.log("dfghjk");
         const Data = new FormData()
         for (let key in form) {
             Data.append(key, form[key])
         }
-        const token = localStorage.getItem('token')
-        axios.post("http://localhost:4000/post", Data,{
-            headers: { "x-auth-token": token }
-        }).then((response) => {
-            console.log(response);
+
+         createPost(Data).then((response)=>{
             setIsOpen(false)
-        })
+         })
     }
 
     return (
