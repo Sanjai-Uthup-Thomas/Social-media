@@ -4,7 +4,8 @@ import { FaRegComment } from 'react-icons/fa';
 import { FiBookmark } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
 import { format, render, cancel, register } from 'timeago.js';
-import { getPosts, likePost, UnlikePost } from '../../../api/userApi'
+import { createComment, getPosts, likePost, UnlikePost } from '../../../api/userApi'
+import CommentsModal from '../../modals/comments';
 
 
 
@@ -12,11 +13,14 @@ import { getPosts, likePost, UnlikePost } from '../../../api/userApi'
 function Posts() {
     const [data, setData] = useState([])
     const [control, setControl] = useState(true)
+    const [showComments,setShowComments] = useState(false)
+    const [comment, setComment] = useState('')
+    const [postId,setPostId]= useState('')
     const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
 
-    console.log("userId", userId);
+   
     const fetchData = async () => {
 
         const posts = await getPosts()
@@ -35,6 +39,15 @@ function Posts() {
         let data = { id }
         UnlikePost(data).then((response) => {
             setControl(!control)
+        })
+    }
+    const commentSubmit=(postId)=>{
+        console.log(postId);
+        console.log(comment);
+        const data={postId, comment}
+        console.log(data);
+        createComment(data).then((response) => {
+            setComment("")
         })
     }
 
@@ -97,12 +110,13 @@ function Posts() {
 
                                 <a
                                     className="mr-3 hover:text-gray-500 cursor-pointer"
-
+                                    onClick={(e)=>{setShowComments(true)
+                                        setPostId(post._id)}}
                                 >
                                     <FaRegComment />
                                 </a>
 
-                            </div>
+                            </div> 
                             <div className="">
                                 <a
                                     className="cursor-pointer hover:text-gray-500"
@@ -132,7 +146,8 @@ function Posts() {
                             <div className="flex-1 pr-3 py-1">
                                 <input
                                     className={`w-full px-3 py-1 text-sm bg-slate-50 outline-0`}
-
+                                    value={comment} 
+                                    onChange={(e) => {setComment(e.target.value) }}
                                     type="text"
                                     placeholder="Add a comment..."
 
@@ -141,8 +156,7 @@ function Posts() {
                             <div className="flex items-center text-sm">
                                 <a
                                     className="cursor-pointer text-sky-500"
-
-
+                                    onClick={()=>commentSubmit(post._id)}
                                 >
                                     Post
                                 </a>
@@ -157,7 +171,11 @@ function Posts() {
 
 
 
-
+{
+    showComments && 
+    <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} >
+    </CommentsModal>
+}
 
 
         </>

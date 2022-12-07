@@ -140,9 +140,6 @@ module.exports = {
         }, 
         doPost:async(req,res)=>{
         req.body.postImage = req.file.filename 
-            console.log(req.body)
-            console.log("user",req.user)
-
            await userHelpers.Posts(req.body,req.user)
             res.json(req.body)
         },
@@ -150,7 +147,6 @@ module.exports = {
              userHelpers.listPosts().then((response)=>{
                 res.json(response)
              })
-
         },
         doLikePost:(req,res)=>{
             console.log(req.body.id);
@@ -159,17 +155,48 @@ module.exports = {
             const userId=req.user
             userHelpers.doLikePost(postId,userId).then((response)=>{
                 res.json(response)
-            })
-            
+            })           
         },
         doUnLikePost:(req,res)=>{
-            console.log(req.body.id);
-            console.log(req.user);
             const postId=req.body.id
             const userId=req.user
             userHelpers.doUnLikePost(postId,userId).then((response)=>{
                 res.json(response)
-            })
+            })            
+        },
+        doComment:(req,res)=>{
+            try{
+                const {postId,comment}=req.body
+                const userId=req.user
+                userHelpers.docommentPost(postId,userId,comment).then((response)=>{
+                    res.json(response)
+                })
+            } catch (err) {
+                res.json({ error: err.message }) 
+            }          
+        },
+        getComment:async(req,res)=>{
+            try{
+                await userHelpers.getCommentPosts(req.params.id).then((response)=>{
+                    res.json(response)
+                })
+                
+
+            } catch (err) {
+                res.json({ error: err.message }) 
+            }
+        },
+        getCommentPost:async(req,res)=>{
+            try{
+                console.log("postId",req.params.id)
+                await userHelpers.getPost(req.params.id).then((response)=>{
+                    console.log(response);
+                    res.json(response)
+
+                })
+            } catch (err) {
+                res.json({ error: err.message }) 
+            }
             
         }
 }

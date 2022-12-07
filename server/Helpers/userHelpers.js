@@ -1,8 +1,11 @@
+const mongoose = require('mongoose')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
 dotenv.config({ path: './var/.env' })
 const postSchema = require('../models/posts');
+const commentSchema = require('../models/comments');
 const { json } = require('express');
+let ObjectId = mongoose.Types.ObjectId
 
 
 let transporter = nodemailer.createTransport({
@@ -84,7 +87,6 @@ module.exports = {
     },
     listPosts: async () => {
         try {
-            console.log("hsaaiia");
             const posts = await postSchema.aggregate([
                 {
                     $lookup: {
@@ -108,8 +110,6 @@ module.exports = {
                     $sort: { 'date': -1 }
                 }
             ])
-            console.log("lkjhgf");
-            console.log(posts);
             return posts
         } catch (error) {
             return error.message
@@ -122,7 +122,6 @@ module.exports = {
             const like = await postSchema.findByIdAndUpdate(postId, {
                 $push: {Likes:userId }
             })
-            console.log(like);
             return json({msg:"sucessfully"})
 
         } catch (error) {
@@ -135,12 +134,71 @@ module.exports = {
             const unlike = await postSchema.findByIdAndUpdate(postId, {
                 $pull: {Likes:userId }
             })
-            console.log(unlike);
             return json({msg:"sucessfully"})
 
         } catch (error) {
             return error.message
         }
+    },
+    docommentPost:(postId,userId,comment)=>{
+        try{
+           const comments = new commentSchema({
+            userId: userId,
+            comment: comment,
+            postId: postId, 
+            })
+            comments.save()
+            return json({msg:"sucessfully"})
+        } catch (error) {
+            return error.message
+        }
+    },
+    getCommentPosts:async(postId)=>{
+        try{
+            let comments=await commentSchema.aggregate([
+                {
+                    $match: { postId: ObjectId(postId) }
+                },{
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: "user"
+                    }
+                }, {
+                    $unwind: '$user'
+                }, {
+                    $project: {
+                        userId: '$userId',
+                        userName: '$user.userName',
+                        date: '$date',
+                        comment: '$comment',
+                    }
+                }
+            ])
+            return comments;
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    getPost:async(postId)=>{
+        try{
+            let post=await postSchema.aggregate([
+                {
+                    $match: { _id: ObjectId(postId) }
+                },{
+                    $project:{
+                        image:'$postImage'
+                    }
+                }
+            ])
+            return post;
+
+        }catch (error) {
+            return error.message
+        }
     }
+
 
 }

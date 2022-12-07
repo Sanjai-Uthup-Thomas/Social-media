@@ -1,5 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import NewPost from '../../modals/NewPost';
 function BottomNav() {
+    const [isOpen, setIsOpen] = useState(false)
+    const view = () => {
+        setIsOpen(true)
+    }
     const Menus = [
         { name: "Home", icon: "home-outline", dis: "translate-x-0" },
         { name: "Profile", icon: "search-outline", dis: "translate-x-16" },
@@ -33,10 +38,28 @@ function BottomNav() {
                             ></span>
                         {/* </span> */}
                         {Menus.map((menu, i) => (
+                            menu.name==`create`? <li key={i} className="w-16">
+                            <a  
+                                className="flex flex-col text-center pt-6"
+                                onClick={view}
+                                
+                            >
+                                <span
+                                    className={`text-xl cursor-pointer duration-500 
+                                    
+                                        `}
+                                >
+                                    <ion-icon name={menu.icon} size="large"></ion-icon>
+                                </span>
+                                
+                               
+                            </a>
+                        </li>:
                             <li key={i} className="w-16">
-                                <a
+                                <a  
                                     className="flex flex-col text-center pt-6"
-                                    // onClick={() => setActive(i)}
+                                    // onClick={view}
+                                    
                                 >
                                     <span
                                         className={`text-xl cursor-pointer duration-500 
@@ -54,7 +77,9 @@ function BottomNav() {
                     </ul>
                 </div>
             </div>
+            <NewPost open={isOpen} onClose={() => { setIsOpen(false) }}/>
         </div>
+        
     )
 }
 
