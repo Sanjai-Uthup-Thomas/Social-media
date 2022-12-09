@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { getUserHead } from '../../../api/userApi'
 import { logout } from '../../../features/auth/authSlice'
 import Posts from '../posts/posts'
 import Suggestions from '../Suggestions/Suggestions'
@@ -19,6 +20,15 @@ function HomePage() {
       }else{
         var users=user
       }
+      const[DP,setDP]=useState([])
+      const fetchData=async()=>{
+          await getUserHead(users.id).then((response)=>{
+              setDP(response.data[0])
+          })
+      }
+      useEffect(()=>{
+          fetchData()
+      },[])
       
 
 
@@ -34,7 +44,7 @@ function HomePage() {
                     <a href="">
                         <img
                             className="rounded-full"
-                            src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80"
+                            src={`http://localhost:4000/DP/${DP.DP}`}
                             width="100"
                         />
                     </a>

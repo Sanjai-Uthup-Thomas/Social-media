@@ -34,11 +34,14 @@ fetchData()
                             
                             <div className='p-2 w-[400px] md:w-1/2'>
                                 <div className='overflow-y-auto h-96 pb-2'>
+                                    <p>comments</p>
                                 {comments ? comments.map((comments, index) => {
                                     return (
                                         <div class="flex-col w-ful bg-white sm:rounded-lg sm:shadow-sm p-1" key={index}>
                                         <div class="flex flex-row ">
-                                            <img class="w-12 h-12 border-2 border-gray-300 rounded-full" alt="User avatar" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;faces=1&amp;faceindex=1&amp;facepad=2.5&amp;w=500&amp;h=500&amp;q=80" />
+                                            <img class="w-12 h-12 border-2 border-gray-300 rounded-full" alt="User avatar" 
+                                            src={`http://localhost:4000/DP/${comments.DP}`}
+                                            />
                                             <div class="flex-col mt-1">
                                                 <div class="flex items-center flex-1 px-4 font-bold leading-tight">{comments.userName}
                                                     <span class="ml-2 text-xs font-normal text-gray-500">{format(comments.date)}

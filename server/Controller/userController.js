@@ -80,25 +80,25 @@ module.exports = {
 
 
     },
-//userLogin
+    //userLogin
     doLogin: async (req, res) => {
         try {
             console.log(req.body);
             const { email, password } = req.body
             const user = await userSignUp.findOne({ email: email })
             console.log(user);
-            if (!user){
+            if (!user) {
                 return res
-                .status(200)
-                .json({ msg: "No account found" });
+                    .status(200)
+                    .json({ msg: "No account found" });
             }
-            const id=user.id
+            const id = user.id
             console.log(id);
-            const blockUser = await userSignUp.findById(id,{Status:true})
-            if(!blockUser){
+            const blockUser = await userSignUp.findById(id, { Status: true })
+            if (!blockUser) {
                 return res
-                .status(200)
-                .json({msg:"Your account has been blocked"})
+                    .status(200)
+                    .json({ msg: "Your account has been blocked" })
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
@@ -120,83 +120,147 @@ module.exports = {
             res.status(500).json({ msg: err.message });
         }
     },
-        //check if token is valid
-        doTokenIsValid: async (req, res) => {
-            try {
-                console.log("req.user", req.user);
-                const token = req.header("x-auth-token")
-                console.log(token,"usrcon 63");
-                if (!token) return res.json(false)
-                const verified = jwt.verify(token, process.env.JWT_SECRET)
-                console.log(verified);
-                if (!verified) return res.json(false)
-                const user = await userSignUp.findById(verified.id)
-                if (!user) return res.json(false)
-                return res.json(true)
-            } catch (err) {
-                response.json({ error: err.message }) 
-            }
-      
-        }, 
-        doPost:async(req,res)=>{
-        req.body.postImage = req.file.filename 
-           await userHelpers.Posts(req.body,req.user)
-            res.json(req.body)
-        },
-        getPost:(req, res) => {
-             userHelpers.listPosts().then((response)=>{
-                res.json(response)
-             })
-        },
-        doLikePost:(req,res)=>{
-            console.log(req.body.id);
-            console.log(req.user);
-            const postId=req.body.id
-            const userId=req.user
-            userHelpers.doLikePost(postId,userId).then((response)=>{
-                res.json(response)
-            })           
-        },
-        doUnLikePost:(req,res)=>{
-            const postId=req.body.id
-            const userId=req.user
-            userHelpers.doUnLikePost(postId,userId).then((response)=>{
-                res.json(response)
-            })            
-        },
-        doComment:(req,res)=>{
-            try{
-                const {postId,comment}=req.body
-                const userId=req.user
-                userHelpers.docommentPost(postId,userId,comment).then((response)=>{
-                    res.json(response)
-                })
-            } catch (err) {
-                res.json({ error: err.message }) 
-            }          
-        },
-        getComment:async(req,res)=>{
-            try{
-                await userHelpers.getCommentPosts(req.params.id).then((response)=>{
-                    res.json(response)
-                })
-                
-
-            } catch (err) {
-                res.json({ error: err.message }) 
-            }
-        },
-        getCommentPost:async(req,res)=>{
-            try{
-                console.log("postId",req.params.id)
-                await userHelpers.getPost(req.params.id).then((response)=>{
-                    console.log(response);
-                    res.json(response)
-
-                })
-            } catch (err) {
-                res.json({ error: err.message }) 
-            }
-            
+    //check if token is valid
+    doTokenIsValid: async (req, res) => {
+        try {
+            console.log("req.user", req.user);
+            const token = req.header("x-auth-token")
+            console.log(token, "usrcon 63");
+            if (!token) return res.json(false)
+            const verified = jwt.verify(token, process.env.JWT_SECRET)
+            console.log(verified);
+            if (!verified) return res.json(false)
+            const user = await userSignUp.findById(verified.id)
+            if (!user) return res.json(false)
+            return res.json(true)
+        } catch (err) {
+            response.json({ error: err.message })
         }
+
+    },
+    doPost: async (req, res) => {
+        req.body.postImage = req.file.filename
+        await userHelpers.Posts(req.body, req.user)
+        res.json(req.body)
+    },
+    getPost: (req, res) => {
+        userHelpers.listPosts().then((response) => {
+            res.json(response)
+        })
+    },
+    doLikePost: (req, res) => {
+        console.log(req.body.id);
+        console.log(req.user);
+        const postId = req.body.id
+        const userId = req.user
+        userHelpers.doLikePost(postId, userId).then((response) => {
+            res.json(response)
+        })
+    },
+    doUnLikePost: (req, res) => {
+        const postId = req.body.id
+        const userId = req.user
+        userHelpers.doUnLikePost(postId, userId).then((response) => {
+            res.json(response)
+        })
+    },
+    doComment: (req, res) => {
+        try {
+            const { postId, comment } = req.body
+            const userId = req.user
+            userHelpers.docommentPost(postId, userId, comment).then((response) => {
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getComment: async (req, res) => {
+        try {
+            await userHelpers.getCommentPosts(req.params.id).then((response) => {
+                res.json(response)
+            })
+
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getCommentPost: async (req, res) => {
+        try {
+            console.log("postId", req.params.id)
+            await userHelpers.getPost(req.params.id).then((response) => {
+                console.log(response);
+                res.json(response)
+
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+
+    },
+    doUserNames: async (req, res) => {
+        try {
+            await userHelpers.getUserNames().then((response) => {
+                console.log("response", response);
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doUserHead: async (req, res) => {
+        try {
+            console.log(req.params.id);
+            await userHelpers.getUserHead(req.params.id).then((response) => {
+
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doUserPosts: async (req, res) => {
+        try {
+            console.log(req.params.id);
+            await userHelpers.getUserPosts(req.params.id).then((response) => {
+                console.log(response);
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getUserProfileForEdit: async (req, res) => {
+        try {
+            console.log(req.params.id);
+            await userHelpers.getUserProfileForEdit(req.params.id).then((response) => {
+                console.log(response);
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doEditProfile:(req,res)=>{
+        try{
+            userHelpers.doUserProfileEdit(req.params.id,req.body).then((response) => {
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doChangeDP:(req,res)=>{
+        try{
+            req.body.photo = req.file.filename
+            userHelpers.changeDp(req.user,req.body.photo).then((response)=>{
+                console.log(response);
+                res.json(response);
+            })
+             
+        }catch (err) {
+            res.json({ error: err.message })
+        }
+    }
 }

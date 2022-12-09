@@ -10,7 +10,8 @@ const initialState ={
     token: localStorage.getItem("token") || "",
     admin_token: localStorage.getItem("admin-auth-token") || undefined,
     loading:false,
-    error:""
+    error:"",
+    signup:false
 }
 export const signInAdmin = createAsyncThunk('signInAdmin',async (body)=>{
     const res = await axios.post('http://localhost:4000/admin/adminLogin',body)
@@ -108,7 +109,8 @@ const authSlice = createSlice({
         },
         [signUpUser.fulfilled]:(state,{payload})=>{
             state.loading = false           
-                state.user=payload            
+                state.user=payload
+                state.signup=true            
         },
         [signUpUser.rejected]:(state,action)=>{
             state.loading = true

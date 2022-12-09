@@ -16,4 +16,6 @@ app.use(cors())
 app.use('/',userUrls)
 app.use('/admin',adminUrls)
 app.use('/images', express.static('public/Posts'))
+app.use('/DP', express.static('public/DP'))
+
 app.listen(4000,()=> console.log("server is running"))

@@ -1,5 +1,5 @@
 import './navbar.css'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
 import { logout } from '../../../features/auth/authSlice'
@@ -12,16 +12,35 @@ import { GoSearch } from 'react-icons/go';
 // import Modal from '../../modals/NewPost';
 // import {createPost} from '../../../api/userApi'
 import  NewPost  from '../../modals/NewPost'
+import { getUserHead } from '../../../api/userApi';
 
 function Navbar() {
     const dispatch = useDispatch()
     const logouthandel = () => {
         dispatch(logout())
     }
+    // const {
+    //     auth:{user}
+    // }=useSelector(state => state)
+    const user=localStorage.getItem('user')
+    if(user.username===undefined){
+        var users=JSON.parse(user)
+      }else{
+        var users=user
+      }
     const [isOpen, setIsOpen] = useState(false)
     const view = () => {
         setIsOpen(true)
     }
+    const[DP,setDP]=useState([])
+    const fetchData=async()=>{
+        await getUserHead(users.id).then((response)=>{
+            setDP(response.data[0])
+        })
+    }
+    useEffect(()=>{
+        fetchData()
+    },[])
 
 
 
@@ -53,7 +72,7 @@ function Navbar() {
                             </div>
                         </div>
                         <div className="basis-1/2 hidden md:block">
-                            <ul className="flex flex-row space-x-4 p-2 text-2xl space-x-6 justify-end">
+                            <ul className="flex flex-row p-2 text-2xl space-x-6 justify-end">
                                 <li>
                                     <a className="cursor-pointer">
                                         <AiOutlineHome />
@@ -101,7 +120,8 @@ function Navbar() {
                                                 <img
                                                     className="rounded-full"
                                                     // src={data.me.image}
-                                                    src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80"
+                                                    src={`http://localhost:4000/DP/${DP.DP}`}
+                                                        // src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80"
                                                     width="40"
                                                 />
                                             </Menu.Button>
@@ -121,20 +141,10 @@ function Navbar() {
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <Link
-                                                                // to={`/${data.me.username}`}
+                                                                to={`/${users.username}`}
                                                                 className="text-gray-700
                                                                 block px-4 py-2 text-sm"
-                                                            // {classNames(
-                                                            //     active
-                                                            //         ? "bg-gray-100 text-gray-900"
-                                                            //         : "text-gray-700",
-                                                            //     "block px-4 py-2 text-sm"
-                                                            // )}
                                                             >
-                                                                <FontAwesomeIcon
-                                                                    icon="fa-solid fa-user"
-                                                                    className="mr-3"
-                                                                />
                                                                 Profile
                                                             </Link>
                                                         )}
@@ -142,18 +152,8 @@ function Navbar() {
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <a
-                                                                className="text-gray-700 block px-4 py-2 text-sm cursor-pointer"
-                                                            // {classNames(
-                                                            //     active
-                                                            //         ? "bg-gray-100 text-gray-900"
-                                                            //         : "text-gray-700",
-                                                            //     "block px-4 py-2 text-sm cursor-pointer"
-                                                            // )}
+                                                                className="text-gray-700 block px-4 py-2 text-sm cursor-pointer"                                                            
                                                             >
-                                                                <FontAwesomeIcon
-                                                                    icon="fa-solid fa-bookmark"
-                                                                    className="mr-3"
-                                                                />
                                                                 Saved
                                                             </a>
                                                         )}
@@ -161,29 +161,15 @@ function Navbar() {
 
                                                 </div>
                                                 <div className="py-1">
-                                                    <Menu.Item>
-                                                        {({ active }) => (
+                                                    
                                                             <a
                                                                 className="text-gray-700 block w-full text-left px-4 py-2 text-sm cursor-pointer"
-                                                                // {classNames(
-                                                                //     active
-                                                                //         ? "bg-gray-100 text-gray-900"
-                                                                //         : "text-gray-700",
-                                                                //     "block w-full text-left px-4 py-2 text-sm cursor-pointer"
-                                                                // )}
-                                                                // onClick={() =>
-                                                                //     signOut(
-                                                                //         client,
-                                                                //         navigate,
-                                                                //         logout
-                                                                //     )
-                                                                // }
+                                                                
                                                                 onClick={logouthandel}
                                                             >
                                                                 Log Out
                                                             </a>
-                                                        )}
-                                                    </Menu.Item>
+                                                       
                                                 </div>
                                             </Menu.Items>
                                         </Transition>

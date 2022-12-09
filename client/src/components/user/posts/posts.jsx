@@ -6,6 +6,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { format, render, cancel, register } from 'timeago.js';
 import { createComment, getPosts, likePost, UnlikePost } from '../../../api/userApi'
 import CommentsModal from '../../modals/comments';
+import { Link } from 'react-router-dom';
 
 
 
@@ -14,8 +15,8 @@ function Posts() {
     const [data, setData] = useState([])
     const [control, setControl] = useState(true)
     const [showComments,setShowComments] = useState(false)
-    const [comment, setComment] = useState('')
     const [postId,setPostId]= useState('')
+    const [comment, setComment] = useState('')
     const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
@@ -24,6 +25,7 @@ function Posts() {
     const fetchData = async () => {
 
         const posts = await getPosts()
+        console.log("posts.data",posts.data);
         setData(posts.data)
     }
     useEffect(() => {
@@ -59,15 +61,20 @@ function Posts() {
                     <div className="border border-slate-200 mb-5" key={post._id}>
                         <div className="p-3 flex flex-row">
                             <div className="flex-1">
-                                <a href="" className="">
-                                    <img
+                            <Link to={`/${post.userName}`}>
+                            <img
                                         className="rounded-full w-8 max-w-none inline "
-                                        src='https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80'
+                                        // src='https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80'
+                            src={`http://localhost:4000/DP/${post.DP}`}
+
                                     />{" "}
                                     <span className="font-medium text-sm ml-2">
                                         {post.userName}
                                     </span>
-                                </a>
+                            </Link>
+                                {/* <a href="" className="">
+                                    
+                                </a> */}
                             </div>
                             <div className="">
                                 <a
@@ -173,8 +180,8 @@ function Posts() {
 
 {
     showComments && 
-    <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} >
-    </CommentsModal>
+    <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
+    
 }
 
 

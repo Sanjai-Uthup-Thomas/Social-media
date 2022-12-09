@@ -1,8 +1,8 @@
 import React from 'react'
 import {useDispatch} from 'react-redux'
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form"
 import { signUpUser } from '../../../features/auth/authSlice'
+import { useForm } from "react-hook-form"
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from 'react';
@@ -56,7 +56,6 @@ function SignUp() {
     const onSub = async (data,e)=>{
         e.preventDefault()
         dispatch(signUpUser(data)).then((response)=>{
-            console.log(response.payload.msg);
             if(!response.payload.msg){
                 navigate('/OTPverification')
             }else{

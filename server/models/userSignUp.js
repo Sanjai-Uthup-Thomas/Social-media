@@ -5,7 +5,9 @@ const signUpTemplate  = new mongoose.Schema({
     phoneNumber:{type:Number, required:true},
     email:{type:String, required:true},
     password:{type:String, required:true},
+    Bio:{type:String},
     Status:{type:Boolean,default:true},
+    profilePhoto:{type:String,default:'demo.jpg'},
     reportStatus:{type:Boolean,default:false},
     createdAt:{type:Date,default:Date.now}
 })

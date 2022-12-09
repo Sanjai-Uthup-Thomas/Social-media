@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
 dotenv.config({ path: './var/.env' })
+const userSchema= require('../models/userSignUp')
 const postSchema = require('../models/posts');
 const commentSchema = require('../models/comments');
 const { json } = require('express');
@@ -66,10 +67,7 @@ module.exports = {
     },
     Posts: (Data, UserId) => {
         try {
-            console.log("data", Data);
-            console.log("userid", UserId);
             const { description, postImage } = Data
-            console.log(description, postImage);
             const post = new postSchema({
                 userId: UserId,
                 description: description,
@@ -98,18 +96,20 @@ module.exports = {
                 }, {
                     $unwind: '$user'
                 }, {
-                    $project: {
+                    $project: { 
                         userId: '$userId',
                         postImage: '$postImage',
                         userName: '$user.userName',
                         date: '$date',
                         description: '$description',
-                        Likes: '$Likes'
+                        Likes: '$Likes',
+                        DP:'$user.profilePhoto'
                     }
                 }, {
                     $sort: { 'date': -1 }
                 }
             ])
+            console.log(posts);
             return posts
         } catch (error) {
             return error.message
@@ -173,6 +173,7 @@ module.exports = {
                         userName: '$user.userName',
                         date: '$date',
                         comment: '$comment',
+                        DP: '$user.profilePhoto'
                     }
                 }
             ])
@@ -194,6 +195,121 @@ module.exports = {
                 }
             ])
             return post;
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    getUserNames:async()=>{
+        try{
+            let usernames=await userSchema.aggregate([
+                {
+                    $project:{
+                        userName:'$userName'
+                    }
+                }
+            ])
+            return usernames
+        }catch (error) {
+            return error.message
+        }
+    },
+    getUserHead:async(userId)=>{
+        try{
+            let userHead=await userSchema.aggregate([
+                {
+                    $match: { _id: ObjectId(userId) }
+                },
+                {
+                    $lookup: {
+                        from: 'posts',
+                        localField: '_id',
+                        foreignField: 'userId',
+                        as: "posts"
+                    }
+                },{
+                    $project:{
+                        userName:'$userName',
+                        postNumbers: { $cond: { if: { $isArray: "$posts"}, then: { $size: "$posts" }, else: 0} },
+                        DP:'$profilePhoto',
+                        Bio:'$Bio'
+                    }
+                }
+            ])
+            return userHead
+        }catch (error) {
+            return error.message
+        }
+    },
+    getUserPosts:async(userId)=>{
+        try{
+            console.log(userId);
+            let userHead=await postSchema.aggregate([
+                {
+                    $match: { userId: ObjectId(userId) }
+                }
+               ,{
+                    $project:{
+                     postImages:'$postImage'
+                    }
+                }
+            ])
+            console.log(userHead);
+            return userHead
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    getUserProfileForEdit:async(userId)=>{
+        try{
+            console.log(userId);
+            let userDetails=await userSchema.findById(userId)
+            console.log(userDetails);
+            return userDetails
+        }catch (error) {
+            return error.message
+        }
+       
+
+    },
+    doUserProfileEdit:async(userId,data)=>{
+        try{   
+            let user = await userSchema.findOne({ _id:userId })
+            let email = await userSchema.findOne({ email: data.email })
+            let userName = await userSchema.findOne({ userName: data.userName })
+            let phoneNumber = await userSchema.findOne({ phoneNumber: data.phoneNumber })
+            if (email && user.email != data.email) {
+                 return ({ message: "Email Id already in use" })
+            } else if (userName && user.userName != data.userName) {
+                return ({ message: "User Name already in use" })
+            }else if (phoneNumber && user.phoneNumber != data.phoneNumber) {
+                return ({ message: "Phone Number already in use" })
+            }
+            else {
+                await userSchema.updateOne({ _id:userId }, {
+                    $set: {
+                        userName: data.userName,
+                        phoneNumber: data.phoneNumber,
+                        email: data.email,
+                        Bio: data.bio
+                    }
+                })
+                return ({ message: "success", status: true })
+            }
+        }catch (error) {
+            return error.message
+        }
+       
+    },
+    changeDp:async(userId,photo)=>{
+        try{
+            await userSchema.updateOne({ _id:userId }, {
+                $set: {
+                    profilePhoto:photo
+                }
+            })
+            return ({ message: "success", status: true })
 
         }catch (error) {
             return error.message
