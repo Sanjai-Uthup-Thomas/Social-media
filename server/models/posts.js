@@ -20,6 +20,9 @@ const Posts = new mongoose.Schema({
     Likes:{
         type:Array
     },
+    Bookmarks:{
+        type:Array
+    },
     date: {
         type: Date,
         default: Date.now,

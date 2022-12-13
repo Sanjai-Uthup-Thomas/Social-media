@@ -242,25 +242,79 @@ module.exports = {
             res.json({ error: err.message })
         }
     },
-    doEditProfile:(req,res)=>{
-        try{
-            userHelpers.doUserProfileEdit(req.params.id,req.body).then((response) => {
+    doEditProfile: (req, res) => {
+        try {
+            userHelpers.doUserProfileEdit(req.params.id, req.body).then((response) => {
                 res.json(response)
             })
         } catch (err) {
             res.json({ error: err.message })
         }
     },
-    doChangeDP:(req,res)=>{
-        try{
+    doChangeDP: (req, res) => {
+        try {
             req.body.photo = req.file.filename
-            userHelpers.changeDp(req.user,req.body.photo).then((response)=>{
+            userHelpers.changeDp(req.user, req.body.photo).then((response) => {
                 console.log(response);
                 res.json(response);
             })
-             
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doSavePost: (req, res) => {
+        try {
+            console.log(req.body.id);
+            console.log("req.user",req.user);
+            const postId = req.body.id
+            const userId = req.user
+            userHelpers.doBookPost(postId, userId).then((response) => {
+                res.json(response)
+            })
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+
+    },
+    doUnsavePost: (req, res) => {
+        try {
+            console.log(req.body.id);
+            console.log(req.user);
+            const postId = req.body.id
+            const userId = req.user
+            userHelpers.doUnBookPost(postId, userId).then((response) => {
+                res.json(response)
+            })
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doSavedPosts:async(req,res)=>{
+        try{
+            console.log(req.params.id);
+            await userHelpers.getSavedPosts(req.params.id).then((response) => {
+                console.log(response);
+                res.json(response)
+            })
+
         }catch (err) {
             res.json({ error: err.message })
         }
-    }
+    },
+    doSearch:async(req,res)=>{
+        try{
+            console.log(req.params.data);
+            await userHelpers.userSearch(req.params.data).then((response) => {
+                res.json(response)
+            })
+            
+
+        }catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    
 }

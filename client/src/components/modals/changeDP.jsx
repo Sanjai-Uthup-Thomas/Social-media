@@ -41,9 +41,17 @@ const ChangeDP=({open,onClose})=>{
                         <p className='text-black'>Change Profile Photo</p>
                         <div >
                             <form onSubmit={submit} encType="multipart/form-data">
-                                <div ><img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' /></div>
+                                <div >{form.DP?
+                                <img className='' src={URL.createObjectURL(form.DP)} />
+                                : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
+                                   
+                                    </div>
                                 <div>
-                                    <input type='file' name='DP' onChange={fileUpload} />
+                                    {/* <input type='file' name='DP' onChange={fileUpload} /> */}
+                                    <label for="file-upload" class="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">
+                                        Select Photo
+                                    </label>
+                                    <input id='file-upload' type='file' name='DP' onChange={fileUpload} accept="image/*" className='hidden bg-gray-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded mt-2' />
 
                                 </div>
                                 <div>

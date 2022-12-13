@@ -3,15 +3,21 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
-import { getUserPosts } from '../../../api/userApi';
+import { getSavedPosts, getUserPosts } from '../../../api/userApi';
 import UserBody from './userBody';
+import SavedBody from './userSaved';
 
 function UserHead({ name, userId }) {
-    const [data,setData] = useState([])
-    const fetchData = async() => {
-       
-        await getUserPosts(userId).then((posts)=>{
+    const [data, setData] = useState([])
+    const [saved, setSaved] = useState([])
+    const [post,setPost]=useState(true)
+    const fetchData = async () => {
+
+        await getUserPosts(userId).then((posts) => {
             setData(posts.data)
+        })
+        await getSavedPosts(userId).then((posts)=>{
+            setSaved(posts.data)
         })
     }
     useEffect(() => {
@@ -20,14 +26,14 @@ function UserHead({ name, userId }) {
     }, [name])
 
     const {
-        auth: {user}
+        auth: { user }
     } = useSelector(state => state)
-    if(user.username===undefined){
-        var Users=JSON.parse(user)
-      }else{
-         Users=user
-      }
-      
+    if (user.username === undefined) {
+        var Users = JSON.parse(user)
+    } else {
+        Users = user
+    }
+
     return (
         <>
             <main className="bg-zinc-50">
@@ -45,20 +51,20 @@ function UserHead({ name, userId }) {
                             <h1 className="text-3xl align-bottom block">
                                 {name.userName}
                             </h1>
-                            {Users.id===userId? <Link
+                            {Users.id === userId ? <Link
                                 as="button"
                                 to={`/editprofile`}
                                 className="bg-white ml-3  text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded text-sm"
                             >
                                 Edit Profile
-                            </Link>: <Link
+                            </Link> : <Link
                                 as="button"
                                 to='/follow'
                                 className="bg-white ml-3  text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded text-sm"
                             >
                                 Follow
                             </Link>}
-                           
+
                             <a
                                 className="ml-3 cursor-pointer"
 
@@ -108,21 +114,42 @@ function UserHead({ name, userId }) {
                 </ul>
 
                 <div className="hidden lg:flex flex-row text-2xl lg:text-xs items-center justify-center border-t uppercase text-gray-400 tracking-widest h-16">
-                    <a
+                    {Users.id === userId ? <><a
                         className={`"text-black border-t border-black"
                                  flex justify-center items-center h-full mr-16 cursor-pointer`}
+                                 onClick={()=>setPost(true)}
 
                     >
                         <span className="hidden lg:inline-block ml-2">
                             Posts
                         </span>
-                    </a>
+                    </a><a
+                        className={`"text-black border-t border-black"
+                                 flex justify-center items-center h-full mr-16 cursor-pointer`}
+                        onClick={()=>setPost(false)}
+                    >
+                            <span className="hidden lg:inline-block ml-2">
+                                Saved
+                            </span>
+                        </a></> : <a
+                            className={`"text-black border-t border-black"
+                                 flex justify-center items-center h-full mr-16 cursor-pointer`}
+
+                        >
+                        <span className="hidden lg:inline-block ml-2">
+                            Posts
+                        </span>
+                    </a>}
+
 
                 </div>
                 <div className="container grid grid-cols-3 gap-1 lg:gap-4 lg:px-16">
-                    {data.map((data) => {
-                        return <UserBody data={data}/>
+                    {post?data.map((data) => {
+                        return <UserBody data={data} />
+                    }):saved.map((data) =>{
+                        return <SavedBody data={data} />
                     })}
+                    
                 </div>
             </main>
         </>

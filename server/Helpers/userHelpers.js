@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
 dotenv.config({ path: './var/.env' })
-const userSchema= require('../models/userSignUp')
+const userSchema = require('../models/userSignUp')
 const postSchema = require('../models/posts');
 const commentSchema = require('../models/comments');
 const { json } = require('express');
@@ -96,14 +96,15 @@ module.exports = {
                 }, {
                     $unwind: '$user'
                 }, {
-                    $project: { 
+                    $project: {
                         userId: '$userId',
                         postImage: '$postImage',
                         userName: '$user.userName',
                         date: '$date',
                         description: '$description',
                         Likes: '$Likes',
-                        DP:'$user.profilePhoto'
+                        DP: '$user.profilePhoto',
+                        Bookmarks: '$Bookmarks',
                     }
                 }, {
                     $sort: { 'date': -1 }
@@ -116,49 +117,49 @@ module.exports = {
         }
     },
 
-    doLikePost: async(postId, userId) => {
+    doLikePost: async (postId, userId) => {
 
         try {
             const like = await postSchema.findByIdAndUpdate(postId, {
-                $push: {Likes:userId }
+                $push: { Likes: userId }
             })
-            return json({msg:"sucessfully"})
+            return json({ msg: "sucessfully" })
 
         } catch (error) {
             return error.message
         }
     },
-    doUnLikePost: async(postId, userId) => {
+    doUnLikePost: async (postId, userId) => {
 
         try {
             const unlike = await postSchema.findByIdAndUpdate(postId, {
-                $pull: {Likes:userId }
+                $pull: { Likes: userId }
             })
-            return json({msg:"sucessfully"})
+            return json({ msg: "sucessfully" })
 
         } catch (error) {
             return error.message
         }
     },
-    docommentPost:(postId,userId,comment)=>{
-        try{
-           const comments = new commentSchema({
-            userId: userId,
-            comment: comment,
-            postId: postId, 
+    docommentPost: (postId, userId, comment) => {
+        try {
+            const comments = new commentSchema({
+                userId: userId,
+                comment: comment,
+                postId: postId,
             })
             comments.save()
-            return json({msg:"sucessfully"})
+            return json({ msg: "sucessfully" })
         } catch (error) {
             return error.message
         }
     },
-    getCommentPosts:async(postId)=>{
-        try{
-            let comments=await commentSchema.aggregate([
+    getCommentPosts: async (postId) => {
+        try {
+            let comments = await commentSchema.aggregate([
                 {
                     $match: { postId: ObjectId(postId) }
-                },{
+                }, {
                     $lookup: {
                         from: 'users',
                         localField: 'userId',
@@ -179,44 +180,44 @@ module.exports = {
             ])
             return comments;
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    getPost:async(postId)=>{
-        try{
-            let post=await postSchema.aggregate([
+    getPost: async (postId) => {
+        try {
+            let post = await postSchema.aggregate([
                 {
                     $match: { _id: ObjectId(postId) }
-                },{
-                    $project:{
-                        image:'$postImage'
+                }, {
+                    $project: {
+                        image: '$postImage'
                     }
                 }
             ])
             return post;
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    getUserNames:async()=>{
-        try{
-            let usernames=await userSchema.aggregate([
+    getUserNames: async () => {
+        try {
+            let usernames = await userSchema.aggregate([
                 {
-                    $project:{
-                        userName:'$userName'
+                    $project: {
+                        userName: '$userName'
                     }
                 }
             ])
             return usernames
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    getUserHead:async(userId)=>{
-        try{
-            let userHead=await userSchema.aggregate([
+    getUserHead: async (userId) => {
+        try {
+            let userHead = await userSchema.aggregate([
                 {
                     $match: { _id: ObjectId(userId) }
                 },
@@ -227,67 +228,67 @@ module.exports = {
                         foreignField: 'userId',
                         as: "posts"
                     }
-                },{
-                    $project:{
-                        userName:'$userName',
-                        postNumbers: { $cond: { if: { $isArray: "$posts"}, then: { $size: "$posts" }, else: 0} },
-                        DP:'$profilePhoto',
-                        Bio:'$Bio'
+                }, {
+                    $project: {
+                        userName: '$userName',
+                        postNumbers: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
+                        DP: '$profilePhoto',
+                        Bio: '$Bio'
                     }
                 }
             ])
             return userHead
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    getUserPosts:async(userId)=>{
-        try{
+    getUserPosts: async (userId) => {
+        try {
             console.log(userId);
-            let userHead=await postSchema.aggregate([
+            let userHead = await postSchema.aggregate([
                 {
                     $match: { userId: ObjectId(userId) }
                 }
-               ,{
-                    $project:{
-                     postImages:'$postImage'
+                , {
+                    $project: {
+                        postImages: '$postImage'
                     }
                 }
             ])
             console.log(userHead);
             return userHead
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    getUserProfileForEdit:async(userId)=>{
-        try{
+    getUserProfileForEdit: async (userId) => {
+        try {
             console.log(userId);
-            let userDetails=await userSchema.findById(userId)
+            let userDetails = await userSchema.findById(userId)
             console.log(userDetails);
             return userDetails
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
-       
+
 
     },
-    doUserProfileEdit:async(userId,data)=>{
-        try{   
-            let user = await userSchema.findOne({ _id:userId })
+    doUserProfileEdit: async (userId, data) => {
+        try {
+            let user = await userSchema.findOne({ _id: userId })
             let email = await userSchema.findOne({ email: data.email })
             let userName = await userSchema.findOne({ userName: data.userName })
             let phoneNumber = await userSchema.findOne({ phoneNumber: data.phoneNumber })
             if (email && user.email != data.email) {
-                 return ({ message: "Email Id already in use" })
+                return ({ message: "Email Id already in use" })
             } else if (userName && user.userName != data.userName) {
                 return ({ message: "User Name already in use" })
-            }else if (phoneNumber && user.phoneNumber != data.phoneNumber) {
+            } else if (phoneNumber && user.phoneNumber != data.phoneNumber) {
                 return ({ message: "Phone Number already in use" })
             }
             else {
-                await userSchema.updateOne({ _id:userId }, {
+                await userSchema.updateOne({ _id: userId }, {
                     $set: {
                         userName: data.userName,
                         phoneNumber: data.phoneNumber,
@@ -295,26 +296,87 @@ module.exports = {
                         Bio: data.bio
                     }
                 })
-                return ({ message: "success", status: true })
+                return ({ message: "success", status: true, data: { id: userId, username: data.userName } })
             }
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
-       
+
     },
-    changeDp:async(userId,photo)=>{
-        try{
-            await userSchema.updateOne({ _id:userId }, {
+    changeDp: async (userId, photo) => {
+        try {
+            await userSchema.updateOne({ _id: userId }, {
                 $set: {
-                    profilePhoto:photo
+                    profilePhoto: photo
                 }
             })
             return ({ message: "success", status: true })
 
-        }catch (error) {
+        } catch (error) {
+            return error.message
+        }
+    },
+    doBookPost: async (postId, userId) => {
+        try {
+            const save = await postSchema.findByIdAndUpdate(postId, {
+                $push: { Bookmarks: userId }
+            })
+            return json({ msg: "sucessfully" })
+        } catch (error) {
+            return error.message
+        }
+
+    },
+    doUnBookPost: async (postId, userId) => {
+        try {
+            const unsave = await postSchema.findByIdAndUpdate(postId, {
+                $pull: { Bookmarks: userId }
+            })
+            return json({ msg: "sucessfully" })
+
+        } catch (error) {
+            return error.message
+        }
+
+    },
+    getSavedPosts: async (userId) => {
+        try {
+            console.log(userId);
+            let userHead = await postSchema.aggregate([
+                {
+                    $match: { Bookmarks: userId }
+                }, {
+                    $project: {
+                        postImages: '$postImage'
+                    }
+                }
+
+            ])
+            console.log(userHead);
+            return userHead
+
+        } catch (error) {
+            return error.message
+        }
+    },
+    userSearch: async (data) => {
+        try {
+            let result = await userSchema.aggregate([
+                {
+                    $match: {
+                        userName: { $regex: new RegExp(data, 'i') }
+                    }
+                }, {
+                    $project: {
+                        userName: '$userName',
+                        userDp: '$profilePhoto'
+                    }
+                }
+            ])
+                return result
+        } catch (error) {
             return error.message
         }
     }
-
 
 }

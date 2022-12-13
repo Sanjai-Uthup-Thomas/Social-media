@@ -30,6 +30,17 @@ router.get('/getUserProfileForEdit/:id',auth,controller.getUserProfileForEdit)
 router.post('/editProfile/:id',auth,controller.doEditProfile)
 router.post('/changeDP',auth,DPupload.single("DP"),controller.doChangeDP)
 
+router.patch('/bookmarkPost',auth,controller.doSavePost)
+router.patch('/unbookmarkPost',auth,controller.doUnsavePost)
+router.get('/savedPosts/:id',auth,controller.doSavedPosts)
+
+router.get('/search/:data',controller.doSearch)
+
+
+
+
+
+
 
 
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import CommentsModal from '../../modals/comments';
 
-function UserBody({ data }) {
+function SavedBody({ data }) {
   const [showComments,setShowComments] = useState(false)
   const [postId,setPostId]= useState('')
   return (
@@ -26,4 +26,4 @@ function UserBody({ data }) {
   )
 }
 
-export default UserBody
+export default SavedBody

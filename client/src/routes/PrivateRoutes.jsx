@@ -1,11 +1,12 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 export const PrivateRoutes = () => {
-    const {
-        auth: { token }
-    } = useSelector(state => state);
+    let token= localStorage.getItem("token");
+    // const {
+    //     auth: { token }
+    // } = useSelector(state => state);
 
     const location = useLocation();
 

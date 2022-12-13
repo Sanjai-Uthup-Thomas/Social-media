@@ -8,8 +8,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from 'react';
 import { ThreeCircles } from 'react-loader-spinner'
 import ChangeDP from '../../components/modals/changeDP';
+import { json } from 'react-router-dom';
+import { addUser } from '../../features/auth/authSlice';
+import { useDispatch } from 'react-redux';
 
 function EditProfile({userId}) {
+    const dispatch=useDispatch()
     const [isOpen,setIsOpen] =useState(false)
     const [loading,setLoading] = useState(true)
     const [control,setControl]=useState(false)
@@ -58,9 +62,15 @@ function EditProfile({userId}) {
         e.preventDefault()
         console.log(data)
         postEditProfile(userId,data).then((response)=>{
-            console.log(response.data);
+            console.log(response.data.data);
             if(!response.data.status){
-                setError(response.data.message)
+                setError("edited",response.data.message)
+            }else{
+                // localStorage.setItem('user',response.data.data)
+                localStorage.setItem('user', JSON.stringify(response.data.data))
+                dispatch(addUser())
+
+                console.log("editing profile");
             }
             setControl(!control)
         })

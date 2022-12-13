@@ -16,6 +16,7 @@ function Suggestions() {
 
             {[1, 2, 3,4,5,6].map(() => {
                 return (
+                    //suggestions of friends
                     <div className="flex py-2">
                         <div className="flex items-center">
                             <a className="inline-block align-top" href="#">

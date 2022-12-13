@@ -11,7 +11,8 @@ const initialState ={
     admin_token: localStorage.getItem("admin-auth-token") || undefined,
     loading:false,
     error:"",
-    signup:false
+    signup:false,
+    control:1
 }
 export const signInAdmin = createAsyncThunk('signInAdmin',async (body)=>{
     const res = await axios.post('http://localhost:4000/admin/adminLogin',body)
@@ -63,6 +64,9 @@ const authSlice = createSlice({
         adminLogout:(state,action)=>{
             state.admin_token=null
             localStorage.setItem('admin-auth-token',"")
+        },
+        control:(state,action)=>{
+            state.control=control+1
         }
     },
     extraReducers:{
@@ -117,5 +121,5 @@ const authSlice = createSlice({
         }
     }
 })
-export const {addToken,addUser,logout,adminLogout}= authSlice.actions
+export const {addToken,addUser,logout,adminLogout,control}= authSlice.actions
 export default authSlice.reducer

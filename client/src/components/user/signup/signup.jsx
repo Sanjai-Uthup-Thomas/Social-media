@@ -71,11 +71,17 @@ function SignUp() {
     <>
     <section className="bg-gray-50 ">
   <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+  <img
+                                    className="p-2"
+                                    src="https://img.icons8.com/ios/2x/brave-web-browser.png"
+                                    width="70"
+                                    
+                                />
       
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-200 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-center text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-blue-700">
-                  Logo
+              <h1 className="text-center text-sm font-bold leading-tight tracking-tight text-gray-900 md:text-sm dark:text-blue-700">
+                  Sign-up to connect with your Friends
               </h1>
               <span className="text-red-600">{error}</span>
               <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSub)}>

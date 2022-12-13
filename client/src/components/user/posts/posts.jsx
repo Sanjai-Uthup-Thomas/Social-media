@@ -4,52 +4,69 @@ import { FaRegComment } from 'react-icons/fa';
 import { FiBookmark } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
 import { format, render, cancel, register } from 'timeago.js';
-import { createComment, getPosts, likePost, UnlikePost } from '../../../api/userApi'
+import { BookmarkPost, createComment, getPosts, likePost, UnBookmarkPost, UnlikePost } from '../../../api/userApi'
 import CommentsModal from '../../modals/comments';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+// import { control } from '../../../features/auth/authSlice';
 
 
 
 
 function Posts() {
     const [data, setData] = useState([])
-    const [control, setControl] = useState(true)
-    const [showComments,setShowComments] = useState(false)
-    const [postId,setPostId]= useState('')
+    const [control2, setControl2] = useState(true)
+    const [showComments, setShowComments] = useState(false)
+    const [postId, setPostId] = useState('')
     const [comment, setComment] = useState('')
     const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
 
-   
+    const {
+        auth: { control }
+    } = useSelector(state => state)
     const fetchData = async () => {
 
+
         const posts = await getPosts()
-        console.log("posts.data",posts.data);
+        console.log(posts.data);
         setData(posts.data)
     }
     useEffect(() => {
         fetchData()
-    }, [control])
+    }, [control2, control])
     const doLike = (id) => {
         let data = { id }
         likePost(data).then((response) => {
-                setControl(!control)
-            })
+            setControl2(!control2)
+        })
     }
     const doUnLike = (id) => {
         let data = { id }
         UnlikePost(data).then((response) => {
-            setControl(!control)
+            setControl2(!control2)
         })
     }
-    const commentSubmit=(postId)=>{
-        console.log(postId);
-        console.log(comment);
-        const data={postId, comment}
-        console.log(data);
-        createComment(data).then((response) => {
-            setComment("")
+    const commentSubmit = (postId) => {
+        if (comment != "") {
+            const data = { postId, comment }
+            createComment(data).then((response) => {
+                setComment("")
+            })
+        }
+
+    }
+    const doBookmark = (id) => {
+        let data = { id }
+        BookmarkPost(data).then((response) => {
+            setControl2(!control2)
+        })
+    }
+    const doUnBookmark = (id) => {
+        let data = { id }
+        UnBookmarkPost(data).then((response) => {
+            setControl2(!control2)
         })
     }
 
@@ -58,20 +75,21 @@ function Posts() {
         <>
             {data && data.map((post, index) => {
                 return (
+                    //posts
                     <div className="border border-slate-200 mb-5" key={post._id}>
                         <div className="p-3 flex flex-row">
                             <div className="flex-1">
-                            <Link to={`/${post.userName}`}>
-                            <img
+                                <Link to={`/${post.userName}`}>
+                                    <img
                                         className="rounded-full w-8 max-w-none inline "
-                                        // src='https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80'
-                            src={`http://localhost:4000/DP/${post.DP}`}
+
+                                        src={`http://localhost:4000/DP/${post.DP}`}
 
                                     />{" "}
                                     <span className="font-medium text-sm ml-2">
                                         {post.userName}
                                     </span>
-                            </Link>
+                                </Link>
                                 {/* <a href="" className="">
                                     
                                 </a> */}
@@ -117,20 +135,32 @@ function Posts() {
 
                                 <a
                                     className="mr-3 hover:text-gray-500 cursor-pointer"
-                                    onClick={(e)=>{setShowComments(true)
-                                        setPostId(post._id)}}
+                                    onClick={(e) => {
+                                        setShowComments(true)
+                                        setPostId(post._id)
+                                    }}
                                 >
                                     <FaRegComment />
                                 </a>
 
-                            </div> 
+                            </div>
                             <div className="">
-                                <a
-                                    className="cursor-pointer hover:text-gray-500"
+                            {
+                                    // post.Likes.length > 0 ?
+                                    post.Bookmarks.includes(userId) ?
+                                        <a
+                                            className="mr-3  cursor-pointer"
+                                            onClick={(e) => {doUnBookmark(post._id) }}
+                                        >
+                                            <FiBookmark className='fill-black' />
+                                        </a> : <a
+                                            className="mr-3 text-black cursor-pointer"
+                                            onClick={(e) => { doBookmark(post._id) }}
 
-                                >
-                                    <FiBookmark />
-                                </a>
+                                        >
+                                            <FiBookmark className='' />
+                                        </a>
+                                }
                             </div>
                         </div>
                         <div className="font-medium text-sm px-3">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
@@ -153,8 +183,8 @@ function Posts() {
                             <div className="flex-1 pr-3 py-1">
                                 <input
                                     className={`w-full px-3 py-1 text-sm bg-slate-50 outline-0`}
-                                    value={comment} 
-                                    onChange={(e) => {setComment(e.target.value) }}
+                                    value={comment}
+                                    onChange={(e) => { setComment(e.target.value) }}
                                     type="text"
                                     placeholder="Add a comment..."
 
@@ -163,7 +193,7 @@ function Posts() {
                             <div className="flex items-center text-sm">
                                 <a
                                     className="cursor-pointer text-sky-500"
-                                    onClick={()=>commentSubmit(post._id)}
+                                    onClick={() => commentSubmit(post._id)}
                                 >
                                     Post
                                 </a>
@@ -174,15 +204,11 @@ function Posts() {
                 )
 
             })}
+            {
+                showComments &&
+                <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
 
-
-
-
-{
-    showComments && 
-    <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
-    
-}
+            }
 
 
         </>

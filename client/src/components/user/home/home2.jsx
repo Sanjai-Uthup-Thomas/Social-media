@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { getUserHead } from '../../../api/userApi'
 import { logout } from '../../../features/auth/authSlice'
 import Posts from '../posts/posts'
@@ -8,14 +8,15 @@ import Suggestions from '../Suggestions/Suggestions'
 
 
 function HomePage() {
+    const [Loader,setLoader]=useState(true)
     const dispatch=useDispatch()
     const logouthandel=()=>{
       dispatch(logout()) 
     }
-    const { 
-        auth: { user },
-      } = useSelector(state => state);
-      if(user.username===undefined){
+    const user=localStorage.getItem('user')
+
+      console.log(user);
+      if(user?.username===undefined){
         var users=JSON.parse(user)
       }else{
         var users=user
@@ -24,16 +25,17 @@ function HomePage() {
       const fetchData=async()=>{
           await getUserHead(users.id).then((response)=>{
               setDP(response.data[0])
+              setLoader(false)
           })
       }
       useEffect(()=>{
           fetchData()
-      },[])
+      },[user])
       
 
 
     return (
-        <main className=" grid grid-cols-3 container md:w-10/12 mx-auto mt-4 bg-gray-50  ">
+        Loader?<h1>loading ...</h1>: <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-8 bg-gray-50  ">
         <div className="md:px-12 col-span-3 lg:col-span-2">
             
             <Posts/>
@@ -75,6 +77,7 @@ function HomePage() {
             </div>
         </div>
     </main>
+       
     )
 }
 
