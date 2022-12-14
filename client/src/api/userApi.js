@@ -1,5 +1,10 @@
 import axios from '../axios/userAxios'
-import header from './header'
+
+const token = localStorage.getItem('token')
+
+const header={
+    headers: { "x-auth-token": token }
+} 
 
 export const login=(Data)=>axios.post('/login', Data)
 
@@ -19,7 +24,7 @@ export const getComments=(Data)=>axios.get(`/comments/${Data}`,header)
 
 export const getCommentPost=(Data)=>axios.get(`/commentpost/${Data}`,header)
 
-export const getUserNames=()=>axios.get('/userNames',header)
+export const getUserNames=()=>axios.get('/userNames')
 
 export const getUserHead=(Data)=>axios.get(`/userHead/${Data}`,header)
 
@@ -41,6 +46,30 @@ export const changeDp=(Data)=>axios.post(`/changeDP`,Data,header)
 export const BookmarkPost=(Data)=>axios.patch('/bookmarkPost',Data,header)
 
 export const UnBookmarkPost=(Data)=>axios.patch('/unbookmarkPost',Data,header)
+
+export const userFollow=(Data)=>axios.patch(`/follow/${Data}`,Data,header)
+
+export const userUnfollow=(Data)=>axios.patch(`/unfollow/${Data}`,Data,header)
+
+export const getSuggestions=(Data)=>axios.get(`/suggestions/${Data}`,header)
+
+export const postDelete=(Data)=>axios.delete(`/deletepost/${Data}`,header)
+
+export const reportPost=(Data)=>axios.patch(`/reportpost`,Data,header)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

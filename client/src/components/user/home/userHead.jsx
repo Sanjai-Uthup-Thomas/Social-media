@@ -3,27 +3,32 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
-import { getSavedPosts, getUserPosts } from '../../../api/userApi';
+import { getSavedPosts, getUserHead, getUserPosts, userFollow, userUnfollow } from '../../../api/userApi';
 import UserBody from './userBody';
 import SavedBody from './userSaved';
 
-function UserHead({ name, userId }) {
+function UserHead({ userId }) {
+    const [name, setName] = useState([])
+    const [control, setControl] = useState(1)
     const [data, setData] = useState([])
     const [saved, setSaved] = useState([])
-    const [post,setPost]=useState(true)
+    const [post, setPost] = useState(true)
     const fetchData = async () => {
-
+        await getUserHead(userId).then((response) => {
+            console.log(response.data[0]);
+            setName(response.data[0])
+        })
         await getUserPosts(userId).then((posts) => {
             setData(posts.data)
         })
-        await getSavedPosts(userId).then((posts)=>{
+        await getSavedPosts(userId).then((posts) => {
             setSaved(posts.data)
         })
     }
     useEffect(() => {
         console.log(name);
         fetchData()
-    }, [name])
+    }, [userId, control])
 
     const {
         auth: { user }
@@ -33,6 +38,24 @@ function UserHead({ name, userId }) {
     } else {
         Users = user
     }
+    const doFollow = (data) => {
+        console.log("follow", data);
+        userFollow(data).then((response) => {
+            console.log("follow response", response.data);
+            setControl(!control)
+
+        })
+    }
+
+    const doUnfollow = (data) => {
+        console.log("follow", data);
+        userUnfollow(data).then((response) => {
+            console.log("unfollow response", response.data);
+            setControl(!control)
+        })
+    }
+    console.log("name in head", name.Following, Users?.id);
+
 
     return (
         <>
@@ -57,13 +80,38 @@ function UserHead({ name, userId }) {
                                 className="bg-white ml-3  text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded text-sm"
                             >
                                 Edit Profile
-                            </Link> : <Link
-                                as="button"
-                                to='/follow'
-                                className="bg-white ml-3  text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded text-sm"
-                            >
-                                Follow
-                            </Link>}
+                            </Link> :
+                                name.Followers?.includes(Users?.id) ?
+                                    <button className="bg-white ml-3
+                                text-gray-800 font-semibold py-1 px-2 border
+                                border-gray-400 rounded text-sm"
+                                        onClick={(e) => doUnfollow(userId)}
+                                    >Unfollow
+                                    </button> :
+                                    name.Following?.includes(Users?.id) ?
+                                        <button className="bg-white ml-3
+                                        text-gray-800 font-semibold py-1 px-2 border
+                                       border-gray-400 rounded text-sm"
+                                            onClick={(e) => doFollow(userId)}
+                                        >Follow back
+                                        </button> :
+                                        <button className="bg-white ml-3
+                                        text-gray-800 font-semibold py-1 px-2 border
+                                        border-gray-400 rounded text-sm"
+                                            onClick={(e) => doFollow(userId)}
+                                        >Follow
+                                        </button>
+
+
+
+                                // <Link
+                                //     as="button"
+                                //     to='/follow'
+                                //     className="bg-white ml-3  text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded text-sm"
+                                // >
+                                //     Follow
+                                // </Link>
+                            }
 
                             <a
                                 className="ml-3 cursor-pointer"
@@ -77,13 +125,13 @@ function UserHead({ name, userId }) {
                             </div>
                             <div className="basis-1/2">
                                 <strong className="mr-1">
-                                    120
+                                    {name.Followers?.length}
                                 </strong>
                                 followers
                             </div>
                             <div className="basis-1/2">
                                 <strong className="mr-1">
-                                    120
+                                    {name.Following?.length}
                                 </strong>
                                 following
                             </div>
@@ -95,44 +143,44 @@ function UserHead({ name, userId }) {
                 <ul className="flex flex-row p-2 text-sm items-center	justify-center border-t text-gray-400 h-16 lg:hidden">
                     <li className="flex-1 text-center">
                         <b className="text-black block">
-                            200
+                            {name.postNumbers}
                         </b>{" "}
                         posts
                     </li>
                     <li className="flex-1 text-center">
                         <b className="text-black block">
-                            200
+                            {name.Followers?.length}
                         </b>
                         followers
                     </li>
                     <li className="flex-1 text-center">
                         <b className="text-black block">
-                            200
+                            {name.Following?.length}
                         </b>
                         following
                     </li>
                 </ul>
 
-                <div className="hidden lg:flex flex-row text-2xl lg:text-xs items-center justify-center border-t uppercase text-gray-400 tracking-widest h-16">
+                <div className="hidden lg:flex flex-row text-2xl lg:text-sm items-center justify-center border-t uppercase text-gray-400 tracking-widest h-16">
                     {Users.id === userId ? <><a
-                        className={`"text-black border-t border-black"
-                                 flex justify-center items-center h-full mr-16 cursor-pointer`}
-                                 onClick={()=>setPost(true)}
+                        className={` ${post ? `border-t-2 border-black text-black` : 'text-gray-400'}
+                                 flex justify-between items-center h-full mr-16 cursor-pointer`}
+                        onClick={() => setPost(true)}
 
                     >
                         <span className="hidden lg:inline-block ml-2">
                             Posts
                         </span>
                     </a><a
-                        className={`"text-black border-t border-black"
+                        className={`${post ? 'text-gray-400' : `border-t-2 border-black text-black`}
                                  flex justify-center items-center h-full mr-16 cursor-pointer`}
-                        onClick={()=>setPost(false)}
+                        onClick={() => setPost(false)}
                     >
                             <span className="hidden lg:inline-block ml-2">
                                 Saved
                             </span>
                         </a></> : <a
-                            className={`"text-black border-t border-black"
+                            className={`border-t-2 border-black text-black
                                  flex justify-center items-center h-full mr-16 cursor-pointer`}
 
                         >
@@ -144,12 +192,12 @@ function UserHead({ name, userId }) {
 
                 </div>
                 <div className="container grid grid-cols-3 gap-1 lg:gap-4 lg:px-16">
-                    {post?data.map((data) => {
+                    {post ? data.map((data) => {
                         return <UserBody data={data} />
-                    }):saved.map((data) =>{
+                    }) : saved.map((data) => {
                         return <SavedBody data={data} />
                     })}
-                    
+
                 </div>
             </main>
         </>

@@ -8,6 +8,7 @@ import { BookmarkPost, createComment, getPosts, likePost, UnBookmarkPost, Unlike
 import CommentsModal from '../../modals/comments';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import ReportModal from '../../modals/reportModal';
 // import { control } from '../../../features/auth/authSlice';
 
 
@@ -17,8 +18,10 @@ function Posts() {
     const [data, setData] = useState([])
     const [control2, setControl2] = useState(true)
     const [showComments, setShowComments] = useState(false)
+    const [showReport,setShowReport] = useState(false)
     const [postId, setPostId] = useState('')
     const [comment, setComment] = useState('')
+    const [postUserId,setUserId] = useState('')
     const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
@@ -96,9 +99,14 @@ function Posts() {
                             </div>
                             <div className="">
                                 <a
-                                    className=""
-                                    href="#"
-                                // onClick={() => setIsModalOpen(true)}
+                                    className="cursor-pointer"
+                                    onClick={()=>{
+                                        console.log("three dot");
+                                        setShowReport(true)
+                                        setPostId(post._id)
+                                        setUserId(post.userId)
+                                    }}
+                               
                                 >
                                     <BsThreeDots />
                                 </a>
@@ -209,6 +217,12 @@ function Posts() {
                 <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
 
             }
+            {
+                showReport &&
+               <ReportModal open={showReport} onClose={() => { setShowReport(false)}} postId={postId} userId={postUserId} currentId={userId} />
+
+            }
+            
 
 
         </>

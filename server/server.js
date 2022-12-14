@@ -2,11 +2,12 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const session = require('express-session')
+var morgan = require('morgan')
 const dotenv =require('dotenv')
 const userUrls= require('./routes/userRoutes')
 const adminUrls= require('./routes/adminRoutes')
 
-
+morgan('tiny')
 const cors = require('cors')
 dotenv.config({path:'./var/.env'})
 mongoose.connect(process.env.DATABASE_ACCESS ,()=>console.log("database connected"))

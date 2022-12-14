@@ -211,7 +211,7 @@ module.exports = {
     },
     doUserHead: async (req, res) => {
         try {
-            console.log(req.params.id);
+            // console.log(req.params.id);
             await userHelpers.getUserHead(req.params.id).then((response) => {
 
                 res.json(response)
@@ -222,9 +222,9 @@ module.exports = {
     },
     doUserPosts: async (req, res) => {
         try {
-            console.log(req.params.id);
+            // console.log(req.params.id);
             await userHelpers.getUserPosts(req.params.id).then((response) => {
-                console.log(response);
+                // console.log(response);
                 res.json(response)
             })
         } catch (err) {
@@ -233,9 +233,9 @@ module.exports = {
     },
     getUserProfileForEdit: async (req, res) => {
         try {
-            console.log(req.params.id);
+            // console.log(req.params.id);
             await userHelpers.getUserProfileForEdit(req.params.id).then((response) => {
-                console.log(response);
+                // console.log(response);
                 res.json(response)
             })
         } catch (err) {
@@ -265,8 +265,8 @@ module.exports = {
     },
     doSavePost: (req, res) => {
         try {
-            console.log(req.body.id);
-            console.log("req.user",req.user);
+            // console.log(req.body.id);
+            // console.log("req.user",req.user);
             const postId = req.body.id
             const userId = req.user
             userHelpers.doBookPost(postId, userId).then((response) => {
@@ -280,8 +280,8 @@ module.exports = {
     },
     doUnsavePost: (req, res) => {
         try {
-            console.log(req.body.id);
-            console.log(req.user);
+            // console.log(req.body.id);
+            // console.log(req.user);
             const postId = req.body.id
             const userId = req.user
             userHelpers.doUnBookPost(postId, userId).then((response) => {
@@ -292,29 +292,83 @@ module.exports = {
             res.json({ error: err.message })
         }
     },
-    doSavedPosts:async(req,res)=>{
-        try{
-            console.log(req.params.id);
+    doSavedPosts: async (req, res) => {
+        try {
+            // console.log(req.params.id);
             await userHelpers.getSavedPosts(req.params.id).then((response) => {
                 console.log(response);
                 res.json(response)
             })
 
-        }catch (err) {
+        } catch (err) {
             res.json({ error: err.message })
         }
     },
-    doSearch:async(req,res)=>{
-        try{
-            console.log(req.params.data);
+    doSearch: async (req, res) => {
+        try {
+            // console.log(req.params.data);
             await userHelpers.userSearch(req.params.data).then((response) => {
                 res.json(response)
             })
-            
 
-        }catch (err) {
+
+        } catch (err) {
             res.json({ error: err.message })
         }
     },
-    
+    doFollow: (req, res) => {
+        try {
+            console.log("req.params in follow", req.params.id);
+            console.log("req.user in follow", req.user);
+            userHelpers.userFollow(req.user, req.params.id).then((response) => {
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doUnfollow: (req, res) => {
+        try {
+            console.log("req.params in follow", req.params.id);
+            console.log("req.user in follow", req.user);
+            userHelpers.userUnfollow(req.user, req.params.id).then((response) => {
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getSuggestions: (req, res) => {
+        try {
+            console.log("req.params in suggestions", req.params.id);
+            userHelpers.doSuggestions(req.params.id).then((response) => {
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doDeletePost: (req, res) => {
+        try {
+            console.log("req.params in delete", req.params.id);
+            userHelpers.deletePost(req.params.id).then((response) => {
+                res.json(response)
+            })
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doReportPost: (req, res) => {
+        try {
+            console.log(req.body)
+            console.log(req.user)
+            userHelpers.reportPost(req.user, req.body).then((response)=>{
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    }
+
 }

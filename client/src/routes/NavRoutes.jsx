@@ -24,12 +24,16 @@ function NavRoutes() {
     console.log("token from redux", token);
 
     const [userName, setUserName] = useState([])
-    const fetchData = () => {
+    const fetchData = async() => {
         console.log("fetchData",user);
         if (user) {
-            getUserNames().then((response) => {
-                setUserName(response.data)
-            })
+            let result=await getUserNames()
+            if(result) {
+                console.log(result.data)
+                setUserName(result.data)
+            }
+              
+            
         }
 
     }

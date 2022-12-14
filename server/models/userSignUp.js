@@ -8,6 +8,8 @@ const signUpTemplate  = new mongoose.Schema({
     Bio:{type:String},
     Status:{type:Boolean,default:true},
     profilePhoto:{type:String,default:'demo.jpg'},
+    Followers:{type:Array},
+    Following:{type:Array},
     reportStatus:{type:Boolean,default:false},
     createdAt:{type:Date,default:Date.now}
 })

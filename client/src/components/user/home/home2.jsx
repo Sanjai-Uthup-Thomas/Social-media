@@ -8,14 +8,11 @@ import Suggestions from '../Suggestions/Suggestions'
 
 
 function HomePage() {
-    const [Loader,setLoader]=useState(true)
     const dispatch=useDispatch()
     const logouthandel=()=>{
       dispatch(logout()) 
     }
     const user=localStorage.getItem('user')
-
-      console.log(user);
       if(user?.username===undefined){
         var users=JSON.parse(user)
       }else{
@@ -25,17 +22,16 @@ function HomePage() {
       const fetchData=async()=>{
           await getUserHead(users.id).then((response)=>{
               setDP(response.data[0])
-              setLoader(false)
           })
       }
       useEffect(()=>{
           fetchData()
-      },[user])
+      },[users])
       
 
 
-    return (
-        Loader?<h1>loading ...</h1>: <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-8 bg-gray-50  ">
+    return (<>
+    <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-8 bg-gray-50  ">
         <div className="md:px-12 col-span-3 lg:col-span-2">
             
             <Posts/>
@@ -72,11 +68,14 @@ function HomePage() {
                     </div>
                 </div>
 
-                <Suggestions />
+                <Suggestions userId={users?.id} />
                 {/* <Footer />  */}
             </div>
         </div>
     </main>
+
+    </>
+        
        
     )
 }

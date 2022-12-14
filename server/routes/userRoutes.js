@@ -23,7 +23,7 @@ router.patch('/unlikePost',auth,controller.doUnLikePost)
 router.post('/addcomment',auth,controller.doComment)
 router.get('/comments/:id',controller.getComment)
 router.get('/commentpost/:id',controller.getCommentPost)
-router.get('/userNames',auth,controller.doUserNames)
+router.get('/userNames',controller.doUserNames)
 router.get('/userHead/:id',auth,controller.doUserHead)
 router.get('/userPosts/:id',auth,controller.doUserPosts)
 router.get('/getUserProfileForEdit/:id',auth,controller.getUserProfileForEdit)
@@ -35,6 +35,21 @@ router.patch('/unbookmarkPost',auth,controller.doUnsavePost)
 router.get('/savedPosts/:id',auth,controller.doSavedPosts)
 
 router.get('/search/:data',controller.doSearch)
+
+router.patch('/follow/:id',auth,controller.doFollow)
+router.patch('/unfollow/:id',auth,controller.doUnfollow)
+router.get('/suggestions/:id',auth,controller.getSuggestions)
+
+router.delete('/deletepost/:id',auth,controller.doDeletePost)
+
+router.patch('/reportpost',auth,controller.doReportPost)
+
+
+
+
+
+
+
 
 
 

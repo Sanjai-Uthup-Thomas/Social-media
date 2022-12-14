@@ -12,7 +12,7 @@ const initialState ={
     loading:false,
     error:"",
     signup:false,
-    control:1
+    control:0
 }
 export const signInAdmin = createAsyncThunk('signInAdmin',async (body)=>{
     const res = await axios.post('http://localhost:4000/admin/adminLogin',body)
@@ -66,7 +66,7 @@ const authSlice = createSlice({
             localStorage.setItem('admin-auth-token',"")
         },
         control:(state,action)=>{
-            state.control=control+1
+            state.control+=1
         }
     },
     extraReducers:{

@@ -233,7 +233,9 @@ module.exports = {
                         userName: '$userName',
                         postNumbers: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
                         DP: '$profilePhoto',
-                        Bio: '$Bio'
+                        Bio: '$Bio',
+                        Followers: '$Followers',
+                        Following: '$Following',
                     }
                 }
             ])
@@ -369,12 +371,82 @@ module.exports = {
                 }, {
                     $project: {
                         userName: '$userName',
-                        userDp: '$profilePhoto'
+                        userDp: '$profilePhoto',
+                        userId: '$_Id',
                     }
                 }
             ])
                 return result
         } catch (error) {
+            return error.message
+        }
+    },
+    userFollow:async(userId,friendId)=>{
+        try{
+            await userSchema.findByIdAndUpdate(userId,{
+                $push:{Following:friendId}
+            })
+            await userSchema.findByIdAndUpdate(friendId,{
+                $push:{Followers:userId}
+            }).then((response)=>{
+                return json({ msg: "sucessfully" })
+            })
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    userUnfollow:async(userId,friendId)=>{
+        try{
+            await userSchema.findByIdAndUpdate(userId,{
+                $pull:{Following:friendId}
+            })
+            await userSchema.findByIdAndUpdate(friendId,{
+                $pull:{Followers:userId}
+            }).then((response)=>{
+                return json({ msg: "sucessfully" })
+            })
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    doSuggestions:async(userId)=>{
+        try{
+           const result= await userSchema.aggregate([
+                {
+                    $match:{_id:{$ne:ObjectId(userId)}}
+                },
+                {
+                    $match:{'Followers':{$nin:[userId]}}
+                },
+                {
+                     $sample: { size: 10 } 
+                }
+            ])
+            return result
+
+
+        }catch (error) {
+            return error.message
+        }
+    },
+    deletePost:async(data)=>{
+        try{
+            await postSchema.findByIdAndDelete(ObjectId(data))
+            return json({ msg: "sucessfully" })
+        }catch (error) {
+            return error.message
+        }
+    },
+    reportPost:async(user,data)=>{
+        try{
+            await postSchema.findByIdAndUpdate(data?.postId,{
+                $push:{Reports:{Reason:data.reason,UserId:user}}
+            })
+            return json({ msg: "sucessfully" })
+
+        }catch (error) {
             return error.message
         }
     }

@@ -23,6 +23,9 @@ const Posts = new mongoose.Schema({
     Bookmarks:{
         type:Array
     },
+    Reports:{
+        type:Array
+    },
     date: {
         type: Date,
         default: Date.now,
