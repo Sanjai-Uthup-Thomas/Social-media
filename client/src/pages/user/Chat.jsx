@@ -1,16 +1,17 @@
 import React from 'react'
 import BottomNav from '../../components/user/bottomNav/bottomNav'
-import Home from '../../components/user/home/home2'
+import ChatMain from '../../components/user/chat/chatMain'
 import Navbar from '../../components/user/navbar/navbar'
 
-function HomePage() {
+
+function Chat() {
   return (
     <>
       <Navbar />
-      <Home />
+      <ChatMain/>
       <BottomNav />
     </>
   )
 }
 
-export default HomePage
+export default Chat

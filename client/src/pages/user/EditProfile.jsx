@@ -10,25 +10,30 @@ import { ThreeCircles } from 'react-loader-spinner'
 import ChangeDP from '../../components/modals/changeDP';
 import { json } from 'react-router-dom';
 import { addUser } from '../../features/auth/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { control } from '../../features/auth/authSlice';
 
-function EditProfile({userId}) {
-    const dispatch=useDispatch()
-    const [isOpen,setIsOpen] =useState(false)
-    const [loading,setLoading] = useState(true)
-    const [control,setControl]=useState(false)
-    const[error,setError] = useState('')
+
+function EditProfile({ userId }) {
+    const dispatch = useDispatch()
+    const {
+        auth: { control }
+    } = useSelector(state => state)
+    const [isOpen, setIsOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+    // const [control,setControl]=useState(false)
+    const [error, setError] = useState('')
     const [userDetails, setUserDetails] = useState("");
     const fetchData = () => {
         getUserProfileForEdit(userId).then((response) => {
-            console.log("response.data",response.data);
+            console.log("response.data", response.data);
             setUserDetails(response.data);
             setLoading(false)
         })
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchData()
-    },[userId,control])
+    }, [userId, control])
     const formSchema = Yup.object().shape({
         userName: Yup.string()
             .required("User Name is required")
@@ -56,154 +61,158 @@ function EditProfile({userId}) {
         mode: "onSubmit",
         // defaultValues:data,
         resolver: yupResolver(formSchema),
-        
+
     })
-    const submit =(data, e) => {
+    const submit = (data, e) => {
         e.preventDefault()
         console.log(data)
-        postEditProfile(userId,data).then((response)=>{
+        postEditProfile(userId, data).then((response) => {
             console.log(response.data.data);
-            if(!response.data.status){
-                setError("edited",response.data.message)
-            }else{
+            if (!response.data.status) {
+                setError("edited", response.data.message)
+            } else {
                 // localStorage.setItem('user',response.data.data)
                 localStorage.setItem('user', JSON.stringify(response.data.data))
                 dispatch(addUser())
 
                 console.log("editing profile");
             }
-            setControl(!control)
+            dispatch(control())
+            // setControl(!control)
         })
     }
 
     return (
-        <>{loading? <ThreeCircles 
-            type="Puff"
-            color="#00BFFF"
-            height={100}
-            width={100}
-            timeout={3000} //3 secs
-   
-         />:<><Navbar />
-            <div className="container md:w-6/12 mx-auto mt-4 bg-gray-50">
-                <>
-                    <div className="flex flex-row">
-                        <div className="w-1/3 p-3">
-                            <p className="float-right mr-5">
-                                <img
-                                    className="rounded-full"
-                                    src={`http://localhost:4000/DP/${userDetails.profilePhoto}`}
-                                    width="65"
-                                />
-                            </p>
-                        </div>
-                        <div>
-                            <h1 className="text-2xl">{userDetails.userName}</h1>
-                            <a className="text-sm text-sky-500 font-bold cursor-pointer"
-                                onClick={()=>setIsOpen(true)}
-                            >
-                                Change Profile Photo
-                            </a><br/>
-                            {error && <span className='text-red-600'>{error}</span>}
-                            
-                        </div>
-                        
-                    </div>
-                    
-                    <form onSubmit={handleSubmit(submit)}>
-                        <div className="flex flex-row mt-5 items-center">
-                            <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
-                                <label className="m-0 p-0 align-baseline font-bold flex align-center">
-                                    Username
-                                </label>
+        <>{loading ?
+            <div className="flex flex-col justify-center items-center w-full h-full">
+                <ThreeCircles
+                    type="Puff"
+                    color="#00BFFF"
+                    height={100}
+                    width={100}
+                    timeout={3000} //3 secs
+
+                />
+            </div> : <><Navbar />
+                <div className="container md:w-6/12 mx-auto mt-4 bg-zinc-100">
+                    <>
+                        <div className="flex flex-row">
+                            <div className="w-1/3 p-3">
+                                <p className="float-right mr-5">
+                                    <img
+                                        className="rounded-full"
+                                        src={`http://localhost:4000/DP/${userDetails.profilePhoto}`}
+                                        width="65"
+                                    />
+                                </p>
                             </div>
-                            <div className="w-2/3 pr-10">
-                                <input
-                                    type="text"
-                                    className="border p-1 px-3 w-full"
-                                    placeholder="Username"
-                                    defaultValue={userDetails.userName}
-                                    // onChange={(e) => setUsername(e.target.value)}
-                                    {...register("userName")}
-                                />
-                                {errors.userName && (
-                                   <span className="text-red-600">{errors.userName.message}</span>
-                               )}
+                            <div>
+                                <h1 className="text-2xl">{userDetails.userName}</h1>
+                                <a className="text-sm text-slate-800 font-bold cursor-pointer"
+                                    onClick={() => setIsOpen(true)}
+                                >
+                                    Change Profile Photo
+                                </a><br />
+                                {error && <span className='text-red-600'>{error}</span>}
 
                             </div>
+
                         </div>
-                        <div className="flex flex-row mt-5 items-center">
-                            <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
-                                <label className="m-0 p-0 align-baseline font-bold flex align-center">
-                                    Bio
-                                </label>
+
+                        <form onSubmit={handleSubmit(submit)}>
+                            <div className="flex flex-row mt-5 items-center">
+                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
+                                    <label className="m-0 p-0 align-baseline font-bold flex align-center">
+                                        Username
+                                    </label>
+                                </div>
+                                <div className="w-2/3 pr-10">
+                                    <input
+                                        type="text"
+                                        className="border p-1 px-3 w-full"
+                                        placeholder="Username"
+                                        defaultValue={userDetails.userName}
+                                        // onChange={(e) => setUsername(e.target.value)}
+                                        {...register("userName")}
+                                    />
+                                    {errors.userName && (
+                                        <span className="text-red-600">{errors.userName.message}</span>
+                                    )}
+
+                                </div>
                             </div>
-                            <div className="w-2/3 pr-10">
-                                <textarea
-                                    className="border p-1 px-3 w-full"
-                                    rows="3"
-                                    defaultValue={userDetails.Bio}
-                                    // onChange={(e) => setBio(e.target.value)}
-                                    {...register("bio")} />
-                                {errors.bio && (
-                                    <span className="text-red-600">{errors.bio.message}</span>
-                                )}
+                            <div className="flex flex-row mt-5 items-center">
+                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
+                                    <label className="m-0 p-0 align-baseline font-bold flex align-center">
+                                        Bio
+                                    </label>
+                                </div>
+                                <div className="w-2/3 pr-10">
+                                    <textarea
+                                        className="border p-1 px-3 w-full"
+                                        rows="3"
+                                        defaultValue={userDetails.Bio}
+                                        // onChange={(e) => setBio(e.target.value)}
+                                        {...register("bio")} />
+                                    {errors.bio && (
+                                        <span className="text-red-600">{errors.bio.message}</span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex flex-row mt-5 items-center">
-                            <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
-                                <label className="m-0 p-0 align-baseline font-bold flex align-center">
-                                    Email
-                                </label>
+                            <div className="flex flex-row mt-5 items-center">
+                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
+                                    <label className="m-0 p-0 align-baseline font-bold flex align-center">
+                                        Email
+                                    </label>
+                                </div>
+                                <div className="w-2/3 pr-10">
+                                    <input
+                                        type="text"
+                                        className="border p-1 px-3 w-full"
+                                        placeholder="Email"
+                                        defaultValue={userDetails.email}
+                                        // onChange={(e) => setEmail(e.target.value)}
+                                        {...register("email")} />
+                                    {errors.email && (
+                                        <span className="text-red-600">{errors.email.message}</span>
+                                    )}
+                                </div>
                             </div>
-                            <div className="w-2/3 pr-10">
-                                <input
-                                    type="text"
-                                    className="border p-1 px-3 w-full"
-                                    placeholder="Email"
-                                    defaultValue={userDetails.email}
-                                    // onChange={(e) => setEmail(e.target.value)}
-                                    {...register("email")} />
-                                {errors.email && (
-                                    <span className="text-red-600">{errors.email.message}</span>
-                                )}
+                            <div className="flex flex-row mt-5 items-center">
+                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
+                                    <label className="m-0 p-0 align-baseline font-bold flex align-center">
+                                        Phone Number
+                                    </label>
+                                </div>
+                                <div className="w-2/3 pr-10">
+                                    <input
+                                        type="text"
+                                        className="border p-1 px-3 w-full"
+                                        placeholder="Phone Number"
+                                        defaultValue={userDetails.phoneNumber}
+                                        // onChange={(e) => setPhone(e.target.value)}
+                                        {...register("phoneNumber")} />
+                                    {errors.phoneNumber && (
+                                        <span className="text-red-600">{errors.phoneNumber.message}</span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex flex-row mt-5 items-center">
-                            <div className="w-1/3 flex flex-row place-content-end align-center pr-8">
-                                <label className="m-0 p-0 align-baseline font-bold flex align-center">
-                                    Phone Number
-                                </label>
+                            <div className="flex flex-row mt-5 items-center">
+                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8" />
+                                <div className="w-2/3 pr-10">
+                                    <button
+                                        className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
+                                        type="submit"
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
                             </div>
-                            <div className="w-2/3 pr-10">
-                                <input
-                                    type="text"
-                                    className="border p-1 px-3 w-full"
-                                    placeholder="Phone Number"
-                                    defaultValue={userDetails.phoneNumber}
-                                    // onChange={(e) => setPhone(e.target.value)}
-                                    {...register("phoneNumber")} />
-                                {errors.phoneNumber && (
-                                    <span className="text-red-600">{errors.phoneNumber.message}</span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex flex-row mt-5 items-center">
-                            <div className="w-1/3 flex flex-row place-content-end align-center pr-8" />
-                            <div className="w-2/3 pr-10">
-                                <button
-                                    className="bg-sky-500 text-white font-semibold py-1 px-2 rounded text-sm disabled:opacity-50"
-                                    type="submit"
-                                >
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </>
-            </div>
-            <BottomNav /></>} 
-            <ChangeDP open={isOpen} onClose={() => { setIsOpen(false) }}/>
+                        </form>
+                    </>
+                </div>
+                <BottomNav /></>}
+            <ChangeDP open={isOpen} onClose={() => { setIsOpen(false) }} />
         </>
     )
 }

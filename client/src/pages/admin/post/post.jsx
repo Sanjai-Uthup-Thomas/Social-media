@@ -6,7 +6,7 @@ import PostList from '../../../components/admin/post/postList'
 function Post() {
     return (
         <>
-            <div className='flex'>
+            <div className='flex flex-col-reverse'>
                 <Sidebar />
                 <PostList />
             </div>

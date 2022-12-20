@@ -1,24 +1,33 @@
 import React from 'react'
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { postDelete, reportPost } from '../../api/userApi'
+import { control } from '../../features/auth/authSlice';
 
 function ReportModal({ open, onClose, postId, userId, currentId }) {
+    console.log(`potId ${postId} userId ${userId} currentId ${currentId}`);
     const [reason, setReason] = useState(false)
+    const dispatch = useDispatch()
+
     const deletePost = (postId) => {
         console.log("postId: " + postId);
         postDelete(postId).then((response) => {
             console.log(response);
             onClose()
             setReason(false)
+            dispatch(control())
+
         })
     }
-    const report = (reason, postId) => {
+    const report = async(reason, postId) => {
         const data={reason,postId}
         console.log("data and post id", data)
-        reportPost(data).then((response)=>{
-            console.log(response.data)
+        await reportPost(data).then((response)=>{
+            console.log(response)
             onClose()
             setReason(false)
+            dispatch(control())
+
         })
     }
     if (!open) { return null } else {

@@ -5,6 +5,9 @@ import CommentsModal from '../../modals/comments';
 function SavedBody({ data }) {
   const [showComments,setShowComments] = useState(false)
   const [postId,setPostId]= useState('')
+  const user = localStorage.getItem("user")
+    const userParse = JSON.parse(user)
+    const userId = userParse.id
   return (
     <div
       className={`relative overflow-hidden w-full pt-[100%]`}
@@ -19,7 +22,7 @@ function SavedBody({ data }) {
       />
       {
         showComments &&
-        <CommentsModal open={showComments} onClose={(e) => setShowComments(false) } postId={postId} />
+        <CommentsModal open={showComments} onClose={(e) => setShowComments(false) } postId={postId} userId={data.userId} currentId={userId} />
 
       }
     </div>

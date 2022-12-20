@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
-const auth = (req, res, next) => {
+const userHelpers=require('.././Helpers/userHelpers')
+const auth = async(req, res, next) => {
     try {
         const token = req.header("x-auth-token")
         // console.log(token, "token");
@@ -11,6 +12,10 @@ const auth = (req, res, next) => {
 
         if (!verified)
             return res.status(401).json({ msg: "Token verification failed, access denied" })
+    const block=await userHelpers.checkBlock(req.user)
+        if(!block){
+            return res.status(401).json({ msg: "You are blocked, access denied" })
+        }
         next()
     } catch (err) {
         console.log(err);

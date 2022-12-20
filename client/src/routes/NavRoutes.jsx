@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, redirect } from "react-router-dom";
 import { PrivateRoutes } from "./PrivateRoutes";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import HomePage from '../pages/user/HomePage';
 import Login from '../components/user/login/login';
 import SignUp from '../components/user/signup/signup';
@@ -16,44 +16,17 @@ import { checkToken, getUserNames } from '../api/userApi';
 import { useState } from 'react';
 import EditProfile from '../pages/user/EditProfile';
 import { object } from 'yup';
+import { logout } from '../features/auth/authSlice';
+import Chat from '../pages/user/Chat';
 function NavRoutes() {
 
     const {
         auth: { token, user, admin_token, signup }
     } = useSelector(state => state)
     console.log("token from redux", token);
+    const dispatch = useDispatch()
 
     const [userName, setUserName] = useState([])
-    const fetchData = async() => {
-        console.log("fetchData",user);
-        if (user) {
-            let result=await getUserNames()
-            if(result) {
-                console.log(result.data)
-                setUserName(result.data)
-            }
-              
-            
-        }
-
-    }
-    const userToken = localStorage.getItem('token')
-    useEffect(() => {
-        
-        let header = {
-            headers: { "x-auth-token": userToken }
-        }
-        checkToken(header).then((response) => {
-        }).catch((error) => {
-            console.log(error);
-            redirect("/")
-            localStorage.setItem('token', '')
-            localStorage.setItem('user', '')
-
-        })
-        fetchData()
-
-    }, [token,userToken,user])
     if (user) {
         if (!signup) {
             if (user.username === undefined) {
@@ -62,10 +35,34 @@ function NavRoutes() {
                 users = user
             }
         }
+    }
+    const userToken = localStorage.getItem('token')
+    useEffect(() => {
+        checkToken().then((response) => {
+        }).catch((error) => {
+            console.log(error);
+            dispatch(logout())
 
 
+        })
+        fetchData()
+
+    }, [token, userToken, user])
+
+    const fetchData = async () => {
+        console.log("fetchData", user);
+        if (user) {
+            let result = await getUserNames()
+            if (result) {
+                console.log(result.data)
+                setUserName(result.data)
+            }
+
+
+        }
 
     }
+
 
 
     return (
@@ -88,7 +85,7 @@ function NavRoutes() {
                 <Route element={<PrivateRoutes />}>
                     <Route path="/home" element={<HomePage />} />
                     {userName.map((data) => (
-                        <Route path={`/${data.userName}`} element={<UserProfile userId={data._id} />} />
+                        <Route path={`/${data.userName}`} element={<UserProfile userId={data._id} key={data._id} />} />
 
                     ))}
                     {/* {userName.map((data) => (                        */}
@@ -97,6 +94,7 @@ function NavRoutes() {
 
                     {/* // ))} */}
 
+                    <Route path="/chat" element={<Chat />} />
 
 
                 </Route>

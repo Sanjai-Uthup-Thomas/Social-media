@@ -39,17 +39,17 @@ function Suggestions({ userId }) {
             {users && users.map((data,index) => {
                 return (
                     //suggestions of friends
-                    <div className="flex py-2">
+                    <div className="flex py-2" key={data._id}>
                         <div className="flex items-center">
                             <Link to={`/${data.userName}`}>
-                            <a className="inline-block align-top">
+                            <div className="inline-block align-top">
                                 <img
                                     className="rounded-full"
                                     src={`http://localhost:4000/DP/${data.profilePhoto}`}
                                     width="35"
                                 />
                                 
-                            </a>
+                            </div>
                             <div className="inline-block ml-2">
                                 <div className="text-sm font-medium">
                                     {data.userName}
@@ -64,7 +64,7 @@ function Suggestions({ userId }) {
                         <div className="flex-1 items-center flex justify-end ">
                             <a
 
-                                className="text-xs text-sky-500 font-bold cursor-pointer"
+                                className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center cursor-pointer"
                                 onClick={(e) => doFollow(data._id)}
                             >
                                 Follow

@@ -18,10 +18,10 @@ function Posts() {
     const [data, setData] = useState([])
     const [control2, setControl2] = useState(true)
     const [showComments, setShowComments] = useState(false)
-    const [showReport,setShowReport] = useState(false)
-    const [postId, setPostId] = useState('')
     const [comment, setComment] = useState('')
-    const [postUserId,setUserId] = useState('')
+    const [showReport, setShowReport] = useState(false)
+    const [postId, setPostId] = useState('')
+    const [postUserId, setUserId] = useState('')
     const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
@@ -33,12 +33,26 @@ function Posts() {
 
 
         const posts = await getPosts()
-        console.log(posts.data);
+        console.log("post.data", posts.data);
         setData(posts.data)
+
+
+        //         const reportsUsers = posts.data
+        //         console.log("reportsUsers", posts.data);
+        //         const finalArray = reportsUsers.map(function (obj) {
+        //             return obj?.Reports;
+        //         });
+        //         const SecondArray = finalArray.map(function (obj) {
+        //   return obj;
+        // });
+        //         console.log("finalArray", finalArray);
+        //         console.log("finalArray", SecondArray);
+
+
     }
     useEffect(() => {
         fetchData()
-    }, [control2, control])
+    }, [control2, control, user])
     const doLike = (id) => {
         let data = { id }
         likePost(data).then((response) => {
@@ -79,7 +93,7 @@ function Posts() {
             {data && data.map((post, index) => {
                 return (
                     //posts
-                    <div className="border border-slate-200 mb-5" key={post._id}>
+                    <div className="border border-slate-200 mb-5" key={post.postId}>
                         <div className="p-3 flex flex-row">
                             <div className="flex-1">
                                 <Link to={`/${post.userName}`}>
@@ -98,42 +112,43 @@ function Posts() {
                                 </a> */}
                             </div>
                             <div className="">
-                                <a
-                                    className="cursor-pointer"
-                                    onClick={()=>{
-                                        console.log("three dot");
-                                        setShowReport(true)
-                                        setPostId(post._id)
-                                        setUserId(post.userId)
-                                    }}
-                               
-                                >
-                                    <BsThreeDots />
-                                </a>
+                                {post.Reports.includes(userId) ?"": 
+                                    <a
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            console.log("three dot");
+                                            setShowReport(true)
+                                            setPostId(post.postId)
+                                            setUserId(post.userId)
+                                        }}
+
+                                    >
+                                        <BsThreeDots />
+                                    </a> }
                             </div>
                         </div>
                         <img
                             className="w-100 mx-auto"
-                            alt={`Photo by sanjai_uthup`}
+                            alt={`Photo by user`}
                             src={`http://localhost:4000/images/${post.postImage}`}
                         />
 
-                        <div className="header p-3 flex flex-row text-2xl justify-between">
+                        <div className="header p-3 pl-8 flex flex-row text-2xl justify-between">
                             <div className="flex ">
                                 {
                                     // post.Likes.length > 0 ?
                                     post.Likes.includes(userId) ?
                                         <a
                                             className="mr-3 text-red-600 cursor-pointer"
-                                            onClick={(e) => { doUnLike(post._id) }}
+                                            onClick={(e) => { doUnLike(post.postId) }}
                                         >
-                                            <AiOutlineLike />
+                                            <AiOutlineLike size={30} />
                                         </a> : <a
                                             className="mr-3 text-black cursor-pointer"
-                                            onClick={(e) => { doLike(post._id) }}
+                                            onClick={(e) => { doLike(post.postId) }}
 
                                         >
-                                            <AiOutlineLike />
+                                            <AiOutlineLike size={30} />
                                         </a>
                                 }
 
@@ -145,39 +160,40 @@ function Posts() {
                                     className="mr-3 hover:text-gray-500 cursor-pointer"
                                     onClick={(e) => {
                                         setShowComments(true)
-                                        setPostId(post._id)
+                                        setPostId(post.postId)
+
                                     }}
                                 >
-                                    <FaRegComment />
+                                    <FaRegComment size={30} />
                                 </a>
 
                             </div>
                             <div className="">
-                            {
+                                {
                                     // post.Likes.length > 0 ?
                                     post.Bookmarks.includes(userId) ?
                                         <a
-                                            className="mr-3  cursor-pointer"
-                                            onClick={(e) => {doUnBookmark(post._id) }}
+                                            className="mr-3  cursor-pointer text-red-600"
+                                            onClick={(e) => { doUnBookmark(post.postId) }}
                                         >
-                                            <FiBookmark className='fill-black' />
+                                            <FiBookmark size={30} />
                                         </a> : <a
-                                            className="mr-3 text-black cursor-pointer"
-                                            onClick={(e) => { doBookmark(post._id) }}
+                                            className="mr-3"
+                                            onClick={(e) => { doBookmark(post.postId) }}
 
                                         >
-                                            <FiBookmark className='' />
+                                            <FiBookmark size={30} />
                                         </a>
                                 }
                             </div>
                         </div>
-                        <div className="font-medium text-sm px-3">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
-                        <div className="px-3 text-sm">
+                        <div className="font-medium text-sm px-3 pl-8">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
+                        <div className="px-3 text-sm pl-8">
                             <span className="font-medium">{post.userName}</span> {post.description}
                         </div>
 
 
-                        <div className="text-gray-500 uppercase px-3 pt-2 pb-5 text-[0.65rem] tracking-wide">
+                        <div className="text-gray-500 uppercase px-3 pl-8 pt-2 pb-5 text-[0.65rem] tracking-wide">
                             {format(post.date)}
                         </div>
 
@@ -201,7 +217,7 @@ function Posts() {
                             <div className="flex items-center text-sm">
                                 <a
                                     className="cursor-pointer text-sky-500"
-                                    onClick={() => commentSubmit(post._id)}
+                                    onClick={() => commentSubmit(post.postId)}
                                 >
                                     Post
                                 </a>
@@ -214,15 +230,15 @@ function Posts() {
             })}
             {
                 showComments &&
-                <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
+                <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} userId={postUserId} currentId={userId} />
 
             }
             {
                 showReport &&
-               <ReportModal open={showReport} onClose={() => { setShowReport(false)}} postId={postId} userId={postUserId} currentId={userId} />
+                <ReportModal open={showReport} onClose={() => { setShowReport(false) }} postId={postId} userId={postUserId} currentId={userId} />
 
             }
-            
+
 
 
         </>

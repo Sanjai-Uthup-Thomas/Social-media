@@ -6,9 +6,9 @@ import axios from 'axios'
 
 const initialState ={
     msg:"",
-    user: localStorage.getItem("user") || undefined,
+    user: localStorage.getItem("user") || "",
     token: localStorage.getItem("token") || "",
-    admin_token: localStorage.getItem("admin-auth-token") || undefined,
+    admin_token: localStorage.getItem("admin-auth-token") || "",
     loading:false,
     error:"",
     signup:false,

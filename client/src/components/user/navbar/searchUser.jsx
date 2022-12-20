@@ -7,7 +7,7 @@ function SearchUser({ user, index }) {
             <Link to={`/${user.userName}`}>
                 <div class="flex flex-row ">
 
-                    <img class="w-12 h-12  border-gray-300 rounded-full" alt="User avatar"
+                    <img className="w-12 h-12  border-gray-300 rounded-full" alt="User avatar"
                         src={`http://localhost:4000/DP/${user.userDp}`}
                     />
                     <div class="flex-col mt-1">

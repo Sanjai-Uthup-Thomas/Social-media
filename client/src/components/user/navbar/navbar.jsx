@@ -6,7 +6,7 @@ import { logout } from '../../../features/auth/authSlice'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu, Transition } from "@headlessui/react";
 import { AiOutlineHome, AiOutlinePlusCircle, AiOutlineHeart } from 'react-icons/ai';
-import { FaRegCommentDots } from 'react-icons/fa';
+import { FaRegBell, FaRegCommentDots } from 'react-icons/fa';
 import { RiHeartLine } from 'react-icons/ri';
 import { GoSearch } from 'react-icons/go';
 // import Modal from '../../modals/NewPost';
@@ -77,16 +77,16 @@ function Navbar() {
                                     placeholder="Search"
                                     type="text"
                                     onChange={searchUser}
-                                    
+
                                 />
                             </div>
                             <div className='absolute w-[322px]'>
-                                {search && search.length > 0 && search.map((user, index) => {
+                                {search ? search.map((user, index) => {
                                     return (<>
-                                        {<SearchUser user={user} index={index} />}
+                                        {<SearchUser user={user} index={index} onClick={() => setSearch([])} />}
                                     </>
                                     )
-                                })
+                                }) : ""
                                 }
                             </div>
 
@@ -94,16 +94,24 @@ function Navbar() {
                         <div className="basis-1/2 hidden md:block">
                             <ul className="flex flex-row p-2 text-2xl space-x-6 justify-end">
                                 <li>
+                                <Link
+                                        to={'/'}>
                                     <a className="cursor-pointer">
                                         <AiOutlineHome />
                                     </a>
+                                    </Link>
 
 
                                 </li>
                                 <li>
-                                    <a className="cursor-pointer" >
-                                        <FaRegCommentDots />
-                                    </a>
+                                    <Link
+                                        to={'/chat'}>
+                                        <a className="cursor-pointer" >
+                                            <FaRegCommentDots />
+
+                                        </a>
+                                    </Link>
+
                                 </li>
                                 <li onClick={view}>
                                     <a
@@ -127,7 +135,7 @@ function Navbar() {
                                 </li> */}
                                 <li>
                                     <a className="cursor-pointer">
-                                        < RiHeartLine />
+                                        <FaRegBell />
                                     </a>
                                 </li>
                                 <li>
@@ -160,6 +168,17 @@ function Navbar() {
                                                 <div className="py-1">
                                                     <Menu.Item>
                                                         {({ active }) => (
+                                                            <div
+
+                                                                className="text-gray-700
+                                                                block px-4 py-2 text-lg"
+                                                            >
+                                                                {`HAI ${users.username}`}
+                                                            </div>
+                                                        )}
+                                                    </Menu.Item>
+                                                    <Menu.Item>
+                                                        {({ active }) => (
                                                             <Link
                                                                 to={`/${users.username}`}
                                                                 className="text-gray-700
@@ -169,16 +188,6 @@ function Navbar() {
                                                             </Link>
                                                         )}
                                                     </Menu.Item>
-                                                    <Menu.Item>
-                                                        {({ active }) => (
-                                                            <a
-                                                                className="text-gray-700 block px-4 py-2 text-sm cursor-pointer"
-                                                            >
-                                                                Saved
-                                                            </a>
-                                                        )}
-                                                    </Menu.Item>
-
                                                 </div>
                                                 <div className="py-1">
 

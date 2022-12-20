@@ -17,7 +17,14 @@ let transporter = nodemailer.createTransport({
     },
 });
 module.exports = {
-
+    checkBlock: async (userId) => {
+        try {
+            const userBlock = await userSchema.findById(userId)
+            return userBlock.Status
+        } catch (error) {
+            return error.message
+        }
+    },
     OTPgenerator: () => {
         try {
             const otpLength = 4
@@ -83,40 +90,95 @@ module.exports = {
 
 
     },
-    listPosts: async () => {
+    listPosts: async (userId) => {
         try {
-            const posts = await postSchema.aggregate([
+            const posts = await userSchema.aggregate([
+                {
+                    $match: {
+                        _id: ObjectId(userId)
+                    }
+                },
+                {
+                    $unwind: '$Following'
+                },
+                {
+                    $addFields: {
+                        "userId": {
+                            "$toObjectId": "$Following"
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'posts',
+                        localField: 'userId',
+                        foreignField: 'userId',
+                        as: 'posts'
+                    }
+                },
+                {
+                    $unwind: '$posts'
+                }
+                ,
                 {
                     $lookup: {
                         from: 'users',
-                        localField: 'userId',
+                        localField: 'posts.userId',
                         foreignField: '_id',
-                        as: "user"
+                        as: 'user'
                     }
-                }, {
+                },
+                {
                     $unwind: '$user'
-                }, {
+                }
+                ,
+                {
+                    $project: {
+                        userId: '$user._id',
+                        postId: '$posts._id',
+                        postImage: '$posts.postImage',
+                        Status: '$posts.Status',
+                        userName: '$user.userName',
+                        date: '$posts.date',
+                        description: '$posts.description',
+                        Likes: '$posts.Likes',
+                        DP: '$user.profilePhoto',
+                        Bookmarks: '$posts.Bookmarks',
+                        Reports: '$posts.Reports'
+                    }
+                },
+                {
+                    $match: {
+                        Status:{$ne:false} 
+                    }
+                },
+                // {
+                //     $unwind:'$Reports'
+                // },
+                {
                     $project: {
                         userId: '$userId',
+                        postId: '$postId',
                         postImage: '$postImage',
-                        userName: '$user.userName',
+                        userName: '$userName',
                         date: '$date',
                         description: '$description',
                         Likes: '$Likes',
-                        DP: '$user.profilePhoto',
+                        DP: '$DP',
                         Bookmarks: '$Bookmarks',
+                        Reports: '$Reports.UserId'
                     }
-                }, {
+                },
+                {
                     $sort: { 'date': -1 }
                 }
             ])
-            console.log(posts);
+            console.log("posts", posts);
             return posts
         } catch (error) {
             return error.message
         }
     },
-
     doLikePost: async (postId, userId) => {
 
         try {
@@ -253,11 +315,11 @@ module.exports = {
                 }
                 , {
                     $project: {
-                        postImages: '$postImage'
+                        postImages: '$postImage',
+                        userId: '$userId'
                     }
                 }
             ])
-            console.log(userHead);
             return userHead
 
         } catch (error) {
@@ -349,7 +411,8 @@ module.exports = {
                     $match: { Bookmarks: userId }
                 }, {
                     $project: {
-                        postImages: '$postImage'
+                        postImages: '$postImage',
+                        userId: '$userId'
                     }
                 }
 
@@ -376,79 +439,121 @@ module.exports = {
                     }
                 }
             ])
-                return result
+            return result
         } catch (error) {
             return error.message
         }
     },
-    userFollow:async(userId,friendId)=>{
-        try{
-            await userSchema.findByIdAndUpdate(userId,{
-                $push:{Following:friendId}
+    userFollow: async (userId, friendId) => {
+        try {
+            await userSchema.findByIdAndUpdate(userId, {
+                $push: { Following: friendId }
             })
-            await userSchema.findByIdAndUpdate(friendId,{
-                $push:{Followers:userId}
-            }).then((response)=>{
+            await userSchema.findByIdAndUpdate(friendId, {
+                $push: { Followers: userId }
+            }).then((response) => {
                 return json({ msg: "sucessfully" })
             })
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    userUnfollow:async(userId,friendId)=>{
-        try{
-            await userSchema.findByIdAndUpdate(userId,{
-                $pull:{Following:friendId}
+    userUnfollow: async (userId, friendId) => {
+        try {
+            await userSchema.findByIdAndUpdate(userId, {
+                $pull: { Following: friendId }
             })
-            await userSchema.findByIdAndUpdate(friendId,{
-                $pull:{Followers:userId}
-            }).then((response)=>{
+            await userSchema.findByIdAndUpdate(friendId, {
+                $pull: { Followers: userId }
+            }).then((response) => {
                 return json({ msg: "sucessfully" })
             })
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    doSuggestions:async(userId)=>{
-        try{
-           const result= await userSchema.aggregate([
+    doSuggestions: async (userId) => {
+        try {
+            const result = await userSchema.aggregate([
                 {
-                    $match:{_id:{$ne:ObjectId(userId)}}
+                    $match: { _id: { $ne: ObjectId(userId) } }
                 },
                 {
-                    $match:{'Followers':{$nin:[userId]}}
+                    $match: { 'Followers': { $nin: [userId] } }
                 },
                 {
-                     $sample: { size: 10 } 
+                    $sample: { size: 10 }
                 }
             ])
             return result
 
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    deletePost:async(data)=>{
-        try{
+    deletePost: async (data) => {
+        try {
             await postSchema.findByIdAndDelete(ObjectId(data))
             return json({ msg: "sucessfully" })
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
     },
-    reportPost:async(user,data)=>{
-        try{
-            await postSchema.findByIdAndUpdate(data?.postId,{
-                $push:{Reports:{Reason:data.reason,UserId:user}}
-            })
+    reportPost: async (user, data) => {
+        try {
+            console.log("report", user, data);
+            const postId = new ObjectId(data.postId)
+            console.log(postId);
+            const result = await postSchema.findByIdAndUpdate(postId, {
+                $push: { Reports: { Reason: data.reason, UserId: user } }
+            },
+                function (err, docs) {
+                    if (err) {
+                        console.log(err)
+                    }
+                    else {
+                        console.log("Updated User : ", docs);
+                    }
+                })
+            console.log(result);
             return json({ msg: "sucessfully" })
 
-        }catch (error) {
+        } catch (error) {
             return error.message
         }
-    }
+    },
+    followers: async (userId) => {
+        const user = await userSchema.findById(userId);
+
+        const Followers = await Promise.all(
+            user.Followers.map((id) => userSchema.findById(id))
+        )
+
+        const formattedFollowers = Followers.map(
+            ({ _id, userName, profilePhoto }) => {
+                return { _id, userName, profilePhoto };
+            }
+        )
+        return formattedFollowers
+    },
+    following: async (userId) => {
+        const user = await userSchema.findById(userId);
+
+        const Following = await Promise.all(
+            user.Following.map((id) => userSchema.findById(id))
+        )
+
+        const formattedFollowing = Following.map(
+            ({ _id, userName, profilePhoto, Followers, Following }) => {
+                return { _id, userName, profilePhoto, Followers, Following };
+            }
+        )
+        console.log("formattedFollowing", formattedFollowing);
+        return formattedFollowing
+    },
+
 
 }

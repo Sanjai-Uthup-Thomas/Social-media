@@ -46,6 +46,7 @@ function MappedPosts({ post, index }) {
         })
     }
     const commentSubmit = (postId) => {
+        console.log("postId",postId);
         if (comment != "") {
             const data = { postId, comment }
             createComment(data).then((response) => {
@@ -96,12 +97,12 @@ function MappedPosts({ post, index }) {
                         post.Likes.includes(userId) ?
                             <a
                                 className="mr-3 text-red-600 cursor-pointer"
-                                onClick={(e) => { doUnLike(post._id) }}
+                                onClick={(e) => { doUnLike(post.postId) }}
                             >
                                 <AiOutlineLike />
                             </a> : <a
                                 className="mr-3 text-black cursor-pointer"
-                                onClick={(e) => { doLike(post._id) }}
+                                onClick={(e) => { doLike(post.postId) }}
 
                             >
                                 <AiOutlineLike />
@@ -116,7 +117,7 @@ function MappedPosts({ post, index }) {
                         className="mr-3 hover:text-gray-500 cursor-pointer"
                         onClick={(e) => {
                             setShowComments(true)
-                            setPostId(post._id)
+                            setPostId(post.postId)
                         }}
                     >
                         <FaRegComment />
@@ -162,7 +163,7 @@ function MappedPosts({ post, index }) {
                 <div className="flex items-center text-sm">
                     <a
                         className="cursor-pointer text-sky-500"
-                        onClick={() => commentSubmit(post._id)}
+                        onClick={() => commentSubmit(post.postId)}
                     >
                         Post
                     </a>

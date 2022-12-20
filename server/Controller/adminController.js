@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken')
 const adminSignUp = require('../models/AdminSignUp')
 const bcrypt = require('bcrypt')
-const adminHelpers=require('../Helpers/adminHelpers')
+const adminHelpers = require('../Helpers/adminHelpers')
 const { response } = require('express')
 
 module.exports = {
 
     //adminSignup
     doSignup: async (req, res) => {
-        try{
-            const {email, password } = req.body
+        try {
+            const { email, password } = req.body
             const Email = await adminSignUp.findOne({ email: email })
             if (Email) {
                 return res
@@ -21,7 +21,7 @@ module.exports = {
             const signedUpUser = new adminSignUp({
                 email: email,
                 password: securePassword
-    
+
             })
             signedUpUser.save()
                 .then(data => {
@@ -31,10 +31,10 @@ module.exports = {
                 .catch(err => {
                     res.json(err);
                 });
-        }catch (err) {
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
-      
+
     },
 
     doLogin: async (req, res) => {
@@ -66,28 +66,63 @@ module.exports = {
     },
     getUsers: async (req, res) => {
         try {
-            adminHelpers.users().then((response)=>{
+            adminHelpers.users().then((response) => {
                 console.log(response);
                 res.status(200).json(response)
             })
-            
 
-            }
-            
-         catch (err) {
+
+        }
+
+        catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    doBlockUser:(req,res)=>{
+    doBlockUser: (req, res) => {
         console.log(req.params.id);
-        const id=req.params.id;
-        try{
-            adminHelpers.blockUser(id).then((response)=>{
+        const id = req.params.id;
+        try {
+            adminHelpers.blockUser(id).then((response) => {
                 console.log(response);
                 res.status(200).json(response)
             })
 
-        }catch (err) {
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+    getPosts: (req, res) => {
+        try {
+            adminHelpers.PostsList().then((response) => {
+                console.log(response);
+                res.status(200).json(response)
+
+            })
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+    doBlockPost: (req, res) => {
+        console.log(req.params.id);
+        const id = req.params.id;
+        try {
+            adminHelpers.blockPost(id).then((response) => {
+                console.log(response);
+                res.status(200).json(response)
+            })
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+    getReportedUsers:(req,res)=>{
+        try {
+            const id = req.params.id
+            console.log("id: " + req.params.id);
+            adminHelpers.ReportedUsers(id).then((response) => {
+                console.log(response);
+                res.status(200).json(response)
+            })
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     }

@@ -124,7 +124,7 @@ module.exports = {
     doTokenIsValid: async (req, res) => {
         try {
             console.log("req.user", req.user);
-            const token = req.header("x-auth-token")
+            const token = req.headers("x-auth-token")
             console.log(token, "usrcon 63");
             if (!token) return res.json(false)
             const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -134,7 +134,7 @@ module.exports = {
             if (!user) return res.json(false)
             return res.json(true)
         } catch (err) {
-            response.json({ error: err.message })
+            res.json({ error: err?.message })
         }
 
     },
@@ -144,7 +144,12 @@ module.exports = {
         res.json(req.body)
     },
     getPost: (req, res) => {
-        userHelpers.listPosts().then((response) => {
+        console.log("get post");
+
+        const userId=req.user
+        console.log("get post");
+        console.log("userId: ", userId);
+        userHelpers.listPosts(userId).then((response) => {
             res.json(response)
         })
     },
@@ -202,7 +207,6 @@ module.exports = {
     doUserNames: async (req, res) => {
         try {
             await userHelpers.getUserNames().then((response) => {
-                console.log("response", response);
                 res.json(response)
             })
         } catch (err) {
@@ -340,7 +344,6 @@ module.exports = {
     },
     getSuggestions: (req, res) => {
         try {
-            console.log("req.params in suggestions", req.params.id);
             userHelpers.doSuggestions(req.params.id).then((response) => {
                 res.json(response)
             })
@@ -364,6 +367,26 @@ module.exports = {
             console.log(req.body)
             console.log(req.user)
             userHelpers.reportPost(req.user, req.body).then((response)=>{
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getFollowers:(req,res)=>{
+        try{
+            console.log(req.params.id)
+            userHelpers.followers(req.params.id).then((response)=>{
+                res.json(response)
+            })
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getFollowing:(req, res)=>{
+        try{
+            console.log(req.params.id)
+            userHelpers.following(req.params.id).then((response)=>{
                 res.json(response)
             })
         } catch (err) {

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { changeDp } from '../../api/userApi';
+import { control } from '../../features/auth/authSlice';
 
 const ChangeDP=({open,onClose})=>{
     const [form, setForm] = useState({
@@ -19,6 +21,7 @@ const ChangeDP=({open,onClose})=>{
             DP: DP
         })
     }
+    const dispatch = useDispatch()
     const submit = async(e) => {
         e.preventDefault()
         const Data = new FormData()
@@ -29,6 +32,7 @@ const ChangeDP=({open,onClose})=>{
         console.log(`data ${Data}`);
          changeDp(Data).then((response)=>{
             onClose()
+            dispatch(control())
          })
     }
     if(!open){return null}else{
@@ -57,7 +61,7 @@ const ChangeDP=({open,onClose})=>{
                                 <div>
 
                                     <button className="bg-gray-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded mt-2" type="submit">
-                                        Sunbmit
+                                        Submit
                                     </button>
 
                                 </div>

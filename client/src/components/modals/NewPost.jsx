@@ -5,13 +5,7 @@ import { control } from '../../features/auth/authSlice';
 
 
 const NewPost = ({ open, onClose }) => {
-    // const {
-    //     auth: { control }
-    // } = useSelector(state => state)
-    const token=localStorage.getItem('token')
-    const header={
-        headers: { "x-auth-token": token }
-    }
+   
 
     const dispatch = useDispatch()
 
@@ -40,7 +34,7 @@ const NewPost = ({ open, onClose }) => {
             Data.append(key, form[key])
         }
 
-        createPost(Data,header).then((response) => {
+        createPost(Data).then((response) => {
             onClose()
             dispatch(control())
 

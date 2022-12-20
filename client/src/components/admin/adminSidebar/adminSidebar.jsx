@@ -39,7 +39,7 @@ function Sidebar() {
             } fill-white`} />
         <h1
           className={`text-white origin-left font-medium text-xl duration-200 ${!open && "scale-0"
-            }`}>Logo</h1>
+            }`}></h1>
 
       </div>
       <ul className="pt-6">
