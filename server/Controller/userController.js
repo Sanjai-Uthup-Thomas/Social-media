@@ -114,6 +114,7 @@ module.exports = {
                 user: {
                     id: user._id,
                     username: user.userName,
+                    profilePhoto: user.profilePhoto
                 },
             });
         } catch (err) {
@@ -215,7 +216,7 @@ module.exports = {
     },
     doUserHead: async (req, res) => {
         try {
-            // console.log(req.params.id);
+            console.log(req.params.id);
             await userHelpers.getUserHead(req.params.id).then((response) => {
 
                 res.json(response)

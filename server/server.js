@@ -6,6 +6,8 @@ var morgan = require('morgan')
 const dotenv =require('dotenv')
 const userUrls= require('./routes/userRoutes')
 const adminUrls= require('./routes/adminRoutes')
+const chatUrls= require('./routes/chatRoutes')
+const messageUrls= require('./routes/messageRoutes')
 
 morgan('tiny')
 const cors = require('cors')
@@ -14,8 +16,12 @@ mongoose.connect(process.env.DATABASE_ACCESS ,()=>console.log("database connecte
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 },resave: true,saveUninitialized: true}))
 app.use(express.json())
 app.use(cors())
+
 app.use('/',userUrls)
 app.use('/admin',adminUrls)
+app.use('/chat',chatUrls)
+app.use('/message',messageUrls)
+
 app.use('/images', express.static('public/Posts'))
 app.use('/DP', express.static('public/DP'))
 

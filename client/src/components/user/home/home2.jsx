@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ThreeCircles } from 'react-loader-spinner'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getUserHead } from '../../../api/userApi'
 import { logout } from '../../../features/auth/authSlice'
 import Posts from '../posts/posts'
@@ -9,21 +9,25 @@ import Suggestions from '../Suggestions/Suggestions'
 
 
 function HomePage() {
+    var users
     const [loading, setLoading] = useState(true)
-
+ const {
+    auth: { user },
+  } = useSelector(state => state);
     const dispatch = useDispatch()
     const logouthandel = () => {
         dispatch(logout())
     }
-    const user = localStorage.getItem('user')
-    if (user?.username === undefined) {
-        var users = JSON.parse(user)
-    } else {
-        var users = user
-    }
+    // const users = localStorage.getItem('user')
+    // if (user?.username === undefined) {
+    //     var users = JSON.parse(user)
+    // } else {
+    //     
+    // }
     const [DP, setDP] = useState([])
     const fetchData = async () => {
         await getUserHead(users.id).then((response) => {
+            console.log("home2",users.id);
             setDP(response.data[0])
             setLoading(false)
 
@@ -34,8 +38,10 @@ function HomePage() {
         })
     }
     useEffect(() => {
+     users = user
+
         fetchData()
-    }, [users])
+    }, [user])
 
 
 
@@ -69,10 +75,10 @@ function HomePage() {
                                 {/* <Link to={`/${dataCurrentUser.me.username}`}>
                                  {dataCurrentUser.me.username}
                              </Link> */}
-                                {users?.username}
+                                {user?.username}
                             </div>
                             <div className="text-gray-500 text-sm leading-4">
-                                {users?.username}
+                                {user?.username}
                             </div>
                         </div>
                         <div className="w-32 text-right m-auto">
@@ -86,7 +92,7 @@ function HomePage() {
                         </div>
                     </div>
 
-                    <Suggestions userId={users?.id} />
+                    <Suggestions userId={user?.id} />
                     {/* <Footer />  */}
                 </div>
             </div>

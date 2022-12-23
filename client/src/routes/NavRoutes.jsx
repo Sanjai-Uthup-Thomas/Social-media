@@ -23,17 +23,15 @@ function NavRoutes() {
     const {
         auth: { token, user, admin_token, signup }
     } = useSelector(state => state)
-    console.log("token from redux", token);
+    // console.log("token from redux", token);
     const dispatch = useDispatch()
 
     const [userName, setUserName] = useState([])
     if (user) {
         if (!signup) {
-            if (user.username === undefined) {
-                var users = JSON.parse(user)
-            } else {
-                users = user
-            }
+            
+                var users = user
+            
         }
     }
     const userToken = localStorage.getItem('token')
@@ -50,11 +48,11 @@ function NavRoutes() {
     }, [token, userToken, user])
 
     const fetchData = async () => {
-        console.log("fetchData", user);
+        // console.log("fetchData", user);
         if (user) {
             let result = await getUserNames()
             if (result) {
-                console.log(result.data)
+                // console.log(result.data)
                 setUserName(result.data)
             }
 

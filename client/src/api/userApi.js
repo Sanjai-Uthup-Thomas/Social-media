@@ -55,6 +55,32 @@ export const getFollowers=(Data)=>axios.get(`/getfollowers/${Data}`)
 
 export const getFollowing=(Data)=>axios.get(`/getfollowing/${Data}`)
 
+//chats
+export const getAllChats=()=>axios.get(`/chat`)
+
+export const createChat=(Data)=>axios.post(`/chat/${Data}`)
+
+export const getChatList=(Data)=>axios.get(`/chat/chatlist/${Data}`)
+
+export const getAllMessages=(Data)=>axios.get(`/message/${Data}`)
+
+export const sendMessage=(Data)=>axios.post(`/message`,Data)
+
+export const searchChat=(Data)=>axios.get(`/chat/search/${Data}`)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

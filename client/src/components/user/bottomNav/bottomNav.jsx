@@ -18,15 +18,16 @@ function BottomNav() {
     const logouthandel = () => {
         dispatch(logout())
     }
-    const user = localStorage.getItem('user')
-    if (user.username === undefined) {
-        var users = JSON.parse(user)
-    } else {
-        var users = user
-    }
+    const users = localStorage.getItem('user')
+    // if (user.username === undefined) {
+    //     var users = JSON.parse(user)
+    // } else {
+    //     var users = user
+    // }
     const [DP, setDP] = useState([])
     const fetchData = () => {
         getUserHead(users.id).then((response) => {
+            // console.log("bottom");
             setDP(response.data[0])
         })
     }

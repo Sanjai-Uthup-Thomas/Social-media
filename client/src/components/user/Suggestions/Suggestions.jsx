@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
+import { ThreeCircles } from 'react-loader-spinner'
 import { Link } from 'react-router-dom'
 import { getSuggestions, userFollow } from '../../../api/userApi'
 
 function Suggestions({ userId }) {
+    console.log(userId);
+    const [loader,setLoader]=useState(true)
     const [users,setUsers]= useState([])
     const [control,setControl]=useState(false)
     const fetchData = () => {
         getSuggestions(userId).then((response) => {
             console.log(response.data)
             setUsers(response.data)
+            setLoader(false)
         })
     }
     useEffect(() => {
@@ -24,8 +28,17 @@ function Suggestions({ userId }) {
     }
 
     return (
-        <>
-            <div className="flex flex-row pt-5">
+        <>{loader?
+            <div className="flex flex-col justify-center items-center w-full h-full">
+            <ThreeCircles
+                type="Puff"
+                color="#00BFFF"
+                height={100}
+                width={100}
+                timeout={3000} //3 secs
+
+            />
+        </div> :<><div className="flex flex-row pt-5">
                 <div className="w-72 font-bold text-gray-500 text-sm">
                     Suggestions For You
                 </div>
@@ -73,7 +86,8 @@ function Suggestions({ userId }) {
                         </div>
                     </div>
                 )
-            })}
+            })}</>}
+            
 
         </>
     )

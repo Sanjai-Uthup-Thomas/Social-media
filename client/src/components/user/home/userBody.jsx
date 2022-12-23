@@ -6,14 +6,14 @@ import CommentsModal from '../../modals/comments';
 
 function UserBody({ data }) {
   const {
-    auth: { control },
+    auth: { control,user },
   } = useSelector(state => state);
   console.log("data",data);
   const [showComments,setShowComments] = useState(false)
   const [postId,setPostId]= useState('')
-  const user = localStorage.getItem("user")
-    const userParse = JSON.parse(user)
-    const userId = userParse.id
+  // const user = localStorage.getItem("user")
+  //   const userParse = JSON.parse(user)
+    const userId = user.id
     useEffect(()=>{
       setShowComments(false)
     },[control])

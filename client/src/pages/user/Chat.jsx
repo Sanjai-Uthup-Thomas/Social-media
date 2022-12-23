@@ -5,10 +5,11 @@ import Navbar from '../../components/user/navbar/navbar'
 
 
 function Chat() {
+
   return (
     <>
       <Navbar />
-      <ChatMain/>
+      <ChatMain />
       <BottomNav />
     </>
   )

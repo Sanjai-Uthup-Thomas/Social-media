@@ -6,13 +6,14 @@ import axios from 'axios'
 
 const initialState ={
     msg:"",
-    user: localStorage.getItem("user") || "",
+    user: JSON.parse(localStorage.getItem("user")) || "",
     token: localStorage.getItem("token") || "",
     admin_token: localStorage.getItem("admin-auth-token") || "",
     loading:false,
     error:"",
     signup:false,
-    control:0
+    control:0,
+    userId:null
 }
 export const signInAdmin = createAsyncThunk('signInAdmin',async (body)=>{
     const res = await axios.post('http://localhost:4000/admin/adminLogin',body)
@@ -67,6 +68,10 @@ const authSlice = createSlice({
         },
         control:(state,action)=>{
             state.control+=1
+        },
+        addMessage:(state,action)=>{
+            console.log(action.payload,"action.payload");
+            state.userId=action.payload
         }
     },
     extraReducers:{
@@ -100,7 +105,7 @@ const authSlice = createSlice({
                 state.token=data.token
                 state.user=data.user
                 state.msg=data.msg
-                localStorage.setItem('user',JSON.stringify(data.user))
+                localStorage.setItem('user',JSON.data.user)
                 localStorage.setItem('token',data.token)
             }          
         },
@@ -121,5 +126,5 @@ const authSlice = createSlice({
         }
     }
 })
-export const {addToken,addUser,logout,adminLogout,control}= authSlice.actions
+export const {addToken,addUser,logout,adminLogout,control,addMessage}= authSlice.actions
 export default authSlice.reducer

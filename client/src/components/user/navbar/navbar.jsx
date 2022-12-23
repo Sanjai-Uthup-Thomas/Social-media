@@ -1,6 +1,6 @@
 import './navbar.css'
 import React, { Fragment, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import { logout } from '../../../features/auth/authSlice'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,15 +21,15 @@ function Navbar() {
     const logouthandel = () => {
         dispatch(logout())
     }
-    // const {
-    //     auth:{user}
-    // }=useSelector(state => state)
-    const user = localStorage.getItem('user')
-    if (user.username === undefined) {
-        var users = JSON.parse(user)
-    } else {
-        var users = user
-    }
+    const {
+        auth:{user}
+    }=useSelector(state => state)
+    const users =user
+    // if (user.username === undefined) {
+    //     var users = JSON.parse(user)
+    // } else {
+    //     var users = user
+    // }
     const [isOpen, setIsOpen] = useState(false)
     const view = () => {
         setIsOpen(true)
@@ -37,6 +37,7 @@ function Navbar() {
     const [DP, setDP] = useState([])
     const fetchData = () => {
         getUserHead(users.id).then((response) => {
+            // console.log("navbar");
             setDP(response.data[0])
         })
     }

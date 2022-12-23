@@ -1,27 +1,261 @@
-import React from 'react'
-import ChatLeft from './chatLeft'
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { createChat, getAllChats, getAllMessages, searchChat, sendMessage } from '../../../api/userApi'
 import ChatRight from './chatRight'
+import ChatList from './chatList'
+import { io } from 'socket.io-client'
+import SearchValue from './searchValue'
+
 
 function ChatMain() {
+  const [search, setSearch] = useState(null)
+  const [chat, setChat] = useState([])
+  const [currentChat, setCurrentChat] = useState(null)
+  const [Messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
+  const [toSocket, setToSocket] = useState(null)
+  const [fromSocket, setFromSocket] = useState(null)
+  const socket = useRef()
+
+  const scrollRef = useRef()
+  const {
+    auth: { user,userId }
+  } = useSelector(state => state)
+  console.log(user.id)
+  console.log(socket, "socket")
+  const searchUser = async (e) => {
+    const searchValue = e.target.value;
+    if (searchValue) {
+      const { data } = await searchChat(searchValue)
+      if (data) {
+        console.log(data);
+        setSearch(data)
+        setChat()
+        console.log(chat);
+      }
+
+    }else{
+      setSearch(null)
+    }
+  };
+  useEffect(() => {
+    if(userId){
+      handelCreateChat(userId)
+    }
+    socket.current = io("ws://localhost:3001")
+    socket.current.on("getMessage", data => {
+      setFromSocket({
+        sender: data.senderId,
+        content: data.text,
+        time: Date.now(),
+        userDP: data.userDP
+      })
+    })
+  }, [])
+  useEffect(() => {
+    fromSocket && currentChat?.users.includes(fromSocket.sender) &&
+      setMessages((prev) => [...prev, fromSocket])
+  }, [fromSocket, currentChat])
+  useEffect(() => {
+    socket.current.emit("addUser", user.id)
+    socket.current.on("getUser", users => {
+      console.log(users);
+    })
+  }, [user])
+
+  useEffect(() => {
+    const getChats = async () => {
+      if (search) {
+        setChat([]); 
+      }else{
+        try {
+          const result = await getAllChats()
+          console.log(result.data);
+          setChat(result.data);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+    }
+    getChats()
+  }, [user.id, Messages, search])
+  useEffect(() => {
+    const getMessages = async () => {
+      try {
+
+        const res = await getAllMessages(currentChat?._id)
+        console.log(res.data);
+        if (res.data.name === "CastError") {
+
+        } else {
+          console.log(res.data);
+
+          setMessages(res.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getMessages()
+  }, [currentChat])
+  console.log(chat);
+  console.log(currentChat);
+  console.log(Messages);
+  const handelSubmit = async (e) => {
+    e.preventDefault();
+    if (newMessage) {
+      const message = {
+        sender: user.id,
+        content: newMessage,
+        chat: currentChat._id
+      }
+      console.log(message);
+
+      try {
+        const res = await sendMessage(message)
+        console.log([...Messages, res.data[0]]);
+        setToSocket(res.data)
+        setMessages([...Messages, res.data[0]]);
+        console.log(Messages);
+        setNewMessage('');
+      } catch (e) {
+        console.log(e);
+      }
+      const receiverId = currentChat.users.find(member => member !== user.id)
+      console.log("receiverId", receiverId);
+      socket.current.emit("sendMessage", {
+        senderId: user.id,
+        receiverId,
+        text: newMessage,
+        userDP: user.profilePhoto
+      })
+    }
+
+  }
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [Messages])
+  const handelCreateChat=async(id)=>{
+    console.log(id);
+    const {data}= await createChat(id)
+    console.log(data);
+    setCurrentChat(data)
+  }
     return (
-        <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100  ">
-            <div className="md:px-12 col-span-3 lg:col-span-2">
+    <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100  ">
+      <div className="md:px-12 col-span-3 lg:col-span-2">
 
 
-            <div class="container mx-auto">
-      <div class="min-w-full border rounded lg:grid lg:grid-cols-3">
-        
-        <ChatLeft/>
-        <ChatRight/>
-        
-      </div>
-    </div>
+        <div className="container mx-auto">
+          <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
 
+            <div className="border-r border-gray-300 lg:col-span-1">
+              <div className="mx-3 my-3">
+                <div className="relative text-gray-600">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-2 " onClick={()=>{setSearch(null)}}>
+                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      viewBox="0 0 24 24" className="w-6 h-6 text-gray-300">
+                      <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                  </span>
+                  <input type="search" className="block w-full py-2 pl-10 bg-gray-100 rounded outline-none" onChange={searchUser} />
+                </div>
+              </div>
 
-
+              <ul className="overflow-auto h-[32rem]">
+                <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Chats</h2>
+                <li>
+                  {search && search.map((items) => {
+                    return (
+                      <div onClick={()=>handelCreateChat(items._id)}>
+                        <SearchValue value={items} />
+                      </div>
+                    )
+                  })}
+                </li>
+                <li>
+                  {chat && chat?.map((item) => {
+                    return (
+                      <div onClick={() => setCurrentChat(item)} key={item._id}>
+                        <ChatList chat={item} currentUser={user.id} />
+                      </div>
+                    )
+                  })}
+                </li>
+              </ul>
             </div>
-        </main>
-    )
+            {currentChat ?
+              <div class="hidden lg:col-span-2 lg:block">
+                <div class="w-full">
+                  {/* <div class="relative flex items-center p-3 border-b border-gray-300">
+                    <img class="object-cover w-10 h-10 rounded-full"
+                      src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg" alt="username" />
+                    <span class="block ml-2 font-bold text-gray-600">Emma</span>
+                    {/* <span class="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
+                    </span> */}
+                  {/* </div>  */}
+                  <div class="relative w-full p-6 overflow-y-auto h-[40rem]">
+                    <div class="space-y-2">
+                      {Messages?.map((m) => (
+                        <div ref={scrollRef}>
+                          <ChatRight message={m} own={m.UID === user.id} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between w-full p-3 border-t border-gray-300">
+                    {/* <button>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button> */}
+                    {/* <button>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                      </svg>
+                    </button> */}
+
+                    <input type="text"
+                      placeholder="Message"
+                      class="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      value={newMessage}
+                    />
+                    {/* <button>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                    </button> */}
+                    <button onClick={handelSubmit}>
+                      <svg class="w-5 h-5 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              :
+              <span className='hidden lg:col-span-2 lg:block text-gray-700 text-center text-4xl my-auto'>Start Chatting Now</span>}
+
+          </div>
+        </div>
+
+
+
+      </div>
+    </main>
+  )
 }
 
 export default ChatMain

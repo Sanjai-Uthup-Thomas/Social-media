@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
 import { getSavedPosts, getUserHead, getUserPosts, userFollow, userUnfollow } from '../../../api/userApi';
+import { addMessage } from '../../../features/auth/authSlice';
 import Friends from '../../modals/friends';
 import UserBody from './userBody';
 import SavedBody from './userSaved';
@@ -12,6 +13,8 @@ function UserHead({ userId }) {
     const {
         auth: { control },
     } = useSelector(state => state);
+    const dispatch = useDispatch()
+    const navigate=useNavigate()
     const [open,setOpen]=useState(false)
     const [followers,setFollowers] = useState(false)
     const [name, setName] = useState([])
@@ -21,7 +24,7 @@ function UserHead({ userId }) {
     const [post, setPost] = useState(true)
     const fetchData = async () => {
         await getUserHead(userId).then((response) => {
-            console.log(response.data[0]);
+            console.log("userhead");
             setName(response.data[0])
         })
         await getUserPosts(userId).then((posts) => {
@@ -62,7 +65,10 @@ function UserHead({ userId }) {
     }
     console.log("name in head", name.Following, Users?.id);
 
-
+const handelMessage=()=>{
+    dispatch(addMessage(userId))
+    navigate('/chat')
+}
     return (
         <>
             <main className="bg-zinc-100">
@@ -122,6 +128,10 @@ function UserHead({ userId }) {
                                     </svg>
                                 </div>
                             </button> */}
+                            <button className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
+                                         onClick={handelMessage}   
+                                        >Message
+                                        </button>
 
                             <a
                                 className="ml-3 cursor-pointer"
