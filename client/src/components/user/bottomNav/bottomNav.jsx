@@ -1,33 +1,40 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Menu, Transition } from "@headlessui/react";
-import { useDispatch } from 'react-redux';
-import { logout } from '../../../features/auth/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, removeId } from '../../../features/auth/authSlice';
 import NewPost from '../../modals/NewPost';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getUserHead } from '../../../api/userApi';
 function BottomNav() {
+    const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false)
     const[isSearch,setIsSearch] = useState(false)
+    const navigate=useNavigate()
     const view = () => {
         setIsOpen(true)
     }
     const search=()=>{
         setIsSearch(true)
     }
-    const dispatch = useDispatch()
+    const home=()=>{
+        navigate(`/home`)
+    }
+    const chat=()=>{
+        dispatch(removeId())
+        navigate(`/chat`)
+    }
     const logouthandel = () => {
         dispatch(logout())
     }
-    const users = localStorage.getItem('user')
-    // if (user.username === undefined) {
-    //     var users = JSON.parse(user)
-    // } else {
-    //     var users = user
-    // }
+    const {
+        auth:{user,userId}
+    }=useSelector(state => state)
+    const users =user
+
     const [DP, setDP] = useState([])
     const fetchData = () => {
         getUserHead(users.id).then((response) => {
-            // console.log("bottom");
+            console.log("bottom");
             setDP(response.data[0])
         })
     }
@@ -35,10 +42,10 @@ function BottomNav() {
         fetchData()
     }, [users])
     const Menus = [
-        { name: "Home", icon: "home-outline", dis: "translate-x-0", },
+        { name: "Home", icon: "home-outline", dis: "translate-x-0",clickHandler:home },
         { name: "Profile", icon: "search-outline", dis: "translate-x-16",clickHandler:search },
         { name: "create", icon: "add-circle-outline", dis: "translate-x-32", clickHandler: view },
-        { name: "Chat", icon: "chatbubble-outline", dis: "translate-x-48" },
+        { name: "Chat", icon: "chatbubble-outline", dis: "translate-x-48",clickHandler:chat },
         // { name: "Search", icon: "person-outline", dis: "translate-x-64" ,clickHandler: logouthandel  },
     ];
     // const [active, setActive] = useState(0);

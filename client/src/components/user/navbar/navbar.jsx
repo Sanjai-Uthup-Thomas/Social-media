@@ -2,7 +2,7 @@ import './navbar.css'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
-import { logout } from '../../../features/auth/authSlice'
+import { logout, removeId } from '../../../features/auth/authSlice'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu, Transition } from "@headlessui/react";
 import { AiOutlineHome, AiOutlinePlusCircle, AiOutlineHeart } from 'react-icons/ai';
@@ -21,10 +21,11 @@ function Navbar() {
     const logouthandel = () => {
         dispatch(logout())
     }
+    const [notifications, setNotifications] = useState([])
     const {
-        auth:{user}
-    }=useSelector(state => state)
-    const users =user
+        auth: { user, userId, socket }
+    } = useSelector(state => state)
+    var users
     // if (user.username === undefined) {
     //     var users = JSON.parse(user)
     // } else {
@@ -42,6 +43,7 @@ function Navbar() {
         })
     }
     useEffect(() => {
+        users = user
         fetchData()
     }, [users])
 
@@ -54,6 +56,15 @@ function Navbar() {
             setSearch()
         }
     };
+    const handelChat = () => {
+        dispatch(removeId())
+    }
+    useEffect(() => {
+        socket?.on("getNotification", (data) => {
+            setNotifications((prev) => [...prev, data])
+        })
+    }, [socket])
+    console.log(notifications);
     return (
         <>
             <><nav className="sticky top-0 min-h-full bg-white md:w-10/12 mx-auto z-40 justify-between">
@@ -95,32 +106,37 @@ function Navbar() {
                         <div className="basis-1/2 hidden md:block">
                             <ul className="flex flex-row p-2 text-2xl space-x-6 justify-end">
                                 <li>
-                                <Link
+                                    <Link
                                         to={'/'}>
-                                    <a className="cursor-pointer">
-                                        <AiOutlineHome />
-                                    </a>
+                                        <a className="cursor-pointer">
+                                            <AiOutlineHome
+                                                size={28} />
+                                        </a>
                                     </Link>
-
-
+                                    {/* <p className='text-sm text-center'>Home</p> */}
                                 </li>
                                 <li>
                                     <Link
                                         to={'/chat'}>
-                                        <a className="cursor-pointer" >
-                                            <FaRegCommentDots />
+                                        <a className="cursor-pointer"
+                                            onClick={handelChat} >
+                                            <FaRegCommentDots size={28} />
 
                                         </a>
+                                        {/* <p className='text-sm text-center'>Chat</p> */}
                                     </Link>
+
 
                                 </li>
                                 <li onClick={view}>
                                     <a
-                                        className="cursor-pointer"
+                                        className="cursor-pointer items-center"
 
                                     >
-                                        <  AiOutlinePlusCircle />
+                                        <  AiOutlinePlusCircle size={28} />
+                                        {/* <p className='text-sm text-center'>Add Post</p> */}
                                     </a>
+
                                 </li>
 
 
@@ -135,9 +151,12 @@ function Navbar() {
                                     </a>
                                 </li> */}
                                 <li>
-                                    <a className="cursor-pointer">
-                                        <FaRegBell />
-                                    </a>
+                                    <Link
+                                        to={'/notifications'}>
+                                        <a className="cursor-pointer">
+                                            <FaRegBell size={28} />
+                                        </a>
+                                    </Link>
                                 </li>
                                 <li>
                                     <Menu
@@ -174,14 +193,14 @@ function Navbar() {
                                                                 className="text-gray-700
                                                                 block px-4 py-2 text-lg"
                                                             >
-                                                                {`HAI ${users.username}`}
+                                                                {`HAI ${DP.userName}`}
                                                             </div>
                                                         )}
                                                     </Menu.Item>
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <Link
-                                                                to={`/${users.username}`}
+                                                                to={`/${DP.userName}`}
                                                                 className="text-gray-700
                                                                 block px-4 py-2 text-sm"
                                                             >

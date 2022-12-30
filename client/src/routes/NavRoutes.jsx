@@ -16,15 +16,25 @@ import { checkToken, getUserNames } from '../api/userApi';
 import { useState } from 'react';
 import EditProfile from '../pages/user/EditProfile';
 import { object } from 'yup';
-import { logout } from '../features/auth/authSlice';
+import { logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
+import Notifications from '../pages/user/Notifications';
 function NavRoutes() {
+    const socketio = require('socket.io-client')("ws://localhost:3001")
 
     const {
         auth: { token, user, admin_token, signup }
     } = useSelector(state => state)
     // console.log("token from redux", token);
     const dispatch = useDispatch()
+    useEffect(() => {
+        socketio.emit("addUser", user.id)
+        socketio.on("getUser", users => {
+          console.log(users);
+          console.log(socketio);
+          dispatch(socketUpdate(socketio))
+        })
+      }, [user,dispatch])
 
     const [userName, setUserName] = useState([])
     if (user) {
@@ -40,8 +50,6 @@ function NavRoutes() {
         }).catch((error) => {
             console.log(error);
             dispatch(logout())
-
-
         })
         fetchData()
 
@@ -92,7 +100,9 @@ function NavRoutes() {
 
                     {/* // ))} */}
 
-                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/chat" element={<Chat socket={socketio} />} />
+                    <Route path="/notifications" element={<Notifications />} />
+
 
 
                 </Route>

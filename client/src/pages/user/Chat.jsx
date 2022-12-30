@@ -4,12 +4,12 @@ import ChatMain from '../../components/user/chat/chatMain'
 import Navbar from '../../components/user/navbar/navbar'
 
 
-function Chat() {
+function Chat({socket}) {
 
   return (
     <>
       <Navbar />
-      <ChatMain />
+      <ChatMain socket={socket}/>
       <BottomNav />
     </>
   )

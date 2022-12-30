@@ -145,18 +145,18 @@ module.exports = {
         res.json(req.body)
     },
     getPost: (req, res) => {
-        console.log("get post");
+        // console.log("get post");
 
         const userId=req.user
-        console.log("get post");
-        console.log("userId: ", userId);
+        // console.log("get post");
+        // console.log("userId: ", userId);
         userHelpers.listPosts(userId).then((response) => {
             res.json(response)
         })
     },
     doLikePost: (req, res) => {
-        console.log(req.body.id);
-        console.log(req.user);
+        // console.log(req.body.id);
+        // console.log(req.user);
         const postId = req.body.id
         const userId = req.user
         userHelpers.doLikePost(postId, userId).then((response) => {
@@ -391,6 +391,24 @@ module.exports = {
                 res.json(response)
             })
         } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    doNotifications:async(req,res)=>{
+        try{
+            console.log(req.body);
+          const result= await  userHelpers.addNotifications(req.body)
+           res.json(result)
+
+        }catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getNotifications:async(req,res)=>{
+        try{
+            const result = await userHelpers.getUserNotifications(req.user)
+            res.json(result)
+        }catch (err) {
             res.json({ error: err.message })
         }
     }

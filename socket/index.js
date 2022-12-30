@@ -8,6 +8,7 @@ const io = require('socket.io')(3001, {
 let users=[]
 
 const addUser=(userId,socketId) =>{
+    console.log(userId,socketId);
     !users.some((user)=> user.userId===userId)&&
     users.push({userId,socketId})
 }
@@ -21,6 +22,7 @@ const getUser =(userId)=>{
 io.on("connection", (socket) => {
     console.log("a user connected");
     socket.on("addUser",userId=>{
+        console.log(userId);
         addUser(userId,socket.id)
         io.emit("getUser",users)
     })
@@ -34,6 +36,17 @@ io.to(user?.socketId).emit("getMessage",{
     text,
     userDP
 })
+    })
+    socket.on("sendNotification",data=>{
+        console.log(data);
+        const {receiverId,senderId,type,senderDp}=data
+        const receiver=users.find(user=>user.userId===receiverId)
+        console.log(receiver);
+        io.to(receiver?.socketId).emit("getNotification",{
+            senderId,
+            type,
+            senderDp
+        })
     })
     socket.on("disconnect", ()=>{
         console.log("a user disconnected");

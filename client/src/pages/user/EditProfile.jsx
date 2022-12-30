@@ -17,7 +17,7 @@ import { control } from '../../features/auth/authSlice';
 function EditProfile({ userId }) {
     const dispatch = useDispatch()
     const {
-        auth: { control }
+        auth: { controlState }
     } = useSelector(state => state)
     const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = useState(true)
@@ -33,7 +33,7 @@ function EditProfile({ userId }) {
     }
     useEffect(() => {
         fetchData()
-    }, [userId, control])
+    }, [userId, controlState])
     const formSchema = Yup.object().shape({
         userName: Yup.string()
             .required("User Name is required")

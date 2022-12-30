@@ -8,7 +8,7 @@ function PostList() {
   const [data, setData] = useState([])
   
   const {
-    auth: { control },
+    auth: { controlState },
 } = useSelector(state => state);
   const fetchData = async () => {
     const posts = await getPosts()
@@ -17,7 +17,7 @@ function PostList() {
   }
   useEffect(() => {
     fetchData()
-  }, [control])
+  }, [controlState])
   return (
     <div>
       <div class="pl-52 align-middle w-full ">

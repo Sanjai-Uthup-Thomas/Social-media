@@ -5,16 +5,18 @@ import { FiBookmark } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
 import { format, render, cancel, register } from 'timeago.js';
 import { BookmarkPost, createComment, getPosts, likePost, UnBookmarkPost, UnlikePost } from '../../../api/userApi'
-import CommentsModal from '../../modals/comments';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CommentsModal from '../../modals/comments';
 import ReportModal from '../../modals/reportModal';
+import MappedPosts from './mappedPosts';
 // import { control } from '../../../features/auth/authSlice';
 
 
 
 
 function Posts() {
+    // const socket = require('socket.io-client')("ws://localhost:3001")
     const [data, setData] = useState([])
     const [control2, setControl2] = useState(true)
     const [showComments, setShowComments] = useState(false)
@@ -27,7 +29,7 @@ function Posts() {
     const userId = userParse.id
 
     const {
-        auth: { control }
+        auth: { controlState }
     } = useSelector(state => state)
     const fetchData = async () => {
 
@@ -52,178 +54,182 @@ function Posts() {
     }
     useEffect(() => {
         fetchData()
-    }, [control2, control, user])
-    const doLike = (id) => {
-        let data = { id }
-        likePost(data).then((response) => {
-            setControl2(!control2)
-        })
-    }
-    const doUnLike = (id) => {
-        let data = { id }
-        UnlikePost(data).then((response) => {
-            setControl2(!control2)
-        })
-    }
-    const commentSubmit = (postId) => {
-        if (comment != "") {
-            const data = { postId, comment }
-            createComment(data).then((response) => {
-                setComment("")
-            })
-        }
+        console.log("why");
+        console.log(controlState);
+    }, [control2, controlState, user])
 
-    }
-    const doBookmark = (id) => {
-        let data = { id }
-        BookmarkPost(data).then((response) => {
-            setControl2(!control2)
-        })
-    }
-    const doUnBookmark = (id) => {
-        let data = { id }
-        UnBookmarkPost(data).then((response) => {
-            setControl2(!control2)
-        })
-    }
+    // const doLike = (id) => {
+    //     let data = { id }
+    //     likePost(data).then((response) => {
+    //         setControl2(!control2)
+    //     })
+    // }
+    // const doUnLike = (id) => {
+    //     let data = { id }
+    //     UnlikePost(data).then((response) => {
+    //         setControl2(!control2)
+    //     })
+    // }
+    // const commentSubmit = (postId) => {
+    //     if (comment != "") {
+    //         const data = { postId, comment }
+    //         createComment(data).then((response) => {
+    //             setComment("")
+    //         })
+    //     }
+
+    // }
+    // const doBookmark = (id) => {
+    //     let data = { id }
+    //     BookmarkPost(data).then((response) => {
+    //         setControl2(!control2)
+    //     })
+    // }
+    // const doUnBookmark = (id) => {
+    //     let data = { id }
+    //     UnBookmarkPost(data).then((response) => {
+    //         setControl2(!control2)
+    //     })
+    // }
 
 
     return (
         <>
             {data && data.map((post, index) => {
                 return (
+                    <MappedPosts post={post} index={index}/>
                     //posts
-                    <div className="border border-slate-200 mb-5" key={post.postId}>
-                        <div className="p-3 flex flex-row">
-                            <div className="flex-1">
-                                <Link to={`/${post.userName}`}>
-                                    <img
-                                        className="rounded-full w-8 max-w-none inline "
+                    // <div className="border border-slate-200 mb-5" key={post.postId}>
+                    //     <div className="p-3 flex flex-row">
+                    //         <div className="flex-1">
+                    //             <Link to={`/${post.userName}`}>
+                    //                 <img
+                    //                     className="rounded-full w-8 max-w-none inline "
 
-                                        src={`http://localhost:4000/DP/${post.DP}`}
+                    //                     src={`http://localhost:4000/DP/${post.DP}`}
 
-                                    />{" "}
-                                    <span className="font-medium text-sm ml-2">
-                                        {post.userName}
-                                    </span>
-                                </Link>
-                                {/* <a href="" className="">
+                    //                 />{" "}
+                    //                 <span className="font-medium text-sm ml-2">
+                    //                     {post.userName}
+                    //                 </span>
+                    //             </Link>
+                    //             {/* <a href="" className="">
                                     
-                                </a> */}
-                            </div>
-                            <div className="">
-                                {post.Reports.includes(userId) ?"": 
-                                    <a
-                                        className="cursor-pointer"
-                                        onClick={() => {
-                                            console.log("three dot");
-                                            setShowReport(true)
-                                            setPostId(post.postId)
-                                            setUserId(post.userId)
-                                        }}
+                    //             </a> */}
+                    //         </div>
+                    //         <div className="">
+                    //             {post.Reports.includes(userId) ?"": 
+                    //                 <a
+                    //                     className="cursor-pointer"
+                    //                     onClick={() => {
+                    //                         console.log("three dot");
+                    //                         setShowReport(true)
+                    //                         setPostId(post.postId)
+                    //                         setUserId(post.userId)
+                    //                     }}
 
-                                    >
-                                        <BsThreeDots />
-                                    </a> }
-                            </div>
-                        </div>
-                        <img
-                            className="w-100 mx-auto"
-                            alt={`Photo by user`}
-                            src={`http://localhost:4000/images/${post.postImage}`}
-                        />
+                    //                 >
+                    //                     <BsThreeDots />
+                    //                 </a> }
+                    //         </div>
+                    //     </div>
+                    //     <img
+                    //         className="w-100 mx-auto"
+                    //         alt={`Photo by user`}
+                    //         src={`http://localhost:4000/images/${post.postImage}`}
+                    //     />
 
-                        <div className="header p-3 pl-8 flex flex-row text-2xl justify-between">
-                            <div className="flex ">
-                                {
-                                    // post.Likes.length > 0 ?
-                                    post.Likes.includes(userId) ?
-                                        <a
-                                            className="mr-3 text-red-600 cursor-pointer"
-                                            onClick={(e) => { doUnLike(post.postId) }}
-                                        >
-                                            <AiOutlineLike size={30} />
-                                        </a> : <a
-                                            className="mr-3 text-black cursor-pointer"
-                                            onClick={(e) => { doLike(post.postId) }}
+                    //     <div className="header p-3 pl-8 flex flex-row text-2xl justify-between">
+                    //         <div className="flex ">
+                    //             {
+                    //                 // post.Likes.length > 0 ?
+                    //                 post.Likes.includes(userId) ?
+                    //                     <a
+                    //                         className="mr-3 text-red-600 cursor-pointer"
+                    //                         onClick={(e) => { doUnLike(post.postId) }}
+                    //                     >
+                    //                         <AiOutlineLike size={30} />
+                    //                     </a> : <a
+                    //                         className="mr-3 text-black cursor-pointer"
+                    //                         onClick={(e) => { doLike(post.postId) }}
 
-                                        >
-                                            <AiOutlineLike size={30} />
-                                        </a>
-                                }
-
-
+                    //                     >
+                    //                         <AiOutlineLike size={30} />
+                    //                     </a>
+                    //             }
 
 
 
-                                <a
-                                    className="mr-3 hover:text-gray-500 cursor-pointer"
-                                    onClick={(e) => {
-                                        setShowComments(true)
-                                        setPostId(post.postId)
-
-                                    }}
-                                >
-                                    <FaRegComment size={30} />
-                                </a>
-
-                            </div>
-                            <div className="">
-                                {
-                                    // post.Likes.length > 0 ?
-                                    post.Bookmarks.includes(userId) ?
-                                        <a
-                                            className="mr-3  cursor-pointer text-red-600"
-                                            onClick={(e) => { doUnBookmark(post.postId) }}
-                                        >
-                                            <FiBookmark size={30} />
-                                        </a> : <a
-                                            className="mr-3"
-                                            onClick={(e) => { doBookmark(post.postId) }}
-
-                                        >
-                                            <FiBookmark size={30} />
-                                        </a>
-                                }
-                            </div>
-                        </div>
-                        <div className="font-medium text-sm px-3 pl-8">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
-                        <div className="px-3 text-sm pl-8">
-                            <span className="font-medium">{post.userName}</span> {post.description}
-                        </div>
 
 
-                        <div className="text-gray-500 uppercase px-3 pl-8 pt-2 pb-5 text-[0.65rem] tracking-wide">
-                            {format(post.date)}
-                        </div>
+                    //             <a
+                    //                 className="mr-3 hover:text-gray-500 cursor-pointer"
+                    //                 onClick={(e) => {
+                    //                     setShowComments(true)
+                    //                     setPostId(post.postId)
 
-                        <div className="px-3 py-2 flex flex-row border-t relative">
+                    //                 }}
+                    //             >
+                    //                 <FaRegComment size={30} />
+                    //             </a>
 
-                            <div className="flex items-center">
-                                <a className="text-2xl cursor-pointer">
+                    //         </div>
+                    //         <div className="">
+                    //             {
+                    //                 // post.Likes.length > 0 ?
+                    //                 post.Bookmarks.includes(userId) ?
+                    //                     <a
+                    //                         className="mr-3  cursor-pointer text-red-600"
+                    //                         onClick={(e) => { doUnBookmark(post.postId) }}
+                    //                     >
+                    //                         <FiBookmark size={30} />
+                    //                     </a> : <a
+                    //                         className="mr-3"
+                    //                         onClick={(e) => { doBookmark(post.postId) }}
 
-                                </a>
-                            </div>
-                            <div className="flex-1 pr-3 py-1">
-                                <input
-                                    className={`w-full px-3 py-1 text-sm bg-slate-50 outline-0`}
-                                    value={comment}
-                                    onChange={(e) => { setComment(e.target.value) }}
-                                    type="text"
-                                    placeholder="Add a comment..."
+                    //                     >
+                    //                         <FiBookmark size={30} />
+                    //                     </a>
+                    //             }
+                    //         </div>
+                    //     </div>
+                    //     <div className="font-medium text-sm px-3 pl-8">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
+                    //     <div className="px-3 text-sm pl-8">
+                    //         <span className="font-medium">{post.userName}</span> {post.description}
+                    //     </div>
 
-                                />
-                            </div>
-                            <div className="flex items-center text-sm">
-                                <a
-                                    className="cursor-pointer text-sky-500"
-                                    onClick={() => commentSubmit(post.postId)}
-                                >
-                                    Post
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+
+                    //     <div className="text-gray-500 uppercase px-3 pl-8 pt-2 pb-5 text-[0.65rem] tracking-wide">
+                    //         {format(post.date)}
+                    //     </div>
+
+                    //     <div className="px-3 py-2 flex flex-row border-t relative">
+
+                    //         <div className="flex items-center">
+                    //             <a className="text-2xl cursor-pointer">
+
+                    //             </a>
+                    //         </div>
+                    //         <div className="flex-1 pr-3 py-1">
+                    //             <input
+                    //                 className={`w-full px-3 py-1 text-sm bg-slate-50 outline-0`}
+                    //                 value={comment}
+                    //                 onChange={(e) => { setComment(e.target.value) }}
+                    //                 type="text"
+                    //                 placeholder="Add a comment..."
+
+                    //             />
+                    //         </div>
+                    //         <div className="flex items-center text-sm">
+                    //             <a
+                    //                 className="cursor-pointer text-sky-500"
+                    //                 onClick={() => commentSubmit(post.postId)}
+                    //             >
+                    //                 Post
+                    //             </a>
+                    //         </div>
+                    //     </div>
+                    // </div>
 
                 )
 

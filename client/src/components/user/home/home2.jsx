@@ -14,13 +14,14 @@ function HomePage() {
  const {
     auth: { user },
   } = useSelector(state => state);
+//   console.log(JSON.parse(user));
     const dispatch = useDispatch()
     const logouthandel = () => {
         dispatch(logout())
     }
     // const users = localStorage.getItem('user')
     // if (user?.username === undefined) {
-    //     var users = JSON.parse(user)
+        var users = user
     // } else {
     //     
     // }
@@ -28,17 +29,19 @@ function HomePage() {
     const fetchData = async () => {
         await getUserHead(users.id).then((response) => {
             console.log("home2",users.id);
+            console.log("home2",response.data[0]);
+
             setDP(response.data[0])
             setLoading(false)
 
         }).catch((error) => {
             console.log(error);
-            // dispatch(logout())
+            dispatch(logout())
 
         })
     }
     useEffect(() => {
-     users = user
+     users =user
 
         fetchData()
     }, [user])
@@ -75,10 +78,11 @@ function HomePage() {
                                 {/* <Link to={`/${dataCurrentUser.me.username}`}>
                                  {dataCurrentUser.me.username}
                              </Link> */}
-                                {user?.username}
+                                {DP?.userName}
                             </div>
                             <div className="text-gray-500 text-sm leading-4">
-                                {user?.username}
+                            {DP?.userName}
+
                             </div>
                         </div>
                         <div className="w-32 text-right m-auto">
@@ -92,7 +96,7 @@ function HomePage() {
                         </div>
                     </div>
 
-                    <Suggestions userId={user?.id} />
+                    <Suggestions userId={DP?._id} />
                     {/* <Footer />  */}
                 </div>
             </div>

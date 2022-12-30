@@ -5,6 +5,7 @@ dotenv.config({ path: './var/.env' })
 const userSchema = require('../models/userSignUp')
 const postSchema = require('../models/posts');
 const commentSchema = require('../models/comments');
+const notificationSchema = require('../models/notifications')
 const { json } = require('express');
 let ObjectId = mongoose.Types.ObjectId
 
@@ -149,7 +150,7 @@ module.exports = {
                 },
                 {
                     $match: {
-                        Status:{$ne:false} 
+                        Status: { $ne: false }
                     }
                 },
                 // {
@@ -173,7 +174,7 @@ module.exports = {
                     $sort: { 'date': -1 }
                 }
             ])
-            console.log("posts", posts);
+            // console.log("posts", posts);
             return posts
         } catch (error) {
             return error.message
@@ -554,6 +555,73 @@ module.exports = {
         console.log("formattedFollowing", formattedFollowing);
         return formattedFollowing
     },
+    addNotifications: async (data) => {
+        try {
+            const { receiverId, senderId, postId, type } = data
+            console.log("data", data);
+            const res = await notificationSchema.findOne({
+                triggered_by: senderId,
+                notify: receiverId,
+                postId: postId,
+                notification: type
+            })
+            console.log(res, "res");
+            if (!res) {
+                const notifications = new notificationSchema({
+                    triggered_by: senderId,
+                    notify: receiverId,
+                    postId: postId,
+                    notification: type
+                })
+                notifications.save()
+            } else {
+                console.log("already saved");
+                await notificationSchema.findByIdAndUpdate(ObjectId(res._id), {
+                    notification: type
+                })
+            }
 
+            return { msg: "sucessfully" }
+        } catch (error) {
+            return error.message
+        }
+    },
+    getUserNotifications: async (UID) => {
+        try {
+            console.log("UID", UID);
+            const notifications = await notificationSchema.aggregate([
+                {
+                    $match: {
+                        notify: ObjectId(UID)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'triggered_by',
+                        foreignField: '_id',
+                        as: "triggeredUser"
+                    }
+                }, {
+                    $unwind: '$triggeredUser'
+                }, {
+                    $project: {
+                        userName: '$triggeredUser.userName',
+                        userDp: '$triggeredUser.profilePhoto',
+                        time: '$updatedAt',
+                        type: '$notification',
+                        read:'$read',
+                    }
+                },{
+                    $sort:{'time':-1}
+                }
 
+            ])
+            console.log(notifications, "notifications")
+            return notifications
+
+        } catch (error) {
+            return error.message
+        }
+    },
 }

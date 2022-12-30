@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { createChat, getAllChats, getAllMessages, searchChat, sendMessage } from '../../../api/userApi'
 import ChatRight from './chatRight'
 import ChatList from './chatList'
-import { io } from 'socket.io-client'
+// import { io } from 'socket.io-client'
 import SearchValue from './searchValue'
 
 
@@ -15,11 +15,12 @@ function ChatMain() {
   const [newMessage, setNewMessage] = useState('')
   const [toSocket, setToSocket] = useState(null)
   const [fromSocket, setFromSocket] = useState(null)
-  const socket = useRef()
+  const [responsive, setResponsive] = useState(false)
+  // const socket = useRef()
 
   const scrollRef = useRef()
   const {
-    auth: { user,userId }
+    auth: { user, userId,socket }
   } = useSelector(state => state)
   console.log(user.id)
   console.log(socket, "socket")
@@ -34,40 +35,35 @@ function ChatMain() {
         console.log(chat);
       }
 
-    }else{
+    } else {
       setSearch(null)
     }
   };
   useEffect(() => {
-    if(userId){
+    if (userId) {
       handelCreateChat(userId)
+      setToSocket(null)
     }
-    socket.current = io("ws://localhost:3001")
-    socket.current.on("getMessage", data => {
+    // socket.current = io("ws://localhost:3001")
+    socket?.on("getMessage", data => {
       setFromSocket({
         sender: data.senderId,
         content: data.text,
         time: Date.now(),
         userDP: data.userDP
       })
-    })
+    }) 
   }, [])
   useEffect(() => {
     fromSocket && currentChat?.users.includes(fromSocket.sender) &&
       setMessages((prev) => [...prev, fromSocket])
+    console.log("currentChat", currentChat);
   }, [fromSocket, currentChat])
-  useEffect(() => {
-    socket.current.emit("addUser", user.id)
-    socket.current.on("getUser", users => {
-      console.log(users);
-    })
-  }, [user])
-
-  useEffect(() => {
+useEffect(() => {
     const getChats = async () => {
       if (search) {
-        setChat([]); 
-      }else{
+        setChat([]);
+      } else {
         try {
           const result = await getAllChats()
           console.log(result.data);
@@ -124,7 +120,7 @@ function ChatMain() {
       }
       const receiverId = currentChat.users.find(member => member !== user.id)
       console.log("receiverId", receiverId);
-      socket.current.emit("sendMessage", {
+      socket?.emit("sendMessage", {
         senderId: user.id,
         receiverId,
         text: newMessage,
@@ -136,13 +132,18 @@ function ChatMain() {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [Messages])
-  const handelCreateChat=async(id)=>{
+  const handelCreateChat = async (id) => {
+    setResponsive(true)
     console.log(id);
-    const {data}= await createChat(id)
-    console.log(data);
+    const { data } = await createChat(id)
+    // console.log(data);
     setCurrentChat(data)
   }
-    return (
+  const handelSelectChat = (item) => {
+    setCurrentChat(item)
+    setResponsive(true)
+  }
+  return (
     <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100  ">
       <div className="md:px-12 col-span-3 lg:col-span-2">
 
@@ -150,10 +151,10 @@ function ChatMain() {
         <div className="container mx-auto">
           <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
 
-            <div className="border-r border-gray-300 lg:col-span-1">
+            <div className= {`${responsive ? 'hidden' : ''} border-r border-gray-300 lg:col-span-1 lg:block`}>
               <div className="mx-3 my-3">
                 <div className="relative text-gray-600">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-2 " onClick={()=>{setSearch(null)}}>
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-2 " onClick={() => { setSearch(null) }}>
                     <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       viewBox="0 0 24 24" className="w-6 h-6 text-gray-300">
                       <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -168,7 +169,7 @@ function ChatMain() {
                 <li>
                   {search && search.map((items) => {
                     return (
-                      <div onClick={()=>handelCreateChat(items._id)}>
+                      <div onClick={() => handelCreateChat(items._id)}>
                         <SearchValue value={items} />
                       </div>
                     )
@@ -177,7 +178,9 @@ function ChatMain() {
                 <li>
                   {chat && chat?.map((item) => {
                     return (
-                      <div onClick={() => setCurrentChat(item)} key={item._id}>
+                      <div onClick={() => { handelSelectChat(item) }
+
+                      } key={item._id}>
                         <ChatList chat={item} currentUser={user.id} />
                       </div>
                     )
@@ -186,15 +189,26 @@ function ChatMain() {
               </ul>
             </div>
             {currentChat ?
-              <div class="hidden lg:col-span-2 lg:block">
+              <div class={`${responsive ? '' : 'hidden'} lg:col-span-2 lg:block`}>
                 <div class="w-full">
-                  {/* <div class="relative flex items-center p-3 border-b border-gray-300">
+                  <div class="relative flex items-center p-3 border-b border-gray-300">
+                    <button class="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 md:hidden"
+                      onClick={() => setResponsive(false)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title"
+                        aria-describedby="desc" role="img" xlink="http://www.w3.org/1999/xlink">
+                        <title>Arrow Left</title>
+                        <desc>A solid styled icon from Orion Icon Library.</desc>
+                        <path data-name="layer1"
+                          fill="#202020" d="M28.001 48L12 32l16.001-16 4.242 4.243-8.759 8.758H52v6H23.486l8.757 8.757L28.001 48z"></path>
+                      </svg>
+                    </button>
                     <img class="object-cover w-10 h-10 rounded-full"
-                      src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg" alt="username" />
-                    <span class="block ml-2 font-bold text-gray-600">Emma</span>
+                      src={`http://localhost:4000/DP/${currentChat?.profilePhoto}`} alt="userName"
+                    />
+                    <span class="block ml-2 font-bold text-gray-600">{currentChat?.userName}</span>
                     {/* <span class="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
                     </span> */}
-                  {/* </div>  */}
+                  </div>
                   <div class="relative w-full p-6 overflow-y-auto h-[40rem]">
                     <div class="space-y-2">
                       {Messages?.map((m) => (

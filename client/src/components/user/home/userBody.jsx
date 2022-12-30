@@ -6,7 +6,7 @@ import CommentsModal from '../../modals/comments';
 
 function UserBody({ data }) {
   const {
-    auth: { control,user },
+    auth: { controlState,user },
   } = useSelector(state => state);
   console.log("data",data);
   const [showComments,setShowComments] = useState(false)
@@ -16,7 +16,7 @@ function UserBody({ data }) {
     const userId = user.id
     useEffect(()=>{
       setShowComments(false)
-    },[control])
+    },[controlState])
   return (
     
     <div

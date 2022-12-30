@@ -68,6 +68,10 @@ export const sendMessage=(Data)=>axios.post(`/message`,Data)
 
 export const searchChat=(Data)=>axios.get(`/chat/search/${Data}`)
 
+export const createNotification=(Data)=>axios.post(`/addnotification`,Data)
+
+export const getNotification=()=>axios.get(`/getnotifications`)
+
 
 
 

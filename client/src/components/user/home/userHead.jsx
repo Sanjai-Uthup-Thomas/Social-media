@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
-import { getSavedPosts, getUserHead, getUserPosts, userFollow, userUnfollow } from '../../../api/userApi';
+import { createNotification, getSavedPosts, getUserHead, getUserPosts, userFollow, userUnfollow } from '../../../api/userApi';
 import { addMessage } from '../../../features/auth/authSlice';
 import Friends from '../../modals/friends';
 import UserBody from './userBody';
@@ -11,7 +11,7 @@ import SavedBody from './userSaved';
 
 function UserHead({ userId }) {
     const {
-        auth: { control },
+        auth: { controlState },
     } = useSelector(state => state);
     const dispatch = useDispatch()
     const navigate=useNavigate()
@@ -37,7 +37,7 @@ function UserHead({ userId }) {
     useEffect(() => {
         console.log("name", name);
         fetchData()
-    }, [userId, control2, control])
+    }, [userId, control2, controlState])
 
     const {
         auth: { user }
@@ -49,8 +49,16 @@ function UserHead({ userId }) {
     }
     const doFollow = (data) => {
         console.log("follow", data);
+        let details = {
+            receiverId:userId,
+            senderId: Users?.id,
+            postId: null,
+            type: "followed",
+        }
         userFollow(data).then((response) => {
             console.log("follow response", response.data);
+
+            createNotification(details)
             setControl(!control2)
 
         })
@@ -72,7 +80,7 @@ const handelMessage=()=>{
     return (
         <>
             <main className="bg-zinc-100">
-                <div className="grid grid-cols-3 container py-10 ">
+                <div className="md:grid grid-cols-3 container py-10 ">
                     <div className="bg-green p-3 rounded flex items-start justify-center">
                         <img
                             className="rounded-full"
@@ -80,7 +88,7 @@ const handelMessage=()=>{
                             width="150"
                         />
                     </div>
-                    <div className="bg-green p-3 rounded text-gray-600 col-span-2">
+                    <div className="bg-green p-3 rounded text-gray-600 col-span-2 pl-10">
                         <div className="flex items-center">
                             <h1 className="text-3xl align-bottom block">
                                 {name.userName}

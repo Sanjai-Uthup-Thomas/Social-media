@@ -47,6 +47,10 @@ router.get('/getfollowers/:id', auth, controller.getFollowers)
 
 router.get('/getfollowing/:id', auth, controller.getFollowing)
 
+router.post('/addnotification', auth, controller.doNotifications)
+
+router.get('/getnotifications',auth, controller.getNotifications)
+
 
 
 

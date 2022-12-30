@@ -9,11 +9,14 @@ function Suggestions({ userId }) {
     const [users,setUsers]= useState([])
     const [control,setControl]=useState(false)
     const fetchData = () => {
-        getSuggestions(userId).then((response) => {
-            console.log(response.data)
-            setUsers(response.data)
-            setLoader(false)
-        })
+        if(userId){
+            getSuggestions(userId).then((response) => {
+                console.log(response.data)
+                setUsers(response.data)
+                setLoader(false)
+            })
+        }
+       
     }
     useEffect(() => {
         fetchData()
@@ -38,7 +41,7 @@ function Suggestions({ userId }) {
                 timeout={3000} //3 secs
 
             />
-        </div> :<><div className="flex flex-row pt-5">
+        </div> :<><div className="flex flex-row pt-3">
                 <div className="w-72 font-bold text-gray-500 text-sm">
                     Suggestions For You
                 </div>

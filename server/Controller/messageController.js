@@ -15,7 +15,7 @@ module.exports = {
     },
     getAllMessages: (req, res) => {
         try {
-            console.log("params", req.params);
+            // console.log("params", req.params);
             Helpers.getMessages(req.params.chatId).then((response)=>{
                 res.status(200).json(response)
             }).catch((err) => {
