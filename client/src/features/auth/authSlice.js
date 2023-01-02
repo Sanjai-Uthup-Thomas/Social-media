@@ -78,7 +78,7 @@ const authSlice = createSlice({
             state.userId=null
         },
         socketUpdate:(state,action)=>{
-            console.log(action.payload,"action.payload");
+            // console.log(action.payload,"action.payload");
             state.socket=action.payload
         }
     },

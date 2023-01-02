@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { ThreeCircles } from 'react-loader-spinner'
-import { useDispatch, useSelector } from 'react-redux'
-import { getUserHead } from '../../../api/userApi'
+// import { ThreeCircles } from 'react-loader-spinner'
+import { useDispatch} from 'react-redux'
 import { logout } from '../../../features/auth/authSlice'
 import Posts from '../posts/posts'
 import Suggestions from '../Suggestions/Suggestions'
@@ -9,67 +8,49 @@ import Suggestions from '../Suggestions/Suggestions'
 
 
 function HomePage() {
-    var users
-    const [loading, setLoading] = useState(true)
- const {
-    auth: { user },
-  } = useSelector(state => state);
+    // var users
+    // const [loading, setLoading] = useState(true)
+    // const {
+    //     auth: { controlState }
+    // } = useSelector(state => state)
+//  const {
+//     auth: { user },
+//   } = useSelector(state => state);
 //   console.log(JSON.parse(user));
     const dispatch = useDispatch()
     const logouthandel = () => {
         dispatch(logout())
     }
-    // const users = localStorage.getItem('user')
-    // if (user?.username === undefined) {
-        var users = user
-    // } else {
-    //     
-    // }
-    const [DP, setDP] = useState([])
-    const fetchData = async () => {
-        await getUserHead(users.id).then((response) => {
-            console.log("home2",users.id);
-            console.log("home2",response.data[0]);
+    const user = localStorage.getItem("user")
+    const userParse = JSON.parse(user)
 
-            setDP(response.data[0])
-            setLoading(false)
-
-        }).catch((error) => {
-            console.log(error);
-            dispatch(logout())
-
-        })
-    }
-    useEffect(() => {
-     users =user
-
-        fetchData()
-    }, [user])
 
 
 
     return (<>
-        {loading ? <div className="flex flex-col justify-center items-center w-full h-full">
-            <ThreeCircles
-                type="Puff"
-                color="#00BFFF"
-                height={100}
-                width={100}
-                timeout={3000} //3 secs
+        {
+        // loading ? <div className="flex flex-col justify-center items-center w-full h-full">
+        //     <ThreeCircles
+        //         type="Puff"
+        //         color="#00BFFF"
+        //         height={100}
+        //         width={100}
+        //         timeout={3000} //3 secs
 
-            />
-        </div> : <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-8 bg-zinc-100  ">
-            <div className="md:px-12 col-span-3 lg:col-span-2">
+        //     />
+        // </div> : 
+        <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-4   ">
+            <div className="md:px-12 col-span-3 lg:col-span-2 ">
 
                 <Posts />
             </div>
-            <div className="col-span-1 hidden lg:block px-12">
-                <div className="fixed p-5 w-80">
-                    <div className="flex flex-row">
+            <div className="col-span-1 hidden lg:block px-4">
+                <div className="fixed p-5 w-80 bg-zinc-100">
+                    <div className="flex flex-row p-2 bg-zinc-100">
                         <a href="">
                             <img
                                 className="rounded-full"
-                                src={`http://localhost:4000/DP/${DP.DP}`}
+                                src={`http://localhost:4000/DP/${userParse.profilePhoto}`}
                                 width="100"
                             />
                         </a>
@@ -78,10 +59,10 @@ function HomePage() {
                                 {/* <Link to={`/${dataCurrentUser.me.username}`}>
                                  {dataCurrentUser.me.username}
                              </Link> */}
-                                {DP?.userName}
+                                {userParse?.userName}
                             </div>
                             <div className="text-gray-500 text-sm leading-4">
-                            {DP?.userName}
+                            {userParse?.username}
 
                             </div>
                         </div>
@@ -96,7 +77,7 @@ function HomePage() {
                         </div>
                     </div>
 
-                    <Suggestions userId={DP?._id} />
+                    <Suggestions userId={userParse?.id} />
                     {/* <Footer />  */}
                 </div>
             </div>

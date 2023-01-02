@@ -12,10 +12,11 @@ import { GoSearch } from 'react-icons/go';
 // import Modal from '../../modals/NewPost';
 // import {createPost} from '../../../api/userApi'
 import NewPost from '../../modals/NewPost'
-import { getSearchedUser, getUserHead } from '../../../api/userApi';
+import { getNotificationsCount, getSearchedUser, getUserHead } from '../../../api/userApi';
 import SearchUser from './searchUser';
 
 function Navbar() {
+    const [data, setData] = useState([])
     const [search, setSearch] = useState([])
     const dispatch = useDispatch()
     const logouthandel = () => {
@@ -23,9 +24,10 @@ function Navbar() {
     }
     const [notifications, setNotifications] = useState([])
     const {
-        auth: { user, userId, socket }
+        auth: { userId, socket }
     } = useSelector(state => state)
-    var users
+    const user = localStorage.getItem("user")
+    const users = JSON.parse(user)
     // if (user.username === undefined) {
     //     var users = JSON.parse(user)
     // } else {
@@ -35,17 +37,17 @@ function Navbar() {
     const view = () => {
         setIsOpen(true)
     }
-    const [DP, setDP] = useState([])
-    const fetchData = () => {
-        getUserHead(users.id).then((response) => {
-            // console.log("navbar");
-            setDP(response.data[0])
-        })
-    }
-    useEffect(() => {
-        users = user
-        fetchData()
-    }, [users])
+    // const [DP, setDP] = useState([])
+    // const fetchData = () => {
+    //     getUserHead(users.id).then((response) => {
+    //         // console.log("navbar");
+    //         setDP(response.data[0])
+    //     })
+    // }
+    // useEffect(() => {
+        
+    //     fetchData()
+    // }, [users])
 
     const searchUser = async (e) => {
         const searchValue = e.target.value;
@@ -60,14 +62,32 @@ function Navbar() {
         dispatch(removeId())
     }
     useEffect(() => {
-        socket?.on("getNotification", (data) => {
-            setNotifications((prev) => [...prev, data])
+        socket?.on("getNotification", (DATA) => {
+            console.log("getNotification", DATA);
+            setNotifications((prev) => [...prev,DATA])
+            let num=notifications.length
+            console.log("getNotification1", notifications);
+
+            setData(notifications.length) 
+            console.log("getNotification2", data);
+
         })
-    }, [socket])
+    }, [socket,notifications])
     console.log(notifications);
+    // const [array, setArray] = useState([])
+    const fetchNOtifications = async () => {
+        console.log("fetchNOtifications");
+        const { data } = await getNotificationsCount()
+        console.log("data: " + data.length);
+        setData(data.length-1)
+    }
+    useEffect(() => {
+        fetchNOtifications()
+    }, [socket])
+
     return (
         <>
-            <><nav className="sticky top-0 min-h-full bg-white md:w-10/12 mx-auto z-40 justify-between">
+            <><nav className="sticky top-0 min-h-full bg-white md:w-10/12 mx-auto z-40 justify-between ">
                 <div className="container max-w-full">
                     <div className="flex flex-row py-1 items-center h-14">
                         <div className="md:basis-1/2 pl-3 lg:p-0 mx-auto">
@@ -153,8 +173,10 @@ function Navbar() {
                                 <li>
                                     <Link
                                         to={'/notifications'}>
-                                        <a className="cursor-pointer">
+                                        <a className="cursor-pointer relative">
                                             <FaRegBell size={28} />
+                                            {data>0 && <div class="inline-flex absolute  -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                            }
                                         </a>
                                     </Link>
                                 </li>
@@ -168,7 +190,7 @@ function Navbar() {
                                                 <img
                                                     className="rounded-full"
                                                     // src={data.me.image}
-                                                    src={`http://localhost:4000/DP/${DP.DP}`}
+                                                    src={`http://localhost:4000/DP/${users.profilePhoto}`}
                                                     // src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80"
                                                     width="40"
                                                 />
@@ -193,14 +215,14 @@ function Navbar() {
                                                                 className="text-gray-700
                                                                 block px-4 py-2 text-lg"
                                                             >
-                                                                {`HAI ${DP.userName}`}
+                                                                {`HAI ${users.username}`}
                                                             </div>
                                                         )}
                                                     </Menu.Item>
                                                     <Menu.Item>
                                                         {({ active }) => (
                                                             <Link
-                                                                to={`/${DP.userName}`}
+                                                                to={`/${users.username}`}
                                                                 className="text-gray-700
                                                                 block px-4 py-2 text-sm"
                                                             >

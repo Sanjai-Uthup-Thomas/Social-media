@@ -19,6 +19,7 @@ import { object } from 'yup';
 import { logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
 import Notifications from '../pages/user/Notifications';
+import Suggestions from '../pages/user/Suggestions';
 function NavRoutes() {
     const socketio = require('socket.io-client')("ws://localhost:3001")
 
@@ -34,7 +35,7 @@ function NavRoutes() {
           console.log(socketio);
           dispatch(socketUpdate(socketio))
         })
-      }, [user,dispatch])
+      }, [user.id])
 
     const [userName, setUserName] = useState([])
     if (user) {
@@ -48,7 +49,7 @@ function NavRoutes() {
     useEffect(() => {
         checkToken().then((response) => {
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
             dispatch(logout())
         })
         fetchData()
@@ -102,6 +103,8 @@ function NavRoutes() {
 
                     <Route path="/chat" element={<Chat socket={socketio} />} />
                     <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/suggestions" element={<Suggestions />} />
+
 
 
 

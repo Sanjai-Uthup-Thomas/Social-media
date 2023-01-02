@@ -131,6 +131,14 @@ module.exports = {
                 },
                 {
                     $unwind: '$user'
+                },
+                {
+                    $lookup: {
+                        from: 'comments',
+                        localField: 'posts._id',
+                        foreignField: 'postId',
+                        as: 'comments'
+                    }
                 }
                 ,
                 {
@@ -143,6 +151,7 @@ module.exports = {
                         date: '$posts.date',
                         description: '$posts.description',
                         Likes: '$posts.Likes',
+                        Comments:'$comments',
                         DP: '$user.profilePhoto',
                         Bookmarks: '$posts.Bookmarks',
                         Reports: '$posts.Reports'
@@ -165,6 +174,7 @@ module.exports = {
                         date: '$date',
                         description: '$description',
                         Likes: '$Likes',
+                        Comments:'$Comments',
                         DP: '$DP',
                         Bookmarks: '$Bookmarks',
                         Reports: '$Reports.UserId'
@@ -174,7 +184,7 @@ module.exports = {
                     $sort: { 'date': -1 }
                 }
             ])
-            // console.log("posts", posts);
+            console.log("posts", posts);
             return posts
         } catch (error) {
             return error.message
@@ -485,7 +495,7 @@ module.exports = {
                     $match: { 'Followers': { $nin: [userId] } }
                 },
                 {
-                    $sample: { size: 10 }
+                    $sample: { size: 20}
                 }
             ])
             return result
@@ -588,7 +598,7 @@ module.exports = {
     },
     getUserNotifications: async (UID) => {
         try {
-            console.log("UID", UID);
+            // console.log("UID", UID);
             const notifications = await notificationSchema.aggregate([
                 {
                     $match: {
@@ -608,20 +618,55 @@ module.exports = {
                     $project: {
                         userName: '$triggeredUser.userName',
                         userDp: '$triggeredUser.profilePhoto',
-                        time: '$updatedAt',
+                        time: '$createdAt',
                         type: '$notification',
-                        read:'$read',
+                        read: '$read',
                     }
-                },{
-                    $sort:{'time':-1}
+                }, {
+                    $sort: { 'time': -1 }
                 }
 
             ])
-            console.log(notifications, "notifications")
+            // console.log(notifications, "notifications")
             return notifications
 
         } catch (error) {
             return error.message
         }
     },
+    doNotifications: async (NID) => {
+        try {
+            console.log("NID", NID);
+            const notification = await notificationSchema.findByIdAndUpdate(NID, {
+                $set: {
+                    read: true,
+                }
+            })
+            // console.log("notification",notification);
+            return { msg: "sucessfully" }
+
+        } catch (error) {
+            return error.message
+        }
+
+    },
+    getUserNotificationsCount: async(UID) => {
+        try {
+            console.log("UID getNotificationsCount", UID);
+            const notifications = await notificationSchema.aggregate([
+                {
+                    $match: {
+                        notify: ObjectId(UID),
+                        read:false
+                    }
+                }
+                
+            ])
+            console.log(notifications, "notifications count")
+            return notifications
+
+        } catch (error) {
+            return error.message
+        }
+    }
 }

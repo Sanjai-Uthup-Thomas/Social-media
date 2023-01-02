@@ -8,7 +8,7 @@ module.exports = {
 
     //userSignup
     doSignup: async (req, res) => {
-        console.log(req.body);
+        // console.log(req.body);
         const { userName, phoneNumber, email, password } = req.body
         const UserName = await userSignUp.findOne({ userName: userName })
         if (UserName) {
@@ -51,7 +51,7 @@ module.exports = {
 
     doOtpVerify: async (req, res) => {
 
-        console.log(req.body);
+        // console.log(req.body);
         const { userName, phoneNumber, email, password, otp, OTP } = req.body
         const isMatch = await bcrypt.compare(OTP, otp);
 
@@ -83,17 +83,17 @@ module.exports = {
     //userLogin
     doLogin: async (req, res) => {
         try {
-            console.log(req.body);
+            // console.log(req.body);
             const { email, password } = req.body
             const user = await userSignUp.findOne({ email: email })
-            console.log(user);
+            // console.log(user);
             if (!user) {
                 return res
                     .status(200)
                     .json({ msg: "No account found" });
             }
             const id = user.id
-            console.log(id);
+            // console.log(id);
             const blockUser = await userSignUp.findById(id, { Status: true })
             if (!blockUser) {
                 return res
@@ -107,7 +107,7 @@ module.exports = {
             if (!isMatch) return res.status(200).json({ msg: "Invalid password" });
             const token = jwt.sign({ email: user.userName, id: user._id }, process.env.JWT_SECRET,
                 { expiresIn: "3d" })
-            console.log("token: " + token);
+            // console.log("token: " + token);
 
             res.json({
                 token,
@@ -124,12 +124,12 @@ module.exports = {
     //check if token is valid
     doTokenIsValid: async (req, res) => {
         try {
-            console.log("req.user", req.user);
+            // console.log("req.user", req.user);
             const token = req.headers("x-auth-token")
-            console.log(token, "usrcon 63");
+            // console.log(token, "usrcon 63");
             if (!token) return res.json(false)
             const verified = jwt.verify(token, process.env.JWT_SECRET)
-            console.log(verified);
+            // console.log(verified);
             if (!verified) return res.json(false)
             const user = await userSignUp.findById(verified.id)
             if (!user) return res.json(false)
@@ -147,7 +147,7 @@ module.exports = {
     getPost: (req, res) => {
         // console.log("get post");
 
-        const userId=req.user
+        const userId = req.user
         // console.log("get post");
         // console.log("userId: ", userId);
         userHelpers.listPosts(userId).then((response) => {
@@ -194,9 +194,9 @@ module.exports = {
     },
     getCommentPost: async (req, res) => {
         try {
-            console.log("postId", req.params.id)
+            // console.log("postId", req.params.id)
             await userHelpers.getPost(req.params.id).then((response) => {
-                console.log(response);
+                // console.log(response);
                 res.json(response)
 
             })
@@ -216,7 +216,7 @@ module.exports = {
     },
     doUserHead: async (req, res) => {
         try {
-            console.log(req.params.id);
+            // console.log(req.params.id);
             await userHelpers.getUserHead(req.params.id).then((response) => {
 
                 res.json(response)
@@ -260,7 +260,7 @@ module.exports = {
         try {
             req.body.photo = req.file.filename
             userHelpers.changeDp(req.user, req.body.photo).then((response) => {
-                console.log(response);
+                // console.log(response);
                 res.json(response);
             })
 
@@ -323,8 +323,8 @@ module.exports = {
     },
     doFollow: (req, res) => {
         try {
-            console.log("req.params in follow", req.params.id);
-            console.log("req.user in follow", req.user);
+            // console.log("req.params in follow", req.params.id);
+            // console.log("req.user in follow", req.user);
             userHelpers.userFollow(req.user, req.params.id).then((response) => {
                 res.json(response)
             })
@@ -334,8 +334,8 @@ module.exports = {
     },
     doUnfollow: (req, res) => {
         try {
-            console.log("req.params in follow", req.params.id);
-            console.log("req.user in follow", req.user);
+            // console.log("req.params in follow", req.params.id);
+            // console.log("req.user in follow", req.user);
             userHelpers.userUnfollow(req.user, req.params.id).then((response) => {
                 res.json(response)
             })
@@ -354,7 +354,7 @@ module.exports = {
     },
     doDeletePost: (req, res) => {
         try {
-            console.log("req.params in delete", req.params.id);
+            // console.log("req.params in delete", req.params.id);
             userHelpers.deletePost(req.params.id).then((response) => {
                 res.json(response)
             })
@@ -367,48 +367,66 @@ module.exports = {
         try {
             console.log(req.body)
             console.log(req.user)
-            userHelpers.reportPost(req.user, req.body).then((response)=>{
+            userHelpers.reportPost(req.user, req.body).then((response) => {
                 res.json(response)
             })
         } catch (err) {
             res.json({ error: err.message })
         }
     },
-    getFollowers:(req,res)=>{
-        try{
+    getFollowers: (req, res) => {
+        try {
             console.log(req.params.id)
-            userHelpers.followers(req.params.id).then((response)=>{
+            userHelpers.followers(req.params.id).then((response) => {
                 res.json(response)
             })
         } catch (err) {
             res.json({ error: err.message })
         }
     },
-    getFollowing:(req, res)=>{
-        try{
+    getFollowing: (req, res) => {
+        try {
             console.log(req.params.id)
-            userHelpers.following(req.params.id).then((response)=>{
+            userHelpers.following(req.params.id).then((response) => {
                 res.json(response)
             })
         } catch (err) {
             res.json({ error: err.message })
         }
     },
-    doNotifications:async(req,res)=>{
-        try{
+    doNotifications: async (req, res) => {
+        try {
             console.log(req.body);
-          const result= await  userHelpers.addNotifications(req.body)
-           res.json(result)
+            const result = await userHelpers.addNotifications(req.body)
+            res.json(result)
 
-        }catch (err) {
+        } catch (err) {
             res.json({ error: err.message })
         }
     },
-    getNotifications:async(req,res)=>{
-        try{
+    getNotifications: async (req, res) => {
+        try {
             const result = await userHelpers.getUserNotifications(req.user)
             res.json(result)
-        }catch (err) {
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    EditNotifications: async (req, res) => {
+        try {
+            console.log(req.params.id);
+            const result = await userHelpers.doNotifications(req.params.id)
+            res.json(result)
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getNotificationsCount:async (req,res)=>{
+        try{
+            console.log("getNotificationsCount");
+            const result = await userHelpers.getUserNotificationsCount(req.user)
+            res.json(result)
+        } catch (err) {
             res.json({ error: err.message })
         }
     }

@@ -7,26 +7,46 @@ import MappedNotifications from './MappedNotifications'
 
 
 function NotificationsComp() {
-    const [data,setData]=useState([])
+    const [data, setData] = useState([])
+    // const [array, setArray] = useState([])
     const {
-        auth: { user }
+        auth: { user, controlState, socket }
     } = useSelector(state => state)
     const fetchData = async () => {
-       const {data}= await getNotification()
+        const { data } = await getNotification()
         setData(data)
     }
     useEffect(() => {
         fetchData()
-    }, [user])
-    console.log(data,"data received");
+    }, [user, controlState])
+    useEffect(() => {
+        socket?.on("getNotification", (data) => {
+            console.log("getNotification", data);
+            setData((prev) => [data, ...prev])
+            console.log(data);
+          
+        })
+          console.log("array", data);
+            function onlyUnique(value, index, self) {
+                return self.indexOf(value) === index;
+            }
+            var unique = data.filter(onlyUnique);
+            console.log("unique", unique);
+            setData(unique)
+        console.log(data.length);
+    }, [socket]) 
+    console.log(data, "data received");
     return (
         <>
-        <div className='p-4'></div>
-        {data && data.map((data)=>{
-            return(
-                <MappedNotifications data={data}/>
-            )
-        })}
+            <div className='p-4'>
+
+            </div>
+            {data && data.map((data) => {
+                return (
+                    <MappedNotifications data={data} />
+                )
+            })}
+           
         </>
     )
 }

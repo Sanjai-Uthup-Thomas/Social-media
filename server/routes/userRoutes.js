@@ -51,6 +51,16 @@ router.post('/addnotification', auth, controller.doNotifications)
 
 router.get('/getnotifications',auth, controller.getNotifications)
 
+router.patch('/updatenotifications/:id',auth, controller.EditNotifications)
+
+router.get('/getnotificationscount',auth, controller.getNotificationsCount)
+
+
+
+
+
+
+
 
 
 

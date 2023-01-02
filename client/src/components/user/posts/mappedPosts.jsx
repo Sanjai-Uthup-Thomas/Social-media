@@ -21,41 +21,35 @@ function MappedPosts({ post, index }) {
     const [postId, setPostId] = useState('')
     const [postUserId, setUserId] = useState('')
     const [comment, setComment] = useState('')
-    const user = localStorage.getItem("user")
 
 
     const {
         auth: { controlState, socket }
     } = useSelector(state => state)
+    const user = localStorage.getItem("user")
     const userParse = JSON.parse(user)
     const userId = userParse.id
     const userName = userParse.username
     const DP = userParse.profilePhoto
 
     let dispatch = useDispatch()
-    // const fetchData = async () => {
-    //     const posts = await getPosts()
-    //     setData(posts.data)
-    // }
-
-    // useEffect(() => {
-    //     fetchData()
-    // }, [control2, controlState])
     const doLike = (id) => {
         let data = { id }
         let details = {
             receiverId: post.userId,
-            senderId: userId,
-            postId: post.postId,
+            userName: userName,
             type: "liked",
+            userDp: DP,
+            read: false
         }
-        socket?.emit("sendNotification", {
-            receiverId: post.userId,
-            senderId: userName,
-            type: "liked",
-            senderDp: DP
-        })
+        socket?.emit("sendNotification", details)
         likePost(data).then((response) => {
+            let details = {
+                receiverId: post.userId,
+                senderId: userId,
+                postId: post.postId,
+                type: "liked",
+            }
             createNotification(details)
             setControl2(!control2)
             dispatch(control())
@@ -72,12 +66,14 @@ function MappedPosts({ post, index }) {
 
         console.log("postId", postId);
         if (comment != "") {
-            socket?.emit("sendNotification", {
-                receiverId: post.userId,
-                senderId: userName,
+            let details = {
+                receiverId: post?.userId,
+                userName: userName,
                 type: "commented",
-                senderDp: DP
-            })
+                userDp: DP,
+                read: false
+            }
+            socket?.emit("sendNotification", details)
             const data = { postId, comment }
             createComment(data).then((response) => {
                 let details = {
@@ -111,8 +107,8 @@ function MappedPosts({ post, index }) {
     }
     return (
         <div>
-            <div className="border border-slate-200 mb-5" key={post.postId}>
-                <div className="p-3 flex flex-row">
+            <div className="border border-slate-200 mb-5 bg-zinc-100" key={post.postId}>
+                <div className="px-2 flex flex-row">
                     <div className="flex-1">
                         <Link to={`/${post.userName}`}>
                             <img
@@ -145,6 +141,10 @@ function MappedPosts({ post, index }) {
                             </a>}
                     </div>
                 </div>
+                <div className='pl-14 mb-2 text-base'>
+                    
+                         {post.description}
+                    </div>
                 <img
                     className="w-100 mx-auto"
                     alt={`Photo by user`}
@@ -205,10 +205,12 @@ function MappedPosts({ post, index }) {
                         }
                     </div>
                 </div>
-                <div className="font-medium text-sm px-3 pl-8">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
-                <div className="px-3 text-sm pl-8">
-                    <span className="font-medium">{post.userName}</span> {post.description}
+                <div className='flex justify-between'>
+                    <div className="font-medium text-sm px-3 pl-8">{post.Likes.length < 1 ? "" : `${post.Likes.length} Likes`}</div>
+                    <div className="font-medium text-sm px-3 pl-8">{post.Comments.length < 1 ? "" : `${post.Comments.length} Comments`}</div>
+
                 </div>
+
 
 
                 <div className="text-gray-500 uppercase px-3 pl-8 pt-2 pb-5 text-[0.65rem] tracking-wide">

@@ -152,7 +152,7 @@ useEffect(() => {
           <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
 
             <div className= {`${responsive ? 'hidden' : ''} border-r border-gray-300 lg:col-span-1 lg:block`}>
-              <div className="mx-3 my-3">
+              <div className="mx-3 my-3 border rounded-lg">
                 <div className="relative text-gray-600">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-2 " onClick={() => { setSearch(null) }}>
                     <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

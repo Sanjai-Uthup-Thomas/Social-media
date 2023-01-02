@@ -4,11 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout, removeId } from '../../../features/auth/authSlice';
 import NewPost from '../../modals/NewPost';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserHead } from '../../../api/userApi';
+import SearchBot from './searchBot';
 function BottomNav() {
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false)
     const[isSearch,setIsSearch] = useState(false)
+    // const [isSearchOpen, setSearchOpen] = useState(false)
+
     const navigate=useNavigate()
     const view = () => {
         setIsOpen(true)
@@ -26,21 +28,8 @@ function BottomNav() {
     const logouthandel = () => {
         dispatch(logout())
     }
-    const {
-        auth:{user,userId}
-    }=useSelector(state => state)
-    const users =user
-
-    const [DP, setDP] = useState([])
-    const fetchData = () => {
-        getUserHead(users.id).then((response) => {
-            console.log("bottom");
-            setDP(response.data[0])
-        })
-    }
-    useEffect(() => {
-        fetchData()
-    }, [users])
+    const user = localStorage.getItem("user")
+    const users = JSON.parse(user)
     const Menus = [
         { name: "Home", icon: "home-outline", dis: "translate-x-0",clickHandler:home },
         { name: "Profile", icon: "search-outline", dis: "translate-x-16",clickHandler:search },
@@ -97,7 +86,7 @@ function BottomNav() {
                                         <img
                                             className="rounded-full border-black"
                                             // src={data.me.image}
-                                            src={`http://localhost:4000/DP/${DP.DP}`}
+                                            src={`http://localhost:4000/DP/${users?.profilePhoto}`}
 
                                             width="40"
                                         />
@@ -138,6 +127,18 @@ function BottomNav() {
                                                     </Link>
                                                 )}
                                             </Menu.Item>
+                                            <Menu.Item>
+                                                {({ active }) => (
+
+                                                    <Link
+                                                        to={`/notifications`}
+                                                        className="text-gray-700
+                                                                block px-4 py-2 text-sm"
+                                                    >
+                                                        Notifications
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
                                         </div>
                                         <div className="py-1">
 
@@ -160,6 +161,8 @@ function BottomNav() {
 
 
             <NewPost open={isOpen} onClose={() => { setIsOpen(false) }} />
+            <SearchBot open={isSearch} onClose={() => { setIsSearch(false) }} />
+
         </div>
 
     )

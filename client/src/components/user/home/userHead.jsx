@@ -11,7 +11,7 @@ import SavedBody from './userSaved';
 
 function UserHead({ userId }) {
     const {
-        auth: { controlState },
+        auth: { controlState,socket },
     } = useSelector(state => state);
     const dispatch = useDispatch()
     const navigate=useNavigate()
@@ -55,6 +55,16 @@ function UserHead({ userId }) {
             postId: null,
             type: "followed",
         }
+        let detail = {
+            receiverId:userId,
+            userName:Users.username,
+            type: "followed",
+            userDp: Users.profilePhoto,
+            read:false,
+            time:Date.now().toString()
+
+        }
+        socket?.emit("sendNotification", detail)
         userFollow(data).then((response) => {
             console.log("follow response", response.data);
 

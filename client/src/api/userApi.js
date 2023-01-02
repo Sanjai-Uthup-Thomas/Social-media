@@ -72,6 +72,16 @@ export const createNotification=(Data)=>axios.post(`/addnotification`,Data)
 
 export const getNotification=()=>axios.get(`/getnotifications`)
 
+export const updateNotification=(Data)=>axios.patch(`/updatenotifications/${Data}`)
+
+export const getNotificationsCount=()=>axios.get(`/getnotificationscount`)
+
+
+
+
+
+
+
 
 
 
