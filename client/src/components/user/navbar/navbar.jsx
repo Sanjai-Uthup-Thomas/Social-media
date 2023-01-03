@@ -24,7 +24,7 @@ function Navbar() {
     }
     const [notifications, setNotifications] = useState([])
     const {
-        auth: { userId, socket }
+        auth: { userId, socket,controlState }
     } = useSelector(state => state)
     const user = localStorage.getItem("user")
     const users = JSON.parse(user)
@@ -63,27 +63,32 @@ function Navbar() {
     }
     useEffect(() => {
         socket?.on("getNotification", (DATA) => {
-            console.log("getNotification", DATA);
-            setNotifications((prev) => [...prev,DATA])
-            let num=notifications.length
-            console.log("getNotification1", notifications);
-
-            setData(notifications.length) 
-            console.log("getNotification2", data);
-
+            setTimeout(() => {
+                fetchNOtifications()
+                console.log("getNotification", DATA);
+              }, 100);
+            // console.log("getNotification", DATA);
+            // setNotifications((prev) => [...prev,DATA])
+            // let num=notifications.length
+            // console.log("getNotification1", notifications);
+            // setData(notifications.length) 
+            // console.log("getNotification2", data);
         })
     }, [socket,notifications])
     console.log(notifications);
     // const [array, setArray] = useState([])
+    useEffect(() => {
+        fetchNOtifications()
+    }, [socket])
     const fetchNOtifications = async () => {
         console.log("fetchNOtifications");
         const { data } = await getNotificationsCount()
         console.log("data: " + data.length);
-        setData(data.length-1)
+        setData(data.length)
     }
     useEffect(() => {
         fetchNOtifications()
-    }, [socket])
+    }, [socket,controlState])
 
     return (
         <>
@@ -125,7 +130,7 @@ function Navbar() {
                         </div>
                         <div className="basis-1/2 hidden md:block">
                             <ul className="flex flex-row p-2 text-2xl space-x-6 justify-end">
-                                <li>
+                                <li >
                                     <Link
                                         to={'/'}>
                                         <a className="cursor-pointer">

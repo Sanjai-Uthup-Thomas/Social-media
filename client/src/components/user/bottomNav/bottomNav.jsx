@@ -5,12 +5,15 @@ import { logout, removeId } from '../../../features/auth/authSlice';
 import NewPost from '../../modals/NewPost';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBot from './searchBot';
+import { getNotificationsCount } from '../../../api/userApi';
 function BottomNav() {
+    const {
+        auth: { socket,controlState }
+    } = useSelector(state => state)
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false)
     const[isSearch,setIsSearch] = useState(false)
-    // const [isSearchOpen, setSearchOpen] = useState(false)
-
+    const [data, setData] = useState()
     const navigate=useNavigate()
     const view = () => {
         setIsOpen(true)
@@ -28,6 +31,23 @@ function BottomNav() {
     const logouthandel = () => {
         dispatch(logout())
     }
+    useEffect(() => {
+        socket?.on("getNotification", (DATA) => {
+             setTimeout(() => {
+                fetchNOtifications()
+                console.log("getNotification", DATA);
+              }, 100);
+        })
+    }, [socket,data])
+    const fetchNOtifications = async () => {
+        console.log("fetchNOtifications");
+        const { data } = await getNotificationsCount()
+        console.log("data: " + data.length);
+        setData(data.length)
+    }
+    useEffect(() => {
+        fetchNOtifications()
+    }, [socket,controlState])
     const user = localStorage.getItem("user")
     const users = JSON.parse(user)
     const Menus = [
@@ -71,6 +91,7 @@ function BottomNav() {
                                     >
                                         <ion-icon name={menu.icon} size="large"></ion-icon>
                                     </span>
+                                    
 
 
                                 </a>
@@ -89,8 +110,10 @@ function BottomNav() {
                                             src={`http://localhost:4000/DP/${users?.profilePhoto}`}
 
                                             width="40"
-                                        />
+                                            />
                                     </Menu.Button>
+                                            {data>0 && <div class="inline-flex absolute  right-1 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                                          }
                                 </div>
 
                                 <Transition
@@ -136,6 +159,8 @@ function BottomNav() {
                                                                 block px-4 py-2 text-sm"
                                                     >
                                                         Notifications
+                                                        {data>0 && <div class="inline-flex absolute  right-4 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                                       }
                                                     </Link>
                                                 )}
                                             </Menu.Item>

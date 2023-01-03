@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, redirect } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { PrivateRoutes } from "./PrivateRoutes";
 import { useDispatch, useSelector } from "react-redux";
 import HomePage from '../pages/user/HomePage';
@@ -15,7 +15,6 @@ import UserProfile from '../pages/user/UserProfile';
 import { checkToken, getUserNames } from '../api/userApi';
 import { useState } from 'react';
 import EditProfile from '../pages/user/EditProfile';
-import { object } from 'yup';
 import { logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
 import Notifications from '../pages/user/Notifications';
@@ -26,13 +25,10 @@ function NavRoutes() {
     const {
         auth: { token, user, admin_token, signup }
     } = useSelector(state => state)
-    // console.log("token from redux", token);
     const dispatch = useDispatch()
     useEffect(() => {
         socketio.emit("addUser", user.id)
         socketio.on("getUser", users => {
-          console.log(users);
-          console.log(socketio);
           dispatch(socketUpdate(socketio))
         })
       }, [user.id])
@@ -96,7 +92,7 @@ function NavRoutes() {
 
                     ))}
                     {/* {userName.map((data) => (                        */}
-                    {users && <Route path={`/editprofile`} element={<EditProfile userId={users.id} />} />
+                    {users && <Route path={`/editprofile`} element={<EditProfile userId={user.id} />} />
                     }
 
                     {/* // ))} */}

@@ -15,6 +15,8 @@ import { control } from '../../features/auth/authSlice';
 
 
 function EditProfile({ userId }) {
+    const user = localStorage.getItem("user")
+    const users = JSON.parse(user)
     const dispatch = useDispatch()
     const {
         auth: { controlState }
@@ -25,8 +27,9 @@ function EditProfile({ userId }) {
     const [error, setError] = useState('')
     const [userDetails, setUserDetails] = useState("");
     const fetchData = () => {
-        getUserProfileForEdit(userId).then((response) => {
+        getUserProfileForEdit(users.id).then((response) => {
             console.log("response.data", response.data);
+            console.log(users.id);
             setUserDetails(response.data);
             setLoading(false)
         })
@@ -66,7 +69,7 @@ function EditProfile({ userId }) {
     const submit = (data, e) => {
         e.preventDefault()
         console.log(data)
-        postEditProfile(userId, data).then((response) => {
+        postEditProfile(users.id, data).then((response) => {
             console.log(response.data.data);
             if (!response.data.status) {
                 setError("edited", response.data.message)

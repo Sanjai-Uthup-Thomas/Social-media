@@ -371,7 +371,9 @@ module.exports = {
                         Bio: data.bio
                     }
                 })
-                return ({ message: "success", status: true, data: { id: userId, username: data.userName } })
+                const result=await userSchema.findById(userId)
+                console.log(result,"created");
+                return ({ message: "success", status: true, data: { id: result._id, username: result.userName,profilePhoto:result.profilePhoto } })
             }
         } catch (error) {
             return error.message

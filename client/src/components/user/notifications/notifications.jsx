@@ -21,19 +21,24 @@ function NotificationsComp() {
     }, [user, controlState])
     useEffect(() => {
         socket?.on("getNotification", (data) => {
-            console.log("getNotification", data);
-            setData((prev) => [data, ...prev])
-            console.log(data);
+            setTimeout(() => {
+                fetchData()
+                // console.log("getNotification", DATA);
+              }, 100);
+            
+            // console.log("getNotification", data);
+            // setData((prev) => [data, ...prev])
+            // console.log(data);
           
         })
-          console.log("array", data);
-            function onlyUnique(value, index, self) {
-                return self.indexOf(value) === index;
-            }
-            var unique = data.filter(onlyUnique);
-            console.log("unique", unique);
-            setData(unique)
-        console.log(data.length);
+        //   console.log("array", data);
+        //     function onlyUnique(value, index, self) {
+        //         return self.indexOf(value) === index;
+        //     }
+        //     var unique = data.filter(onlyUnique);
+        //     console.log("unique", unique);
+        //     setData(unique)
+        // console.log(data.length);
     }, [socket]) 
     console.log(data, "data received");
     return (
