@@ -13,7 +13,7 @@ import { control } from '../../../features/auth/authSlice';
 
 
 function MappedPosts({ post, index }) {
-    console.log(post, "post");
+    // console.log(post, "post");
     const [data, setData] = useState([])
     const [control2, setControl2] = useState(true)
     const [showComments, setShowComments] = useState(false)

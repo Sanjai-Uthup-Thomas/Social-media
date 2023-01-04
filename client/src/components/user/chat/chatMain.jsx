@@ -144,7 +144,7 @@ useEffect(() => {
     setResponsive(true)
   }
   return (
-    <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100  ">
+    <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100 pb-14 md:pb-0">
       <div className="md:px-12 col-span-3 lg:col-span-2">
 
 

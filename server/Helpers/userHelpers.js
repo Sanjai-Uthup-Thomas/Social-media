@@ -18,6 +18,39 @@ let transporter = nodemailer.createTransport({
     },
 });
 module.exports = {
+    findUser: async (data) => {
+        try {
+            const User = await userSchema.findOne(
+                {
+                    $or: [
+                        
+                        { userName: data },
+                        { email: data },
+                        { phoneNumber: data }
+                    ]
+                }
+            )
+            if (User) {
+                return User
+            } else {
+                return { error: "No such user" }
+            }
+
+        } catch (error) {
+            return error.message
+        }
+    },
+    encryptedOTPintoDB:async(UID,otp)=>{
+try{
+    await userSchema.findByIdAndUpdate(UID,{
+        $set:{otp:otp}
+    })
+    return { msg: "sucessfully",_id:UID }
+
+}catch(error){
+    return error.message
+}
+    },
     checkBlock: async (userId) => {
         try {
             const userBlock = await userSchema.findById(userId)
@@ -151,7 +184,7 @@ module.exports = {
                         date: '$posts.date',
                         description: '$posts.description',
                         Likes: '$posts.Likes',
-                        Comments:'$comments',
+                        Comments: '$comments',
                         DP: '$user.profilePhoto',
                         Bookmarks: '$posts.Bookmarks',
                         Reports: '$posts.Reports'
@@ -174,7 +207,7 @@ module.exports = {
                         date: '$date',
                         description: '$description',
                         Likes: '$Likes',
-                        Comments:'$Comments',
+                        Comments: '$Comments',
                         DP: '$DP',
                         Bookmarks: '$Bookmarks',
                         Reports: '$Reports.UserId'
@@ -371,9 +404,9 @@ module.exports = {
                         Bio: data.bio
                     }
                 })
-                const result=await userSchema.findById(userId)
-                console.log(result,"created");
-                return ({ message: "success", status: true, data: { id: result._id, username: result.userName,profilePhoto:result.profilePhoto } })
+                const result = await userSchema.findById(userId)
+                console.log(result, "created");
+                return ({ message: "success", status: true, data: { id: result._id, username: result.userName, profilePhoto: result.profilePhoto } })
             }
         } catch (error) {
             return error.message
@@ -386,6 +419,19 @@ module.exports = {
                 $set: {
                     profilePhoto: photo
                 }
+            })
+            const result = await userSchema.findById(userId)
+            console.log(result, "created");
+            return ({ message: "success", status: true, data: { id: result._id, username: result.userName, profilePhoto: result.profilePhoto } })
+
+        } catch (error) {
+            return error.message
+        }
+    },
+    doChangePassword: async (UID, password) => {
+        try {
+            await userSchema.findByIdAndUpdate(UID, {
+                $set: { password: password }
             })
             return ({ message: "success", status: true })
 
@@ -497,7 +543,7 @@ module.exports = {
                     $match: { 'Followers': { $nin: [userId] } }
                 },
                 {
-                    $sample: { size: 20}
+                    $sample: { size: 20 }
                 }
             ])
             return result
@@ -517,21 +563,21 @@ module.exports = {
     },
     reportPost: async (user, data) => {
         try {
-            console.log("report", user, data);
+            // console.log("report", user, data);
             const postId = new ObjectId(data.postId)
-            console.log(postId);
+            // console.log(postId);
             const result = await postSchema.findByIdAndUpdate(postId, {
                 $push: { Reports: { Reason: data.reason, UserId: user } }
             },
                 function (err, docs) {
                     if (err) {
-                        console.log(err)
+                        // console.log(err)
                     }
                     else {
-                        console.log("Updated User : ", docs);
+                        // console.log("Updated User : ", docs);
                     }
                 })
-            console.log(result);
+            // console.log(result);
             return json({ msg: "sucessfully" })
 
         } catch (error) {
@@ -564,13 +610,13 @@ module.exports = {
                 return { _id, userName, profilePhoto, Followers, Following };
             }
         )
-        console.log("formattedFollowing", formattedFollowing);
+        // console.log("formattedFollowing", formattedFollowing);
         return formattedFollowing
     },
     addNotifications: async (data) => {
         try {
             const { receiverId, senderId, postId, type } = data
-            console.log("data", data);
+            // console.log("data", data);
             const res = await notificationSchema.findOne({
                 triggered_by: senderId,
                 notify: receiverId,
@@ -587,7 +633,7 @@ module.exports = {
                 })
                 notifications.save()
             } else {
-                console.log("already saved");
+                // console.log("already saved");
                 await notificationSchema.findByIdAndUpdate(ObjectId(res._id), {
                     notification: type
                 })
@@ -638,7 +684,7 @@ module.exports = {
     },
     doNotifications: async (NID) => {
         try {
-            console.log("NID", NID);
+            // console.log("NID", NID);
             const notification = await notificationSchema.findByIdAndUpdate(NID, {
                 $set: {
                     read: true,
@@ -652,19 +698,19 @@ module.exports = {
         }
 
     },
-    getUserNotificationsCount: async(UID) => {
+    getUserNotificationsCount: async (UID) => {
         try {
-            console.log("UID getNotificationsCount", UID);
+            // console.log("UID getNotificationsCount", UID);
             const notifications = await notificationSchema.aggregate([
                 {
                     $match: {
                         notify: ObjectId(UID),
-                        read:false
+                        read: false
                     }
                 }
-                
+
             ])
-            console.log(notifications, "notifications count")
+            // console.log(notifications, "notifications count")
             return notifications
 
         } catch (error) {

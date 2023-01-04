@@ -19,6 +19,7 @@ import { logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
 import Notifications from '../pages/user/Notifications';
 import Suggestions from '../pages/user/Suggestions';
+import ForgetPassword from '../components/user/login/forgetPassword';
 function NavRoutes() {
     const socketio = require('socket.io-client')("ws://localhost:3001")
 
@@ -82,7 +83,8 @@ function NavRoutes() {
                         <Route path="/" element={<Login />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/OTPverification" element={<SignupOTP />} />
-                        {/* <Route path="/home" element={<HomePage />} /> */}
+                        <Route path="/forgetpassword" element={<ForgetPassword/>} />
+                         {/* <Route path="/home" element={<HomePage />} /> */}
                     </>
                 )}
                 <Route element={<PrivateRoutes />}>

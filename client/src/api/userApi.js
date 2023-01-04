@@ -2,6 +2,10 @@ import axios from '../axios/userAxios'
 
 export const login=(Data)=>axios.post('/login', Data)
 
+export const otpLogin=(Data)=>axios.post('/otplogin', Data)
+
+export const forgetPassword=(Data)=>axios.post('/forgetpassword', Data)
+
 export const checkToken=()=>axios.post(`/tokenIsValid`)
 
 export const createPost= (Data)=>axios.post('/post',Data)
@@ -35,6 +39,8 @@ export const getUserProfileForEdit=(Data)=>axios.get(`/getUserProfileForEdit/${D
 export const postEditProfile=(userId,Data)=>axios.post(`/editProfile/${userId}`,Data)
 
 export const changeDp=(Data)=>axios.post(`/changeDP`,Data)
+
+export const setNewPassword=(Data)=>axios.patch(`/changepassword`,Data)
 
 //Bookmark post
 export const BookmarkPost=(Data)=>axios.patch('/bookmarkPost',Data)

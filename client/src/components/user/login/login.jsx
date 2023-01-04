@@ -11,7 +11,7 @@ function Login() {
     const [password, setPassword] = useState("")
     const [msg, setMsg] = useState("")
     const dispatch = useDispatch()
-    // const {
+    // const { 
     //     auth: { msg },
     //   } = useSelector(state => state);
     const handelLogin = (e) => {
@@ -72,8 +72,9 @@ function Login() {
                                         value={password} onChange={(e) => setPassword(e.target.value)} />
                                 </div>
                                 <div className="flex items-center justify-end">
-
-                                    {/* <a href="/" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a> */}
+                                    <Link to='/forgetpassword'>
+                                    <a className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
+                                    </Link>
                                 </div>
                                 <button type='submit' className="w-full text-white bg-blue-700 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-5">Sign in</button>
                             </form>

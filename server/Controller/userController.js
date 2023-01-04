@@ -3,6 +3,7 @@ const userSignUp = require('../models/userSignUp')
 const bcrypt = require('bcrypt')
 const userHelpers = require('../Helpers/userHelpers')
 const { response } = require('express')
+const e = require('express')
 
 module.exports = {
 
@@ -119,6 +120,49 @@ module.exports = {
             });
         } catch (err) {
             res.status(500).json({ msg: err.message });
+        }
+    },
+    doForgetPassword: async (req, res) => {
+        console.log(req.body);
+        const { data } = req.body;
+        try {
+            const user = await userHelpers.findUser(data)
+            console.log(user);
+            if (user.error) {
+                res.json(user)
+            } else {
+                const { _id, email } = user
+                console.log(email);
+                const otp = userHelpers.OTPgenerator()
+                userHelpers.sentOTPverificationmail(email, otp)
+                const saltPassword = await bcrypt.genSalt(10)
+                const secureOTP = await bcrypt.hash(otp, saltPassword)
+                const encryptedOTP = await userHelpers.encryptedOTPintoDB(_id, secureOTP)
+                res.json(encryptedOTP)
+
+            }
+
+        } catch (err) {
+            res.json({ error: err?.message })
+        }
+    },
+    doOtpLogin: async (req, res) => {
+        try {
+            console.log(req.body);
+            const { userId, otp, password } = req.body
+            const user = await userSignUp.findById(userId)
+            const isMatch = await bcrypt.compare(otp, user.otp);
+            if (!isMatch) return res.json({ msg: "Invalid OTP" });
+            const saltPassword = await bcrypt.genSalt(10)
+            const securePassword = await bcrypt.hash(password, saltPassword)
+            await userSignUp.findByIdAndUpdate(userId, {
+                $set: {
+                    password: securePassword
+                }
+            })
+            return res.json(true)
+        } catch (err) {
+            res.json({ error: err?.message })
         }
     },
     //check if token is valid
@@ -263,6 +307,21 @@ module.exports = {
                 // console.log(response);
                 res.json(response);
             })
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    changePassword: async (req, res) => {
+        try {
+            // console.log(req.params);
+            // console.log("req.body ",req.body);
+            const { password } = req.body
+            const saltPassword = await bcrypt.genSalt(10)
+            const securePassword = await bcrypt.hash(password, saltPassword)
+            await userHelpers.doChangePassword(req.user, securePassword)
+            // console.log(response);
+            res.json(response);
 
         } catch (err) {
             res.json({ error: err.message })
@@ -421,9 +480,9 @@ module.exports = {
             res.json({ error: err.message })
         }
     },
-    getNotificationsCount:async (req,res)=>{
-        try{
-            console.log("getNotificationsCount");
+    getNotificationsCount: async (req, res) => {
+        try {
+            // console.log("getNotificationsCount");
             const result = await userHelpers.getUserNotificationsCount(req.user)
             res.json(result)
         } catch (err) {

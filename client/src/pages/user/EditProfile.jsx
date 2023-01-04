@@ -12,9 +12,13 @@ import { json } from 'react-router-dom';
 import { addUser } from '../../features/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { control } from '../../features/auth/authSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ChangePassword from '../../components/user/home/changePassword';
 
 
 function EditProfile({ userId }) {
+    const [password,setPassword]=useState(false)
     const user = localStorage.getItem("user")
     const users = JSON.parse(user)
     const dispatch = useDispatch()
@@ -75,6 +79,16 @@ function EditProfile({ userId }) {
                 setError("edited", response.data.message)
             } else {
                 // localStorage.setItem('user',response.data.data)
+                toast.success('Profile edited', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                });
                 localStorage.setItem('user', JSON.stringify(response.data.data))
                 dispatch(addUser())
 
@@ -87,7 +101,7 @@ function EditProfile({ userId }) {
 
     return (
         <>{loading ?
-            <div className="flex flex-col justify-center items-center w-full h-full">
+            <div className="flex flex-col justify-center items-center w-full h-full mb-10 md:mb-0">
                 <ThreeCircles
                     type="Puff"
                     color="#00BFFF"
@@ -173,8 +187,9 @@ function EditProfile({ userId }) {
                                         type="text"
                                         className="border p-1 px-3 w-full"
                                         placeholder="Email"
-                                        defaultValue={userDetails.email}
+                                        value={userDetails.email}
                                         // onChange={(e) => setEmail(e.target.value)}
+                                        readonly
                                         {...register("email")} />
                                     {errors.email && (
                                         <span className="text-red-600">{errors.email.message}</span>
@@ -202,20 +217,45 @@ function EditProfile({ userId }) {
                             </div>
                             <div className="flex flex-row mt-5 items-center">
                                 <div className="w-1/3 flex flex-row place-content-end align-center pr-8" />
-                                <div className="w-2/3 pr-10">
+                                <div className="w-2/3 pr-10 p-4 flex">
                                     <button
                                         className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
                                         type="submit"
                                     >
                                         Submit
                                     </button>
+                                    
+                                    
+                                        <div className='pt-5 pr-10' >
+
+                                    <a
+                                        className="className='py-6 bg-black rounded-3xl p-1 px-auto mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-16 items-center"
+                                        onClick={()=>setPassword(!password)}
+                                    >Change Password</a>
+                                        </div>
                                 </div>
                             </div>
                         </form>
+                        { password && 
+                         <ChangePassword />
+                        }
+
                     </>
                 </div>
                 <BottomNav /></>}
             <ChangeDP open={isOpen} onClose={() => { setIsOpen(false) }} />
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
         </>
     )
 }

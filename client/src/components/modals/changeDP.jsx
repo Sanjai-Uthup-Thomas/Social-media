@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { changeDp } from '../../api/userApi';
 import { control } from '../../features/auth/authSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ChangeDP=({open,onClose})=>{
+const ChangeDP = ({ open, onClose }) => {
+    const [error, setError] = useState(false)
     const [form, setForm] = useState({
         DP: ""
     })
@@ -16,40 +19,75 @@ const ChangeDP=({open,onClose})=>{
     // }
     const fileUpload = (e) => {
         const DP = e.target.files[0]
+        if (!DP?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
+            console.log('Please select valid image JPG,JPEG,PNG');
+            form.DP=false
+            setError(true)
+            toast.warn('Please select valid image', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                });
+            // onClose()
+        }else{
+            setError(false) 
+        }
         setForm({
             ...form,
             DP: DP
         })
     }
     const dispatch = useDispatch()
-    const submit = async(e) => {
+    const submit = async (e) => {
         e.preventDefault()
         const Data = new FormData()
         for (let key in form) {
-            console.log(`key, form[key] ${key, form[key]}`);
+            // console.log(`key, form[key] ${key, form[key]}`);
             Data.append(key, form[key])
         }
-        console.log(`data ${Data}`);
-         changeDp(Data).then((response)=>{
-            onClose()
-            dispatch(control())
-         })
+        console.log(form);
+        const { DP } = form
+        console.log(DP); 
+        if (DP && !error) {
+            console.log(`data ${Data}`);
+            changeDp(Data).then((response) => {
+                toast.success('Profile Photo changed', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                });
+                onClose()
+                localStorage.setItem('user', JSON.stringify(response.data.data))
+                dispatch(control())
+            })
+        }
+
     }
-    if(!open){return null}else{
-    return(
-        <div className='fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center z-50'>
-            <div className='w-[400px] flex flex-col'>
-                <button className='text-white text-xl place-self-end' 
-                onClick={()=> onClose()}>X</button>
-                <div className='bg-white p-2 h-auto text-black rounded text-center'> <div>
+    if (!open) { return null } else {
+        return (
+            <div className='fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center z-50'>
+                <div className='w-[400px] flex flex-col'>
+                    <button className='text-white text-xl place-self-end'
+                        onClick={() => onClose()}>X</button>
+                    <div className='bg-white p-2 h-auto text-black rounded text-center'> <div>
                         <p className='text-black'>Change Profile Photo</p>
                         <div >
                             <form onSubmit={submit} encType="multipart/form-data">
-                                <div >{form.DP?
-                                <img className='' src={URL.createObjectURL(form.DP)} />
-                                : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
-                                   
-                                    </div>
+                                <div >{form.DP ?
+                                    <img className='' src={URL.createObjectURL(form.DP)} />
+                                    : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
+
+                                </div>
                                 <div>
                                     {/* <input type='file' name='DP' onChange={fileUpload} /> */}
                                     <label for="file-upload" class="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">
@@ -68,9 +106,21 @@ const ChangeDP=({open,onClose})=>{
                             </form>
                         </div>
                     </div></div>
-             </div>
-        </div>
-    )
+                </div>
+                <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
+            </div>
+        )
     }
 }
 export default ChangeDP

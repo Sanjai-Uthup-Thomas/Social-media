@@ -10,6 +10,10 @@ const DPupload = require('../middleware/DPMulter')
 router.post('/signup', controller.doSignup)
 
 router.post('/login', controller.doLogin)
+router.post('/forgetpassword', controller.doForgetPassword)
+router.post('/otplogin', controller.doOtpLogin)
+
+
 router.post('/otpverify', controller.doOtpVerify)
 router.post('/tokenIsValid', auth, controller.doTokenIsValid)
 
@@ -28,6 +32,9 @@ router.get('/userPosts/:id', auth, controller.doUserPosts)
 router.get('/getUserProfileForEdit/:id', auth, controller.getUserProfileForEdit)
 router.post('/editProfile/:id', auth, controller.doEditProfile)
 router.post('/changeDP', auth, DPupload.single("DP"), controller.doChangeDP)
+router.patch('/changepassword', auth, controller.changePassword) 
+
+
 
 router.patch('/bookmarkPost', auth, controller.doSavePost)
 router.patch('/unbookmarkPost', auth, controller.doUnsavePost)

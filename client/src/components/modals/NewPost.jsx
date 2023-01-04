@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch, } from 'react-redux';
 import { createPost } from '../../api/userApi';
 import { control } from '../../features/auth/authSlice';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NewPost = ({ open, onClose }) => {
-   
-
     const dispatch = useDispatch()
-
+    const [error, setError] = useState(false)
     const [form, setForm] = useState({
         description: "",
         postImage: ""
@@ -22,6 +21,24 @@ const NewPost = ({ open, onClose }) => {
     }
     const fileUpload = (e) => {
         const img = e.target.files[0]
+        if (!img?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
+            console.log('Please select valid image JPG,JPEG,PNG');
+            setError(true)
+            form.Posts=false
+            toast.warn('Please select valid image', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                });
+            // onClose()
+        }else{
+            setError(false) 
+        }
         setForm({
             ...form,
             Posts: img
@@ -29,16 +46,25 @@ const NewPost = ({ open, onClose }) => {
     }
     const submit = async (e) => {
         e.preventDefault()
+        if (error) {
+            return false
+        }
         const Data = new FormData()
         for (let key in form) {
             Data.append(key, form[key])
         }
+        const { description, postImage } = form
+        console.log(description);
+        console.log(postImage);
+        if (description && postImage && !error) {
+            console.log(form);
+            createPost(Data).then((response) => {
+                onClose()
+                dispatch(control())
 
-        createPost(Data).then((response) => {
-            onClose()
-            dispatch(control())
+            })
+        }
 
-        })
     }
     if (!open) { return null } else {
         return (
@@ -50,11 +76,11 @@ const NewPost = ({ open, onClose }) => {
                         <p className='text-black'>Create New Post</p>
                         <div >
                             <form onSubmit={submit} encType="multipart/form-data">
-                            <div >{form.Posts?
-                                <img className='' src={URL.createObjectURL(form.Posts)} />
-                                : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
-                                   
-                                    </div>
+                                <div >{form.Posts ?
+                                    <img className='' src={URL.createObjectURL(form.Posts)} />
+                                    : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
+
+                                </div>
                                 {/* <div ><img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' /></div> */}
                                 <div>
                                     <textarea
@@ -83,8 +109,20 @@ const NewPost = ({ open, onClose }) => {
                         </div>
                     </div></div>
                 </div>
+                <ToastContainer 
+                                    position="bottom-right"
+                                    autoClose={2000}
+                                    hideProgressBar={false}
+                                    newestOnTop={false}
+                                    closeOnClick
+                                    rtl={false}
+                                    pauseOnFocusLoss
+                                    draggable
+                                    pauseOnHover
+                                    theme="dark" />
             </div>
         )
     }
 }
 export default NewPost
+                                    
