@@ -24,6 +24,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
     "react-spinner-loader": "^1.1.1",
+    "react-tag-autocomplete": "^6.3.0",
     "react-toastify": "^9.1.1",
     "redux": "^4.2.0",
     "socket.io-client": "^4.5.4",

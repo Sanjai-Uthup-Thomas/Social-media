@@ -20,19 +20,21 @@ function ChatMain() {
 
   const scrollRef = useRef()
   const {
-    auth: { user, userId,socket }
+    auth: {  userId,socket }
   } = useSelector(state => state)
-  console.log(user.id)
-  console.log(socket, "socket")
+  const userParse = localStorage.getItem("user")
+    const  user= JSON.parse(userParse)
+  // console.log(user.id)
+  // console.log(socket, "socket")
   const searchUser = async (e) => {
     const searchValue = e.target.value;
     if (searchValue) {
       const { data } = await searchChat(searchValue)
       if (data) {
-        console.log(data);
+        // console.log(data);
         setSearch(data)
         setChat()
-        console.log(chat);
+        // console.log(chat);
       }
 
     } else {
@@ -46,18 +48,21 @@ function ChatMain() {
     }
     // socket.current = io("ws://localhost:3001")
     socket?.on("getMessage", data => {
+      console.log(socket); 
+      console.log(data,"getting");
       setFromSocket({
         sender: data.senderId,
         content: data.text,
         time: Date.now(),
         userDP: data.userDP
       })
+      console.log("get message from socket");
     }) 
   }, [])
   useEffect(() => {
     fromSocket && currentChat?.users.includes(fromSocket.sender) &&
       setMessages((prev) => [...prev, fromSocket])
-    console.log("currentChat", currentChat);
+    // console.log("currentChat", currentChat);
   }, [fromSocket, currentChat])
 useEffect(() => {
     const getChats = async () => {
@@ -66,7 +71,7 @@ useEffect(() => {
       } else {
         try {
           const result = await getAllChats()
-          console.log(result.data);
+          // console.log(result.data);
           setChat(result.data);
         } catch (e) {
           console.log(e);
@@ -81,7 +86,7 @@ useEffect(() => {
       try {
 
         const res = await getAllMessages(currentChat?._id)
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.name === "CastError") {
 
         } else {
@@ -95,9 +100,9 @@ useEffect(() => {
     }
     getMessages()
   }, [currentChat])
-  console.log(chat);
-  console.log(currentChat);
-  console.log(Messages);
+  // console.log(chat);
+  // console.log(currentChat);
+  // console.log(Messages);
   const handelSubmit = async (e) => {
     e.preventDefault();
     if (newMessage) {
@@ -126,6 +131,8 @@ useEffect(() => {
         text: newMessage,
         userDP: user.profilePhoto
       })
+      console.log("sending message");
+      console.log(socket); 
     }
 
   }
@@ -144,7 +151,7 @@ useEffect(() => {
     setResponsive(true)
   }
   return (
-    <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100 pb-14 md:pb-0">
+    <main className=" grid grid-cols-2 container md:w-10/12 mx-auto pt-8 bg-zinc-100">
       <div className="md:px-12 col-span-3 lg:col-span-2">
 
 
@@ -192,7 +199,7 @@ useEffect(() => {
               <div class={`${responsive ? '' : 'hidden'} lg:col-span-2 lg:block`}>
                 <div class="w-full">
                   <div class="relative flex items-center p-3 border-b border-gray-300">
-                    <button class="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 md:hidden"
+                    <button class="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 lg:hidden"
                       onClick={() => setResponsive(false)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title"
                         aria-describedby="desc" role="img" xlink="http://www.w3.org/1999/xlink">
@@ -213,7 +220,7 @@ useEffect(() => {
                     <div class="space-y-2">
                       {Messages?.map((m) => (
                         <div ref={scrollRef}>
-                          <ChatRight message={m} own={m.UID === user.id} />
+                          <ChatRight message={m} own={m?.UID === user.id} />
                         </div>
                       ))}
                     </div>

@@ -24,15 +24,20 @@ function NavRoutes() {
     const socketio = require('socket.io-client')("ws://localhost:3001")
 
     const {
-        auth: { token, user, admin_token, signup }
+        auth: { token, admin_token, signup }
     } = useSelector(state => state)
+    const userParse = localStorage.getItem("user")
+    const  user= JSON.parse(userParse)
     const dispatch = useDispatch()
     useEffect(() => {
-        socketio.emit("addUser", user.id)
+        socketio.emit("addUser", user?.id)
+        console.log(user?.id);
         socketio.on("getUser", users => {
-          dispatch(socketUpdate(socketio))
+            // console.log(users); 
+            // console.log(socketio.id);
+          dispatch(socketUpdate(socketio)) 
         })
-      }, [user.id])
+      }, [user?.id])
 
     const [userName, setUserName] = useState([])
     if (user) {
@@ -44,14 +49,14 @@ function NavRoutes() {
     }
     const userToken = localStorage.getItem('token')
     useEffect(() => {
-        checkToken().then((response) => {
-        }).catch((error) => {
-            // console.log(error);
-            dispatch(logout())
-        })
+        // checkToken().then((response) => {
+        // }).catch((error) => {
+        //     // console.log(error);
+        //     // dispatch(logout())
+        // })
         fetchData()
 
-    }, [token, userToken, user])
+    }, [user?.id])
 
     const fetchData = async () => {
         // console.log("fetchData", user);

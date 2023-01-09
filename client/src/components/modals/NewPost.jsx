@@ -1,19 +1,47 @@
 import React, { useState } from 'react';
 import { useDispatch, } from 'react-redux';
-import { createPost } from '../../api/userApi';
+import { createPost, getTag } from '../../api/userApi';
 import { control } from '../../features/auth/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const NewPost = ({ open, onClose }) => {
     const dispatch = useDispatch()
+    const [tags, setTags] = useState([])
+    const [tagsInText, setTagsInText] = useState([])
+
+    
     const [error, setError] = useState(false)
     const [form, setForm] = useState({
+        Posts: null,
         description: "",
         postImage: ""
     })
-    const handleChange = e => {
+    const handleChange = (e) => {
         const { name, value } = e.target
+        console.log(e.target.value);
+        setTagsInText(value)
+        function test(words) {
+            var n = words.split(" ");
+            return n[n.length - 1];
+        }
+        const tag = test(e.target.value)
+        console.log(tag.startsWith('#'));
+        if (tag.startsWith('#')) {
+            console.log(tag);
+            var data = tag.substring(1);
+            getTag(data).then((response) => {
+                let { data } = response
+                console.log(data);
+                setTags(data)
+                // dispatch(control()) 
+
+            })
+        } else {
+            console.log("no entry");
+            setTags([])
+
+        }
         setForm({
             ...form,
             [name]: value
@@ -24,7 +52,7 @@ const NewPost = ({ open, onClose }) => {
         if (!img?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
             console.log('Please select valid image JPG,JPEG,PNG');
             setError(true)
-            form.Posts=false
+            form.Posts = false
             toast.warn('Please select valid image', {
                 position: "bottom-right",
                 autoClose: 5000,
@@ -34,10 +62,11 @@ const NewPost = ({ open, onClose }) => {
                 draggable: true,
                 progress: undefined,
                 theme: "dark",
-                });
+            });
             // onClose()
-        }else{
-            setError(false) 
+        } else {
+            console.log(img);
+            setError(false)
         }
         setForm({
             ...form,
@@ -53,10 +82,11 @@ const NewPost = ({ open, onClose }) => {
         for (let key in form) {
             Data.append(key, form[key])
         }
-        const { description, postImage } = form
+        console.log(form.Posts);
+        const { description, Posts } = form
         console.log(description);
-        console.log(postImage);
-        if (description && postImage && !error) {
+        console.log(Posts);
+        if (description && Posts && !error) {
             console.log(form);
             createPost(Data).then((response) => {
                 onClose()
@@ -92,6 +122,11 @@ const NewPost = ({ open, onClose }) => {
 
 
                                     />
+                                    {tags.length > 0 && tags.map((res) => {
+                                        return (
+                                            <div>{res?.HashTag}</div>
+                                        )
+                                    })}
                                     <label for="file-upload" class="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">
                                         Select Photo
                                     </label>
@@ -109,20 +144,19 @@ const NewPost = ({ open, onClose }) => {
                         </div>
                     </div></div>
                 </div>
-                <ToastContainer 
-                                    position="bottom-right"
-                                    autoClose={2000}
-                                    hideProgressBar={false}
-                                    newestOnTop={false}
-                                    closeOnClick
-                                    rtl={false}
-                                    pauseOnFocusLoss
-                                    draggable
-                                    pauseOnHover
-                                    theme="dark" />
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark" />
             </div>
         )
     }
 }
 export default NewPost
-                                    

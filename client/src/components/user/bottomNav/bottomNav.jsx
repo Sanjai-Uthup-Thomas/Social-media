@@ -40,9 +40,9 @@ function BottomNav() {
         })
     }, [socket,data])
     const fetchNOtifications = async () => {
-        console.log("fetchNOtifications");
+        // console.log("fetchNOtifications");
         const { data } = await getNotificationsCount()
-        console.log("data: " + data.length);
+        // console.log("data: " + data.length);
         setData(data.length)
     }
     useEffect(() => {
@@ -59,7 +59,7 @@ function BottomNav() {
     ];
     // const [active, setActive] = useState(0);
     return (
-        <div className='fixed bottom-2 w-full max-h-[3rem] md:hidden block '>
+        <div className='sticky bottom-2 w-full max-h-[3rem] lg:hidden block '>
 
             <div className="flex justify-center items-center">
                 <div className="bg-white max-h-[4rem] px-6 rounded-t-xl">

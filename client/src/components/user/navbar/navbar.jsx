@@ -92,10 +92,10 @@ function Navbar() {
 
     return (
         <>
-            <><nav className="sticky top-0 min-h-full bg-white md:w-10/12 mx-auto z-40 justify-between ">
+            <><nav className="sticky top-0 min-h-full bg-white lg:w-10/12 mx-auto z-40 justify-between ">
                 <div className="container max-w-full">
                     <div className="flex flex-row py-1 items-center h-14">
-                        <div className="md:basis-1/2 pl-3 lg:p-0 mx-auto">
+                        <div className="lg:basis-1/2 pl-3 lg:p-0 mx-auto">
                             <Link to="/">
                                 <img
                                     className=""
@@ -104,7 +104,7 @@ function Navbar() {
                                 />
                             </Link>
                         </div>
-                        <div className="basis-1/2 hidden md:block">
+                        <div className="basis-1/2 hidden lg:block">
                             <div className="relative">
                                 <GoSearch className="absolute left-3 top-3 text-gray-300" />
 
@@ -128,7 +128,7 @@ function Navbar() {
                             </div>
 
                         </div>
-                        <div className="basis-1/2 hidden md:block">
+                        <div className="basis-1/2 hidden lg:block">
                             <ul className="flex flex-row p-2 text-2xl space-x-6 justify-end">
                                 <li >
                                     <Link

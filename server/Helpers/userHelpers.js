@@ -5,6 +5,7 @@ dotenv.config({ path: './var/.env' })
 const userSchema = require('../models/userSignUp')
 const postSchema = require('../models/posts');
 const commentSchema = require('../models/comments');
+const tagsSchema = require('../models/tags');
 const notificationSchema = require('../models/notifications')
 const { json } = require('express');
 let ObjectId = mongoose.Types.ObjectId
@@ -23,7 +24,7 @@ module.exports = {
             const User = await userSchema.findOne(
                 {
                     $or: [
-                        
+
                         { userName: data },
                         { email: data },
                         { phoneNumber: data }
@@ -40,16 +41,16 @@ module.exports = {
             return error.message
         }
     },
-    encryptedOTPintoDB:async(UID,otp)=>{
-try{
-    await userSchema.findByIdAndUpdate(UID,{
-        $set:{otp:otp}
-    })
-    return { msg: "sucessfully",_id:UID }
+    encryptedOTPintoDB: async (UID, otp) => {
+        try {
+            await userSchema.findByIdAndUpdate(UID, {
+                $set: { otp: otp }
+            })
+            return { msg: "sucessfully", _id: UID }
 
-}catch(error){
-    return error.message
-}
+        } catch (error) {
+            return error.message
+        }
     },
     checkBlock: async (userId) => {
         try {
@@ -109,10 +110,18 @@ try{
     Posts: (Data, UserId) => {
         try {
             const { description, postImage } = Data
+            const tags = description.match(/#\w+/g)
+            //tags=[#1,#2]
+            const Tags = tags.map(async (tag) => {
+                await tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag }, { upsert: true })
+            })
+
+            console.log("id: " + Tags);
             const post = new postSchema({
                 userId: UserId,
                 description: description,
                 postImage: postImage,
+                tags: tags
 
             })
             post.save()
@@ -218,6 +227,45 @@ try{
                 }
             ])
             console.log("posts", posts);
+            return posts
+        } catch (error) {
+            return error.message
+        }
+    },
+    latestPosts: async () => {
+        try {
+            const posts = await postSchema.aggregate([
+                {
+                    $lookup: {
+
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: "user"
+
+                    }
+                },
+                {
+                    $unwind:'$user'
+                },
+                {
+                    $project: {
+                        userId: '$userId',
+                        postId: '$postId',
+                        postImage: '$postImage',
+                        userName: '$user.userName',
+                        date: '$date',
+                        description: '$description',
+                        DP: '$user.profilePhoto',
+                    }
+                },
+                {
+                    $sort: { 'date': -1 }
+                }, {
+                    $limit: 1
+                }
+            ])
+            console.log("latestPost",posts);
             return posts
         } catch (error) {
             return error.message
@@ -716,5 +764,54 @@ try{
         } catch (error) {
             return error.message
         }
+    },
+    getAllTags: async (data) => {
+        try {
+            // console.log("UID getNotificationsCount", UID);
+            const result = await tagsSchema.aggregate([
+                {
+                    $match: {
+                        tags: { $regex: new RegExp(data, 'i') }
+                    }
+                }
+                , {
+                    $project: {
+                        HashTag: '$tags',
+                    }
+                },
+                { $limit: 5 }
+
+            ])
+            console.log(result, "tags")
+            return result
+
+        } catch (error) {
+            return error.message
+        }
+    },
+    TopTenTags:async()=>{
+        try {
+            // console.log("UID getNotificationsCount", UID);
+            const result = await postSchema.aggregate([
+                {
+                    $unwind:'$tags'
+                },
+                {
+                    $group : {
+                       _id : '$tags',
+                       count: { $sum: 1 }
+                    }
+                  },{
+                    $sort:{'count':-1}
+                  }
+
+            ])
+            console.log(result, "topten tags")
+            return result
+
+        } catch (error) {
+            return error.message
+        }
     }
+
 }

@@ -32,6 +32,7 @@ function ForgetPassword() {
                         className="pb-2"
                         src="https://img.icons8.com/ios/2x/brave-web-browser.png"
                         width="70"
+                        alt='logo'
 
                     />
 
@@ -41,7 +42,7 @@ function ForgetPassword() {
                                 Enter Email, Phone Number or Username <br/>to reset password
                             </p>
 
-
+ 
                             <div>
 
                                 <input type="text" id="forget" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com"
@@ -50,7 +51,7 @@ function ForgetPassword() {
                             <div className="flex items-center justify-end">
 
                             <Link to='/'>
-                            <a className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"> Back to Login</a>
+                            <p className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"> Back to Login</p>
 
                                </Link>
                             </div>

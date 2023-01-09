@@ -198,6 +198,12 @@ module.exports = {
             res.json(response)
         })
     },
+    getLatestPost: (req, res) => {
+        console.log("ghjk");
+        userHelpers.latestPosts().then((response) => {
+            res.json(response)
+        })
+    },
     doLikePost: (req, res) => {
         // console.log(req.body.id);
         // console.log(req.user);
@@ -485,6 +491,32 @@ module.exports = {
             // console.log("getNotificationsCount");
             const result = await userHelpers.getUserNotificationsCount(req.user)
             res.json(result)
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getTags: async (req, res) => {
+        try {
+            console.log(req.query.data);
+            var str = req.query.data;
+            var result = '#' + str;
+            console.log(result)
+
+            const response = await userHelpers.getAllTags(result)
+            res.json(response)
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    getTopTenTags:(req, res) => {
+        try {
+            userHelpers.TopTenTags().then((response)=>{
+            res.json(response)
+            }).catch((err)=>{
+                console.log(err);
+            })
+
         } catch (err) {
             res.json({ error: err.message })
         }

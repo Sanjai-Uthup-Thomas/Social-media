@@ -4,7 +4,7 @@ import authReducer from '../features/auth/authSlice'
 
 export default configureStore({
     reducer: {
-        auth: authReducer,
+        auth: authReducer, 
         // sidebar:sidebarReducer      
     },
     middleware: getDefaultMiddleware =>

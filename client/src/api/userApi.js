@@ -12,6 +12,8 @@ export const createPost= (Data)=>axios.post('/post',Data)
 
 export const getPosts=()=>axios.get('/post/')
 
+export const getLatestPost=()=>axios.get('/latestpost')
+
 export const likePost=(Data)=>axios.patch('/likePost',Data)
 
 export const UnlikePost=(Data)=>axios.patch('/unlikePost',Data)
@@ -81,6 +83,13 @@ export const getNotification=()=>axios.get(`/getnotifications`)
 export const updateNotification=(Data)=>axios.patch(`/updatenotifications/${Data}`)
 
 export const getNotificationsCount=()=>axios.get(`/getnotificationscount`)
+
+export const getTag=(Data)=>axios.get(`/gettag/tag?data=${Data}`)
+
+export const getTopTenTags=()=>axios.get(`/toptentags`)
+
+
+
 
 
 

@@ -9,6 +9,9 @@ const Posts = new mongoose.Schema({
         type: String,
         required: true
     },
+     tags: {
+        type:Array
+    },
     postImage: {
         type: String,
         required: true

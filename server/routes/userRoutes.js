@@ -20,6 +20,7 @@ router.post('/tokenIsValid', auth, controller.doTokenIsValid)
 
 router.post('/post', auth, upload.single("Posts"), controller.doPost)
 router.get('/post', auth, controller.getPost)
+router.get('/latestpost',auth, controller.getLatestPost)
 router.patch('/likePost', auth, controller.doLikePost)
 router.patch('/unlikePost', auth, controller.doUnLikePost)
 
@@ -61,6 +62,13 @@ router.get('/getnotifications',auth, controller.getNotifications)
 router.patch('/updatenotifications/:id',auth, controller.EditNotifications)
 
 router.get('/getnotificationscount',auth, controller.getNotificationsCount)
+
+router.get(`/gettag/:data`,auth, controller.getTags)
+
+router.get(`/toptentags`,auth,controller.getTopTenTags)
+
+
+
 
 
 
