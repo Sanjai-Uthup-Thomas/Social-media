@@ -15,6 +15,7 @@ import { control } from '../../features/auth/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChangePassword from '../../components/user/home/changePassword';
+import Settings from './settings';
 
 
 function EditProfile({ userId }) {
@@ -29,6 +30,7 @@ function EditProfile({ userId }) {
     const [loading, setLoading] = useState(true)
     // const [control,setControl]=useState(false)
     const [error, setError] = useState('')
+    const [settings,setSettings]=useState(false)
     const [userDetails, setUserDetails] = useState("");
     const fetchData = () => {
         getUserProfileForEdit(users.id).then((response) => {
@@ -226,13 +228,17 @@ function EditProfile({ userId }) {
                                     </button>
                                     
                                     
-                                        <div className='pt-5 pr-10' >
+                                        <div className='pt-5 px-5' >
 
                                     <a
                                         className="className='py-6 bg-black rounded-3xl p-1 px-auto mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-16 items-center"
                                         onClick={()=>setPassword(!password)}
                                     >Change Password</a>
                                         </div>
+                                        <a className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center cursor-pointer"
+                                           onClick={()=>setSettings(true)}
+                                        >Deactivate
+                                        </a>
                                 </div>
                             </div>
                         </form>
@@ -244,6 +250,7 @@ function EditProfile({ userId }) {
                 </div>
                 <BottomNav /></>}
             <ChangeDP open={isOpen} onClose={() => { setIsOpen(false) }} />
+            {settings && <Settings open={settings} onClose={() => { setSettings(false) }}  userId={userId}/> }
             <ToastContainer
                 position="top-center"
                 autoClose={5000}

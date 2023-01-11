@@ -15,21 +15,22 @@ import UserProfile from '../pages/user/UserProfile';
 import { checkToken, getUserNames } from '../api/userApi';
 import { useState } from 'react';
 import EditProfile from '../pages/user/EditProfile';
-import { logout, socketUpdate } from '../features/auth/authSlice';
+import { control, logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
 import Notifications from '../pages/user/Notifications';
 import Suggestions from '../pages/user/Suggestions';
 import ForgetPassword from '../components/user/login/forgetPassword';
 function NavRoutes() {
-    const socketio = require('socket.io-client')("ws://localhost:3001")
+    
 
     const {
-        auth: { token, admin_token, signup }
+        auth: { token, admin_token, signup,controlState }
     } = useSelector(state => state)
     const userParse = localStorage.getItem("user")
     const  user= JSON.parse(userParse)
     const dispatch = useDispatch()
     useEffect(() => {
+        const socketio = require('socket.io-client')("ws://localhost:3001")
         socketio.emit("addUser", user?.id)
         console.log(user?.id);
         socketio.on("getUser", users => {
@@ -37,7 +38,11 @@ function NavRoutes() {
             // console.log(socketio.id);
           dispatch(socketUpdate(socketio)) 
         })
-      }, [user?.id])
+      }, [user?.id,controlState])
+    //   useEffect(()=>{
+    //     dispatch(control())
+
+    //   },[])
 
     const [userName, setUserName] = useState([])
     if (user) {
@@ -104,7 +109,7 @@ function NavRoutes() {
 
                     {/* // ))} */}
 
-                    <Route path="/chat" element={<Chat socket={socketio} />} />
+                    <Route path="/chat" element={<Chat />} />
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/suggestions" element={<Suggestions />} />
 

@@ -24,7 +24,7 @@ function UserHead({ userId }) {
     const [post, setPost] = useState(true)
     const fetchData = async () => {
         await getUserHead(userId).then((response) => {
-            console.log("userhead");
+            console.log("userhead",response.data[0]);
             setName(response.data[0])
         })
         await getUserPosts(userId).then((posts) => {
@@ -90,6 +90,14 @@ const handelMessage=()=>{
     return (
         <>
             <main className="bg-zinc-100">
+                {name.reportStatus?
+                <div className="md: container h-screen py-10 ">
+                    <div className="bg-green p-3 rounded flex items-start justify-center">
+                        <h1 className='text-4xl'>Account Deactivated</h1>
+                        </div>
+                        </div>:
+                <>
+                
                 <div className="md:grid grid-cols-3 container py-10 ">
                     <div className="bg-green p-3 rounded flex items-start justify-center">
                         <img
@@ -146,10 +154,12 @@ const handelMessage=()=>{
                                     </svg>
                                 </div>
                             </button> */}
-                            <button className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
+                            {Users.id !== userId ?<a className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
                                          onClick={handelMessage}   
                                         >Message
-                                        </button>
+                                        </a>:""}
+                            
+                                        
 
                             <a
                                 className="ml-3 cursor-pointer"
@@ -279,8 +289,12 @@ const handelMessage=()=>{
                         </div>
                 }
                 </div>
+                </>}
+                
 
 {open && <Friends open={open} onClose={() => { setOpen(false) }} followers={followers} userId={userId}/> }
+
+
             </main>
         </>
     )

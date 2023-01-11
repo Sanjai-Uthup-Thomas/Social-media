@@ -111,7 +111,7 @@ function Navbar() {
                                 <input
                                     id="search"
                                     className="p-2 bg-gray-100 rounded-lg w-80 pl-10 align-middle focus:outline-0 placeholder:font-light"
-                                    placeholder="Search"
+                                    placeholder="Search Users"
                                     type="text"
                                     onChange={searchUser}
 

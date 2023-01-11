@@ -67,6 +67,11 @@ router.get(`/gettag/:data`,auth, controller.getTags)
 
 router.get(`/toptentags`,auth,controller.getTopTenTags)
 
+router.patch('/deactiveAccount/:id',auth, controller.deactiveAccount)
+
+
+
+
 
 
 

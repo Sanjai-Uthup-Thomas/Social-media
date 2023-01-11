@@ -25,8 +25,8 @@ const getAll = () => {
 io.on("connection", (socket) => {
     console.log(`a user connected ${socket.id}`);
     // console.log(socket);
-    // const users = getAll()
-    // console.log(users);
+    const users = getAll()
+    console.log(users);
     socket.on("addUser", userId => {
         console.log(userId);
         if (userId !== null) {
@@ -48,6 +48,9 @@ io.on("connection", (socket) => {
             text,
             userDP
         })
+        console.log("user?.socketId",user?.socketId);
+        const use = getAll()
+        console.log(use);
     })
     // receiverId: post.userId,
     //         userName: userName,
@@ -66,6 +69,8 @@ io.on("connection", (socket) => {
             read,
             time
         })
+        console.log("user?.socketId",receiver?.socketId);
+
     })
     socket.on(`disconnect ${socket.id}`, () => {
         console.log("a user disconnected");

@@ -88,6 +88,11 @@ export const getTag=(Data)=>axios.get(`/gettag/tag?data=${Data}`)
 
 export const getTopTenTags=()=>axios.get(`/toptentags`)
 
+export const deactiveAccount=(Data)=>axios.patch(`/deactiveAccount/${Data}`)
+
+
+
+
 
 
 

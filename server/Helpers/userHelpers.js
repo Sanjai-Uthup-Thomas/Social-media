@@ -138,7 +138,8 @@ module.exports = {
             const posts = await userSchema.aggregate([
                 {
                     $match: {
-                        _id: ObjectId(userId)
+                        _id: ObjectId(userId),
+
                     }
                 },
                 {
@@ -189,6 +190,7 @@ module.exports = {
                         postId: '$posts._id',
                         postImage: '$posts.postImage',
                         Status: '$posts.Status',
+                        reportStatus: '$user.reportStatus',
                         userName: '$user.userName',
                         date: '$posts.date',
                         description: '$posts.description',
@@ -201,7 +203,8 @@ module.exports = {
                 },
                 {
                     $match: {
-                        Status: { $ne: false }
+                        Status: { $ne: false },
+                        reportStatus: { $ne: true }
                     }
                 },
                 // {
@@ -246,7 +249,7 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind:'$user'
+                    $unwind: '$user'
                 },
                 {
                     $project: {
@@ -254,9 +257,17 @@ module.exports = {
                         postId: '$postId',
                         postImage: '$postImage',
                         userName: '$user.userName',
+                        reportStatus: '$user.reportStatus',
+                        Status:'$user.Status',
                         date: '$date',
                         description: '$description',
                         DP: '$user.profilePhoto',
+                    }
+                },
+                {
+                    $match: {
+                        Status: { $ne: false },
+                        reportStatus: { $ne: true }
                     }
                 },
                 {
@@ -265,7 +276,7 @@ module.exports = {
                     $limit: 1
                 }
             ])
-            console.log("latestPost",posts);
+            console.log("latestPost", posts);
             return posts
         } catch (error) {
             return error.message
@@ -388,6 +399,7 @@ module.exports = {
                         postNumbers: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
                         DP: '$profilePhoto',
                         Bio: '$Bio',
+                        reportStatus: '$reportStatus',
                         Followers: '$Followers',
                         Following: '$Following',
                     }
@@ -789,26 +801,41 @@ module.exports = {
             return error.message
         }
     },
-    TopTenTags:async()=>{
+    TopTenTags: async () => {
         try {
             // console.log("UID getNotificationsCount", UID);
             const result = await postSchema.aggregate([
                 {
-                    $unwind:'$tags'
+                    $unwind: '$tags'
                 },
                 {
-                    $group : {
-                       _id : '$tags',
-                       count: { $sum: 1 }
+                    $group: {
+                        _id: '$tags',
+                        count: { $sum: 1 }
                     }
-                  },{
-                    $sort:{'count':-1}
-                  }
+                }, {
+                    $sort: { 'count': -1 }
+                }
 
             ])
             console.log(result, "topten tags")
             return result
 
+        } catch (error) {
+            return error.message
+        }
+    },
+    doDeactiveAccount: async (UID) => {
+        try {
+            console.log("UID getNotificationsCount", UID);
+            const result = await userSchema.findByIdAndUpdate(UID,
+                {
+                    $set: {
+                        reportStatus: true,
+                    }
+                })
+            console.log(result, "DeactiveAccount")
+            return result
         } catch (error) {
             return error.message
         }

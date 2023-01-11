@@ -102,10 +102,12 @@ module.exports = {
                     .json({ msg: "Your account has been blocked" })
             }
 
+
             const isMatch = await bcrypt.compare(password, user.password);
 
 
             if (!isMatch) return res.status(200).json({ msg: "Invalid password" });
+            await userSignUp.findByIdAndUpdate(id, { $set: { reportStatus: false } })
             const token = jwt.sign({ email: user.userName, id: user._id }, process.env.JWT_SECRET,
                 { expiresIn: "3d" })
             // console.log("token: " + token);
@@ -509,11 +511,25 @@ module.exports = {
             res.json({ error: err.message })
         }
     },
-    getTopTenTags:(req, res) => {
+    getTopTenTags: (req, res) => {
         try {
-            userHelpers.TopTenTags().then((response)=>{
-            res.json(response)
-            }).catch((err)=>{
+            userHelpers.TopTenTags().then((response) => {
+                res.json(response)
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        } catch (err) {
+            res.json({ error: err.message })
+        }
+    },
+    deactiveAccount: (req, res) => {
+        try {
+            console.log(req.params);
+            const { id } = req.params
+            userHelpers.doDeactiveAccount(id).then((response) => {
+                res.json(response)
+            }).catch((err) => {
                 console.log(err);
             })
 

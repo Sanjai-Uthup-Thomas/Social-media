@@ -9,6 +9,7 @@ const NewPost = ({ open, onClose }) => {
     const dispatch = useDispatch()
     const [tags, setTags] = useState([])
     const [tagsInText, setTagsInText] = useState([])
+  
 
     
     const [error, setError] = useState(false)
@@ -17,30 +18,31 @@ const NewPost = ({ open, onClose }) => {
         description: "",
         postImage: ""
     })
+    function handleSuggestionClick(suggestion) {
+        const value=tagsInText.split(" ")
+        const pop=value.pop()
+        const finalValue=value.push(suggestion)
+        const something=value.join(' ') 
+        setTagsInText(something)
+        setTags('')
+      }
     const handleChange = (e) => {
         const { name, value } = e.target
-        console.log(e.target.value);
         setTagsInText(value)
         function test(words) {
             var n = words.split(" ");
             return n[n.length - 1];
         }
         const tag = test(e.target.value)
-        console.log(tag.startsWith('#'));
         if (tag.startsWith('#')) {
-            console.log(tag);
             var data = tag.substring(1);
             getTag(data).then((response) => {
                 let { data } = response
-                console.log(data);
                 setTags(data)
                 // dispatch(control()) 
-
             })
         } else {
-            console.log("no entry");
             setTags([])
-
         }
         setForm({
             ...form,
@@ -119,14 +121,16 @@ const NewPost = ({ open, onClose }) => {
                                         placeholder="Write a caption..."
                                         name='description'
                                         onChange={handleChange}
+                                        value={tagsInText}
 
 
                                     />
-                                    {tags.length > 0 && tags.map((res) => {
+                                    {tags.length > 0 &&
+                                    <div className='py-2'>{tags.map((res) => {
                                         return (
-                                            <div>{res?.HashTag}</div>
+                                            <div className='' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
                                         )
-                                    })}
+                                    })}</div> }
                                     <label for="file-upload" class="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">
                                         Select Photo
                                     </label>

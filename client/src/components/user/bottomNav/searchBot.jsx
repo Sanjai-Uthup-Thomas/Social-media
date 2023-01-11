@@ -33,7 +33,7 @@ const [search,setSearch]=useState([])
                         <input
                             id="search"
                             className="p-2 bg-gray-100 rounded-lg w-11/12 pl-10 align-middle focus:outline-0 placeholder:font-light"
-                            placeholder="Search"
+                            placeholder="Search Users"
                             type="text"
                             onChange={searchUser}
 
