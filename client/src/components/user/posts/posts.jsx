@@ -4,7 +4,7 @@ import { FaRegComment } from 'react-icons/fa';
 import { FiBookmark } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
 import { format, render, cancel, register } from 'timeago.js';
-import { BookmarkPost, createComment, getPosts, likePost, UnBookmarkPost, UnlikePost } from '../../../api/userApi'
+import { BookmarkPost, createComment, getPosts, getTagedPosts, likePost, UnBookmarkPost, UnlikePost } from '../../../api/userApi'
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import CommentsModal from '../../modals/comments';
@@ -31,14 +31,20 @@ function Posts() {
     const userId = userParse.id
 
     const {
-        auth: { controlState}
+        auth: { controlState,tag,tagName}
     } = useSelector(state => state)
     const fetchData = async () => {
+        if(tag===null){
+            const posts = await getPosts()
+            setData(posts.data)
+        }else{ 
+            console.log("tag selection");
+            console.log(tag);
+            const posts = await getTagedPosts(tag)
+            setData(posts.data)
 
 
-        const posts = await getPosts()
-        console.log("post.data", posts.data);
-        setData(posts.data)
+        }
 
 
     }
@@ -52,7 +58,7 @@ function Posts() {
 
 
     return (
-        <>
+        <>{!tag &&
         <div className='w-100 h-12 mb-4 flex bg-zinc-100 border border-slate-200' 
         onClick={view}
         >
@@ -80,7 +86,9 @@ function Posts() {
             <button className="bg-black rounded-3xl  dark:bg-slate-800 dark:text-white h-8 w-20 items-center cursor-pointer text-sm">ADD POST</button>
                         </div>
             </div>
-             </div>
+             </div>}
+             {tag && <div className='w-100 h-8 mb-4 flex bg-zinc-100 border border-slate-200 px-aut0' 
+        ><div className='items-center'>Posts with {tagName} hash tag</div></div>}
             {data && data.map((post, index) => {
                 return (
                     <MappedPosts post={post} index={index}/>

@@ -18,7 +18,7 @@ function Suggestions({ userId }) {
         if(userId){
             getSuggestions(userId).then((response) => {
                 console.log(response.data)
-                let array=response.data.slice(1)
+                let array=response.data.slice(0,1)
                 setUsers(array)
                 setLoader(false)
             })

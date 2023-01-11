@@ -48,7 +48,7 @@ function ChatMain() {
     }
     // socket.current = io("ws://localhost:3001")
     socket?.on("getMessage", data => {
-      console.log(socket); 
+      console.log(socket,"getMessage"); 
       console.log(data,"getting");
       setFromSocket({
         sender: data.senderId,
@@ -58,7 +58,7 @@ function ChatMain() {
       })
       console.log("get message from socket");
     }) 
-  }, [])
+  }, [socket])
   useEffect(() => {
     fromSocket && currentChat?.users.includes(fromSocket.sender) &&
       setMessages((prev) => [...prev, fromSocket])
@@ -99,7 +99,7 @@ useEffect(() => {
       }
     }
     getMessages()
-  }, [currentChat])
+  }, [currentChat,socket])
   // console.log(chat);
   // console.log(currentChat);
   // console.log(Messages);

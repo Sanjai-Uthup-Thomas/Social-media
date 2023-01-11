@@ -24,21 +24,21 @@ function NavRoutes() {
     
 
     const {
-        auth: { token, admin_token, signup,controlState }
+        auth: { token, admin_token, signup,controlState,socket }
     } = useSelector(state => state)
     const userParse = localStorage.getItem("user")
     const  user= JSON.parse(userParse)
     const dispatch = useDispatch()
     useEffect(() => {
         const socketio = require('socket.io-client')("ws://localhost:3001")
-        socketio.emit("addUser", user?.id)
-        console.log(user?.id);
+        socketio?.emit("addUser", user?.id)
+        console.log(user?.id,"addUser");
         socketio.on("getUser", users => {
-            // console.log(users); 
-            // console.log(socketio.id);
+            console.log(users,"users"); 
+            console.log(socketio?.id,"socketid");
           dispatch(socketUpdate(socketio)) 
         })
-      }, [user?.id,controlState])
+      }, [user?.id])
     //   useEffect(()=>{
     //     dispatch(control())
 

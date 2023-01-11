@@ -109,11 +109,20 @@ module.exports = {
     },
     Posts: (Data, UserId) => {
         try {
+            const array = []
             const { description, postImage } = Data
             const tags = description.match(/#\w+/g)
-            //tags=[#1,#2]
+            //tags=[#happy,#2]=>[id[#happy], id[#2]]
             const Tags = tags.map(async (tag) => {
-                await tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag }, { upsert: true })
+                tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag }, { upsert: true }).then(async (value) => {
+                    const { _id } = value
+                    await postSchema.findByIdAndUpdate(post?._id, {
+                        $push: { tags: _id }
+                    })
+
+                }).catch((error) => {
+                    console.log(error);
+                })
             })
 
             console.log("id: " + Tags);
@@ -121,9 +130,11 @@ module.exports = {
                 userId: UserId,
                 description: description,
                 postImage: postImage,
-                tags: tags
+                tags: array
 
             })
+
+            console.log(post);
             post.save()
 
 
@@ -235,6 +246,69 @@ module.exports = {
             return error.message
         }
     },
+    tagedPosts: async (TID) => {
+        console.log(TID, "TID");
+        try {
+            const posts = await postSchema.aggregate([
+                {
+                    $match: {
+                        tags: {
+                            $in: [ObjectId(TID)]
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                {
+                    $unwind: '$user'
+                },
+                {
+                    $lookup: {
+                        from: 'comments',
+                        localField: '_id',
+                        foreignField: 'postId',
+                        as: 'comments'
+                    }
+                },
+                {
+                    $project: {
+                        userId: '$user._id',
+                        postId: '$_id',
+                        postImage: '$postImage',
+                        Status: '$Status',
+                        reportStatus: '$user.reportStatus',
+                        userName: '$user.userName',
+                        date: '$date',
+                        description: '$description',
+                        Likes: '$Likes',
+                        Comments: '$comments',
+                        DP: '$user.profilePhoto',
+                        Bookmarks: '$Bookmarks',
+                        Reports: '$Reports'
+                    }
+                },
+                {
+                    $match: {
+                        Status: { $ne: false },
+                        reportStatus: { $ne: true }
+                    }
+                },
+                {
+                    $sort: { 'date': -1 }
+                }
+            ])
+            console.log(posts, "taged posts");
+            return posts;
+        } catch (error) {
+            return error.message
+        }
+    },
     latestPosts: async () => {
         try {
             const posts = await postSchema.aggregate([
@@ -258,7 +332,7 @@ module.exports = {
                         postImage: '$postImage',
                         userName: '$user.userName',
                         reportStatus: '$user.reportStatus',
-                        Status:'$user.Status',
+                        Status: '$user.Status',
                         date: '$date',
                         description: '$description',
                         DP: '$user.profilePhoto',
@@ -811,9 +885,26 @@ module.exports = {
                 {
                     $group: {
                         _id: '$tags',
+                        tag: { $first: '$_id' },
                         count: { $sum: 1 }
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: 'tags',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: "tags"
+                    }
+                },
+                {
+                    $project: {
+                        _id: '$tags.tags',
+                        tag: '$_id',
+                        count: '$count'
+                    }
+                },
+                {
                     $sort: { 'count': -1 }
                 }
 

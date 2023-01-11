@@ -20,6 +20,8 @@ router.post('/tokenIsValid', auth, controller.doTokenIsValid)
 
 router.post('/post', auth, upload.single("Posts"), controller.doPost)
 router.get('/post', auth, controller.getPost)
+router.get('/gettagedposts/:id', auth, controller.getTagedPosts)
+
 router.get('/latestpost',auth, controller.getLatestPost)
 router.patch('/likePost', auth, controller.doLikePost)
 router.patch('/unlikePost', auth, controller.doUnLikePost)

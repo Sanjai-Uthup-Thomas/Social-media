@@ -44,9 +44,10 @@ const NewPost = ({ open, onClose }) => {
         } else {
             setTags([])
         }
+        console.log("tagsInText",tagsInText);
         setForm({
             ...form,
-            [name]: value
+            [name]: tagsInText
         })
     }
     const fileUpload = (e) => {
@@ -85,8 +86,9 @@ const NewPost = ({ open, onClose }) => {
             Data.append(key, form[key])
         }
         console.log(form.Posts);
-        const { description, Posts } = form
-        console.log(description);
+        let { description, Posts } = form
+        description=tagsInText
+        console.log(description,"description");
         console.log(Posts);
         if (description && Posts && !error) {
             console.log(form);

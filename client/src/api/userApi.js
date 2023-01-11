@@ -12,6 +12,8 @@ export const createPost= (Data)=>axios.post('/post',Data)
 
 export const getPosts=()=>axios.get('/post/')
 
+export const getTagedPosts=(Data)=>axios.get(`/gettagedposts/${Data}`) 
+
 export const getLatestPost=()=>axios.get('/latestpost')
 
 export const likePost=(Data)=>axios.patch('/likePost',Data)

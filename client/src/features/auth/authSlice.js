@@ -15,6 +15,8 @@ const initialState ={
     controlState:0,
     userId:null,
     socket:null,
+    tag:null,
+    tagName:null
 }
 export const signInAdmin = createAsyncThunk('signInAdmin',async (body)=>{
     const res = await axios.post('http://localhost:4000/admin/adminLogin',body)
@@ -80,6 +82,13 @@ const authSlice = createSlice({
         socketUpdate:(state,action)=>{
             // console.log(action.payload,"action.payload");
             state.socket=action.payload
+        },
+        addTag:(state,action)=>{
+            state.tag=action.payload
+        },
+        addTagName:(state,action)=>{
+            state.tagName=action.payload
+
         }
     },
     extraReducers:{
@@ -134,5 +143,5 @@ const authSlice = createSlice({
         }
     }
 })
-export const {addToken,addUser,logout,adminLogout,control,addMessage,removeId,socketUpdate}= authSlice.actions
+export const {addToken,addUser,logout,adminLogout,control,addMessage,removeId,socketUpdate,addTag,addTagName}= authSlice.actions
 export default authSlice.reducer

@@ -2,7 +2,7 @@ import './navbar.css'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
-import { logout, removeId } from '../../../features/auth/authSlice'
+import { addTag, control, logout, removeId } from '../../../features/auth/authSlice'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu, Transition } from "@headlessui/react";
 import { AiOutlineHome, AiOutlinePlusCircle, AiOutlineHeart } from 'react-icons/ai';
@@ -89,7 +89,10 @@ function Navbar() {
     useEffect(() => {
         fetchNOtifications()
     }, [socket,controlState])
-
+const handelHome=()=>{
+    dispatch(addTag(null))
+    dispatch(control())
+}
     return (
         <>
             <><nav className="sticky top-0 min-h-full bg-white lg:w-10/12 mx-auto z-40 justify-between ">
@@ -101,6 +104,7 @@ function Navbar() {
                                     className=""
                                     src="https://img.icons8.com/ios/2x/brave-web-browser.png"
                                     width="50"
+                                    onClick={(e)=>{handelHome()}}
                                 />
                             </Link>
                         </div>
@@ -133,7 +137,7 @@ function Navbar() {
                                 <li >
                                     <Link
                                         to={'/'}>
-                                        <a className="cursor-pointer">
+                                        <a className="cursor-pointer" onClick={(e)=>{handelHome()}}>
                                             <AiOutlineHome
                                                 size={28} />
                                         </a>

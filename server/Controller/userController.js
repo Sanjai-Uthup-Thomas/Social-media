@@ -200,6 +200,13 @@ module.exports = {
             res.json(response)
         })
     },
+    getTagedPosts:(req,res)=>{
+        console.log(req.params);
+        const tagId=req.params.id
+        userHelpers.tagedPosts(tagId).then((response) => {
+            res.json(response)
+        })
+    },
     getLatestPost: (req, res) => {
         console.log("ghjk");
         userHelpers.latestPosts().then((response) => {
