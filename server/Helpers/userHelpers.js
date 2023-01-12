@@ -114,15 +114,40 @@ module.exports = {
             const tags = description.match(/#\w+/g)
             //tags=[#happy,#2]=>[id[#happy], id[#2]]
             const Tags = tags.map(async (tag) => {
-                tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag }, { upsert: true }).then(async (value) => {
-                    const { _id } = value
-                    await postSchema.findByIdAndUpdate(post?._id, {
-                        $push: { tags: _id }
+                console.log(tag, 'taggggggggggggg');
+                const value = await tagsSchema.findOne({ tags: tag })
+                console.log(value, 'valueeeeeeeeeeeeeeeeeeeee');
+                if(!value){
+                    console.log('firstttttttttt');
+                    const newTag = new tagsSchema({
+                        tags: tag,    
                     })
+        
+                    newTag.save().then(async()=>{
+                        console.log(newTag);
+                        await postSchema.findByIdAndUpdate(post?._id, {
+                            $push: { tags: newTag._id }
+                        })
+                    })
+                }else{
+                    await postSchema.findByIdAndUpdate(post?._id, {
+                        $push: { tags: value._id }
+                    })
+                    console.log("why thissssssssssssss");
+                }
+                
 
-                }).catch((error) => {
-                    console.log(error);
-                })
+
+                // tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag },{ upsert: true } ).then(async (value) => {
+                //     console.log("value: " +value);
+                //     const { _id } = value
+                //     await postSchema.findByIdAndUpdate(post?._id, {
+                //         $push: { tags: _id }
+                //     })
+
+                // }).catch((error) => {
+                //     console.log(error);
+                // })
             })
 
             console.log("id: " + Tags);

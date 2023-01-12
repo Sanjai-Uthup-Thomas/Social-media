@@ -34,7 +34,7 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
     if (!open) { return null } else {
         return (
             <div className='fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center z-50'>
-                <div className='md:w-[750px] flex flex-col'>
+                <div className='md:w-[740px] flex flex-col'>
                     <button className='text-white text-xl place-self-end'
                         onClick={() => onClose()}>X</button>
                     <div className='bg-white p-2 h-auto text-black rounded'>
@@ -49,7 +49,7 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
                                 )
                             })}
 
-                            <div className='p-2 w-[400px] md:w-1/2'>
+                            <div className='p-2 w-[335px] md:w-1/2'>
                                 <div className='overflow-y-auto h-96 pb-2'>
                                 <div className=" flex justify-end">
                                 <a
