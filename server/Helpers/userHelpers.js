@@ -110,7 +110,7 @@ module.exports = {
     Posts: (Data, UserId) => {
         try {
             const array = []
-            const { description, postImage } = Data
+            const { description, postImage,Location } = Data
             const tags = description.match(/#\w+/g)
             //tags=[#happy,#2]=>[id[#happy], id[#2]]
             const Tags = tags.map(async (tag) => {
@@ -155,6 +155,7 @@ module.exports = {
                 userId: UserId,
                 description: description,
                 postImage: postImage,
+                Location:Location,
                 tags: array
 
             })
@@ -229,6 +230,7 @@ module.exports = {
                         reportStatus: '$user.reportStatus',
                         userName: '$user.userName',
                         date: '$posts.date',
+                        Location:'$posts.Location',
                         description: '$posts.description',
                         Likes: '$posts.Likes',
                         Comments: '$comments',
@@ -253,6 +255,7 @@ module.exports = {
                         postImage: '$postImage',
                         userName: '$userName',
                         date: '$date',
+                        Location: '$Location',
                         description: '$description',
                         Likes: '$Likes',
                         Comments: '$Comments',
@@ -310,6 +313,7 @@ module.exports = {
                         reportStatus: '$user.reportStatus',
                         userName: '$user.userName',
                         date: '$date',
+                        Location:'$Location',
                         description: '$description',
                         Likes: '$Likes',
                         Comments: '$comments',
@@ -360,6 +364,7 @@ module.exports = {
                         Status: '$user.Status',
                         date: '$date',
                         description: '$description',
+                        Location:'$Location',
                         DP: '$user.profilePhoto',
                     }
                 },
@@ -931,6 +936,8 @@ module.exports = {
                 },
                 {
                     $sort: { 'count': -1 }
+                },{
+                    $limit:10
                 }
 
             ])

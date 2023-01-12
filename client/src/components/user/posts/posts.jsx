@@ -87,8 +87,8 @@ function Posts() {
                         </div>
             </div>
              </div>}
-             {tag && <div className='w-100 h-8 mb-4 flex bg-zinc-100 border border-slate-200 px-aut0' 
-        ><div className='items-center'>Posts with {tagName} hash tag</div></div>}
+             {tag && <div className='w-100 h-8 mb-4 flex bg-zinc-100 rounded-xl border-slate-200 px-auto' 
+        ><div className=' mx-auto'>Posts with {tagName} </div></div>}
             {data && data.map((post, index) => {
                 return (
                     <MappedPosts post={post} index={index}/>

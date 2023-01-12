@@ -111,15 +111,21 @@ function MappedPosts({ post, index }) {
                 <div className="px-2 flex flex-row">
                     <div className="flex-1">
                         <Link to={`/${post.userName}`}>
+                            <div className='flex'>
                             <img
                                 className="rounded-full w-8 max-w-none inline "
 
                                 src={`http://localhost:4000/DP/${post.DP}`}
 
                             />{" "}
-                            <span className="font-medium text-sm ml-2">
-                                {post.userName}
-                            </span>
+                             <div class="ml-3 ">
+                                    <span class="text-sm font-semibold antialiased block leading-tight"> {post.userName}</span>
+                                    {post.Location &&  <span class="text-gray-600 text-xs block">{post.Location}</span>}
+                                   
+                                    {/* <div className='text-xs'></div> */}
+
+                                </div>
+                                </div>
                         </Link>
                         {/* <a href="" className="">
                                     
@@ -141,7 +147,7 @@ function MappedPosts({ post, index }) {
                             </a>}
                     </div>
                 </div>
-                <div className='pl-14 mb-2 text-base'>
+                <div className='pl-2 mb-2 text-base'>
                     
                          {post.description}
                     </div>

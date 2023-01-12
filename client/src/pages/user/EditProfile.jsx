@@ -218,8 +218,8 @@ function EditProfile({ userId }) {
                                 </div>
                             </div>
                             <div className="flex flex-row mt-5 items-center">
-                                <div className="w-1/3 flex flex-row place-content-end align-center pr-8" />
-                                <div className="w-2/3 pr-10 p-4 flex">
+                                <div className="hidden md:w-1/3 md:flex flex-row place-content-end align-center pr-8" />
+                                <div className="w-full pr-10 p-4 flex">
                                     <button
                                         className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center"
                                         type="submit"

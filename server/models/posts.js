@@ -1,16 +1,16 @@
 const mongoose = require('mongoose')
 
 const Posts = new mongoose.Schema({
-    userId:{
-        type:  mongoose.Types.ObjectId,
+    userId: {
+        type: mongoose.Types.ObjectId,
         required: true
     },
     description: {
         type: String,
         required: true
     },
-     tags: {
-        type:Array
+    tags: {
+        type: Array
     },
     postImage: {
         type: String,
@@ -20,14 +20,19 @@ const Posts = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    Likes:{
-        type:Array
+
+    Location: {
+        type: String,
+    }
+    ,
+    Likes: {
+        type: Array
     },
-    Bookmarks:{
-        type:Array
+    Bookmarks: {
+        type: Array
     },
-    Reports:{
-        type:Array
+    Reports: {
+        type: Array
     },
     date: {
         type: Date,

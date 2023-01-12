@@ -4,14 +4,40 @@ import { createPost, getTag } from '../../api/userApi';
 import { control } from '../../features/auth/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PlacesAutocomplete, {
+    geocodeByAddress,
+    getLatLng
+} from "react-places-autocomplete";
 
 const NewPost = ({ open, onClose }) => {
+    //place api
+    const [address, setAddress] = useState("");
+    const handleChangeAddress = (newAddress) => {
+        setAddress(newAddress);
+    };
+    const handleSelectAddress = (newAddress) => {
+        setAddress(newAddress);
+        geocodeByAddress(newAddress)
+            .then((results) => getLatLng(results[0]))
+            .then((latLng) =>{
+                
+                console.log("Success", newAddress)
+                setForm({
+                    ...form,
+                    Location: newAddress
+                })
+            } 
+            )
+            .catch((error) => console.error("Error", error));
+    };
+
+
     const dispatch = useDispatch()
     const [tags, setTags] = useState([])
     const [tagsInText, setTagsInText] = useState([])
-  
 
-    
+
+
     const [error, setError] = useState(false)
     const [form, setForm] = useState({
         Posts: null,
@@ -19,13 +45,13 @@ const NewPost = ({ open, onClose }) => {
         postImage: ""
     })
     function handleSuggestionClick(suggestion) {
-        const value=tagsInText.split(" ")
-        const pop=value.pop()
-        const finalValue=value.push(suggestion)
-        const something=value.join(' ') 
+        const value = tagsInText.split(" ")
+        const pop = value.pop()
+        const finalValue = value.push(suggestion)
+        const something = value.join(' ')
         setTagsInText(something)
         setTags('')
-      }
+    }
     const handleChange = (e) => {
         const { name, value } = e.target
         setTagsInText(value)
@@ -44,7 +70,7 @@ const NewPost = ({ open, onClose }) => {
         } else {
             setTags([])
         }
-        console.log("tagsInText",tagsInText);
+        console.log("tagsInText", tagsInText);
         setForm({
             ...form,
             [name]: tagsInText
@@ -85,10 +111,10 @@ const NewPost = ({ open, onClose }) => {
         for (let key in form) {
             Data.append(key, form[key])
         }
-        console.log(form.Posts);
+        console.log(form);
         let { description, Posts } = form
-        description=tagsInText
-        console.log(description,"description");
+        description = tagsInText
+        console.log(description, "description");
         console.log(Posts);
         if (description && Posts && !error) {
             console.log(form);
@@ -115,6 +141,48 @@ const NewPost = ({ open, onClose }) => {
                                     : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
 
                                 </div>
+                                <div className='p-2'>
+                                <PlacesAutocomplete
+                                    value={address}
+                                    onChange={handleChangeAddress}
+                                    onSelect={handleSelectAddress}
+                                >
+                                    {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                                        <div>
+                                            <input
+                                                {...getInputProps({
+                                                    placeholder: "Add location",
+                                                    className: "location-search-input p-1 w-full outline-0 h-30 border-2 rounded-md"
+                                                })}
+                                            />
+                                            <div className="autocomplete-dropdown-container">
+                                                {loading && <div>Loading...</div>}
+                                                {suggestions.map((suggestion) => {
+                                                    const className = suggestion.active
+                                                        ? "suggestion-item--active"
+                                                        : "suggestion-item";
+                                                    // inline style for demonstration purpose
+                                                    const style = suggestion.active
+                                                        ? { backgroundColor: "#fafafa", cursor: "pointer" }
+                                                        : { backgroundColor: "#ffffff", cursor: "pointer" };
+                                                    return (
+                                                        <div
+                                                            key={suggestion.placeId}
+                                                            {...getSuggestionItemProps(suggestion, {
+                                                                className,
+                                                                style
+                                                            })}
+                                                        >
+                                                            <span>{suggestion.description}</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </PlacesAutocomplete>
+                                </div>
+                                
                                 {/* <div ><img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' /></div> */}
                                 <div>
                                     <textarea
@@ -128,11 +196,11 @@ const NewPost = ({ open, onClose }) => {
 
                                     />
                                     {tags.length > 0 &&
-                                    <div className='py-2'>{tags.map((res) => {
-                                        return (
-                                            <div className='' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
-                                        )
-                                    })}</div> }
+                                        <div className='py-2'>{tags.map((res) => {
+                                            return (
+                                                <div className='' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
+                                            )
+                                        })}</div>}
                                     <label for="file-upload" class="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">
                                         Select Photo
                                     </label>
