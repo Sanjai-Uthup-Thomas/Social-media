@@ -36,9 +36,9 @@ function LatestPost() {
 
                                 />{" "}
                                 {/* <div className=''> */}
-                                <div class="ml-3 ">
-                                    <span class="text-sm font-semibold antialiased block leading-tight"> {post.userName}</span>
-                                    <span class="text-gray-600 text-xs block">{post.Location}</span>
+                                <div className="ml-3 ">
+                                    <span className="text-sm font-semibold antialiased block leading-tight"> {post.userName}</span>
+                                    <span className="text-gray-600 text-xs block">{post.Location}</span>
                                     <div className='text-xs'></div>
 
                                 </div>

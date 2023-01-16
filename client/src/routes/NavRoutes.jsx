@@ -1,44 +1,34 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { PrivateRoutes } from "./PrivateRoutes";
-import { useDispatch, useSelector } from "react-redux";
+import {useSelector } from "react-redux";
 import HomePage from '../pages/user/HomePage';
 import Login from '../components/user/login/login';
 import SignUp from '../components/user/signup/signup';
 import SignupOTP from '../components/user/signupOTP/signupOTP';
 import AdminLogin from '../components/admin/login/adminLogin';
 import { PrivateAdmin } from './AdminPrivate';
-import AdminDash from '../pages/admin/dash/dash';
 import User from '../pages/admin/user/user';
 import Post from '../pages/admin/post/post';
 import UserProfile from '../pages/user/UserProfile';
-import { checkToken, getUserNames } from '../api/userApi';
+import {getUserNames } from '../api/userApi';
 import { useState } from 'react';
 import EditProfile from '../pages/user/EditProfile';
-import { control, logout, socketUpdate } from '../features/auth/authSlice';
 import Chat from '../pages/user/Chat';
 import Notifications from '../pages/user/Notifications';
 import Suggestions from '../pages/user/Suggestions';
 import ForgetPassword from '../components/user/login/forgetPassword';
+import ErrorPage from '../components/common/404page';
+import ErrorPage2 from '../components/common/500page';
 function NavRoutes() {
     
 
     const {
-        auth: { token, admin_token, signup,controlState,socket }
+        auth: { token, admin_token, signup,controlState,socket,serverError}
     } = useSelector(state => state)
     const userParse = localStorage.getItem("user")
     const  user= JSON.parse(userParse)
-    const dispatch = useDispatch()
-    useEffect(() => {
-        const socketio = require('socket.io-client')("ws://localhost:3001")
-        socketio?.emit("addUser", user?.id)
-        console.log(user?.id,"addUser");
-        socketio.on("getUser", users => {
-            console.log(users,"users"); 
-            console.log(socketio?.id,"socketid");
-          dispatch(socketUpdate(socketio)) 
-        })
-      }, [user?.id])
+   
     //   useEffect(()=>{
     //     dispatch(control())
 
@@ -54,11 +44,6 @@ function NavRoutes() {
     }
     const userToken = localStorage.getItem('token')
     useEffect(() => {
-        // checkToken().then((response) => {
-        // }).catch((error) => {
-        //     // console.log(error);
-        //     // dispatch(logout())
-        // })
         fetchData()
 
     }, [user?.id])
@@ -100,7 +85,7 @@ function NavRoutes() {
                 <Route element={<PrivateRoutes />}>
                     <Route path="/home" element={<HomePage />} />
                     {userName.map((data) => (
-                        <Route path={`/${data.userName}`} element={<UserProfile userId={data._id} key={data._id} />} />
+                        <Route path={`/${data.userName}`} element={<UserProfile userId={data._id} key={data.userName} />} />
 
                     ))}
                     {/* {userName.map((data) => (                        */}
@@ -117,10 +102,13 @@ function NavRoutes() {
 
 
                 </Route>
-                <Route path="*" element={<h2> OOPS! Page Not Found</h2>} />
+                <Route path="*" element={<ErrorPage/>} />
+
+                {serverError && <Route path="/error" element={<ErrorPage2/>} />}
+
                 {admin_token ? (
                     <>
-                        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+                        <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
                     </>
                 ) : (
                     <>
@@ -129,7 +117,6 @@ function NavRoutes() {
                 )}
                 <><Route path="/admin" element={<AdminLogin />} /></>
                 <Route element={<PrivateAdmin />}>
-                    <Route path="/admin/dashboard" element={<AdminDash />} />
                     <Route path="/admin/users" element={<User />} />
                     <Route path="/admin/posts" element={<Post />} />
                 </Route>

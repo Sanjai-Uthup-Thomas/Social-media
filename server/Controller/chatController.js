@@ -1,49 +1,36 @@
-const chatHelper=require('../Helpers/chatHelpers')
+const chatHelper = require('../Helpers/chatHelpers')
 
 module.exports = {
-    getAllChats:(req,res)=>{
-        try{
-            console.log("user: " + req.user)
-            chatHelper.getAllChats(req.user).then((response)=>{
-                res.status(200).json(response)
-            }).catch((error)=>{
-                res.status(500).json(error)
-             })
-        }catch (err) {
+    getAllChats: async (req, res) => {
+        try {
+            const response = await chatHelper.getAllChats(req.user)
+            res.status(200).json(response)
+
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    createChat:async(req,res)=>{
-        try{
-            console.log("user: " + req.user)
-            console.log("friend: " + req.params.id)
-             chatHelper.startChat(req.user,req.params.id).then((response)=>{
-                res.status(200).json(response)
-             }).catch((error)=>{
-                res.status(500).json(error)
-             })
-        }catch (err) {
+    createChat: async (req, res) => {
+        try {
+            const response = await chatHelper.startChat(req.user, req.params.id)
+            res.status(200).json(response)
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    chatList:(req,res)=>{
-        try{
-            console.log("chat: " + req.params.chatID)
-            chatHelper.getChatList(req.params.chatID,req.user).then((response)=>{
-                res.status(200).json(response)
-             }).catch((error)=>{
-                res.status(500).json(error)
-             })
-        }catch (err) {
+    chatList: async (req, res) => {
+        try {
+            const response = await chatHelper.getChatList(req.params.chatID, req.user)
+            res.json(response)
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    searchList:async(req, res) => {
-        try{
-            await chatHelper.userSearch(req.params.data,req.user).then((response) => {
-                res.json(response)
-            })
-        }catch (err) {
+    searchList: async (req, res) => {
+        try {
+            const response = await chatHelper.userSearch(req.params.data, req.user)
+            res.json(response)
+        } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     }

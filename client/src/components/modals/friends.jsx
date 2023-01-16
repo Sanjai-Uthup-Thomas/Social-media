@@ -40,14 +40,14 @@ function Friends({ open, onClose, followers, userId }) {
                         {data.map((name) => {
                             return (
                                 <div key={data} className='p-1'>
-                                    <div class="flex-col w-ful bg-white sm:rounded-lg sm:shadow-sm p-1 cursor-pointer">
+                                    <div className="flex-col w-ful bg-white sm:rounded-lg sm:shadow-sm p-1 cursor-pointer">
                                         <Link to={`/${name.userName}`}>
-                                            <div class="flex flex-row ml-5 " onClick={() => onClose()}>
-                                                <img class="w-12 h-12 border-2 border-gray-300 rounded-full" alt="User avatar"
+                                            <div className="flex flex-row ml-5 " onClick={() => onClose()}>
+                                                <img className="w-12 h-12 border-2 border-gray-300 rounded-full" alt="User avatar"
                                                     src={`http://localhost:4000/DP/${name.profilePhoto}`}
                                                 />
-                                                <div class="flex-col mt-3">
-                                                    <div class="flex items-center flex-1 px-4 font-normal leading-tight">{name.userName}
+                                                <div className="flex-col mt-3">
+                                                    <div className="flex items-center flex-1 px-4 font-normal leading-tight">{name.userName}
                                                     </div>
 
                                                 </div>

@@ -11,7 +11,6 @@ module.exports = {
         const newMessage = new Message(data)
         try {
             const savedMessage = await newMessage.save()
-            // console.log(savedMessage.chat,savedMessage._id);
             await chat.findByIdAndUpdate(savedMessage.chat, {
                 latestMessage: savedMessage._id
             })
@@ -39,7 +38,6 @@ module.exports = {
                     }
                 }
             ])
-            console.log(result);
             return result
         } catch (err) {
             return err
@@ -50,7 +48,6 @@ module.exports = {
             const message = await Message.find({
                 chat: chatId,
             })
-            console.log("chat", chatId)
             const result = await Message.aggregate([
                 {
                     $match: { chat: ObjectId(chatId) }
@@ -74,8 +71,6 @@ module.exports = {
                     }
                 }
             ])
-            console.log(message);
-            console.log("result", result);
             return result
         } catch (err) {
             return err

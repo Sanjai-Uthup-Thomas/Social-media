@@ -3,11 +3,6 @@ import { useDispatch } from "react-redux";
 import { NavLink} from "react-router-dom";
 import { adminLogout } from "../../../features/auth/authSlice";
 
-
-
-
-
-
 function Sidebar() {
   const [open, setOpen] = useState(true)
   const dispatch=useDispatch()
@@ -18,7 +13,6 @@ function Sidebar() {
   
 
   const Menus = [
-    { title: "Dashboard", src: "https://img.icons8.com/material-rounded/512/dashboard-layout.png", path: "/admin/dashboard", number: 0,},
     { title: "Users", src: "https://img.icons8.com/ios-glyphs/512/user.png", path: "/admin/users", number: 1 },
     { title: "Posts ", src: "https://img.icons8.com/ios-filled/2x/post-stamp.png",  path: "/admin/posts", number: 2 },
    

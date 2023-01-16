@@ -17,29 +17,23 @@ function Login() {
     const handelLogin = (e) => {
         e.preventDefault()
         console.log(email, password)
-        // dispatch(signInUser({email,password})).then((res)=>{
-        //     console.log(res.payload.data.token);
-        //     if(res.payload.data.token!==undefined){
-        //         navigate('/home')
-        //     }
-        // })
         const data = { email, password }
         login(data).then((response) => {
             console.log(response.data);
             if (response.data.token !== undefined) {
                 localStorage.setItem('token', response.data.token)
                 localStorage.setItem('user', JSON.stringify(response.data.user))
-                console.log("login successful");
                 dispatch(addToken())
                 dispatch(addUser())
-
                 Navigate('/home')
-                console.log(("why you"));
             } else {
                 setMsg(response.data.msg)
-                console.log("msg: " + msg);
             }
 
+        }).catch((err)=>{
+            const msg=err.response.data.msg
+            setMsg(msg)
+            console.log(err);
         })
     }
 

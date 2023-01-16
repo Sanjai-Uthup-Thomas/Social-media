@@ -84,8 +84,8 @@ function MappedPosts({ post, index }) {
                 }
                 createNotification(details)
 
-                setComment("")
             })
+            setComment("")
         }
 
     }
@@ -118,9 +118,9 @@ function MappedPosts({ post, index }) {
                                 src={`http://localhost:4000/DP/${post.DP}`}
 
                             />{" "}
-                             <div class="ml-3 ">
-                                    <span class="text-sm font-semibold antialiased block leading-tight"> {post.userName}</span>
-                                    {post.Location &&  <span class="text-gray-600 text-xs block">{post.Location}</span>}
+                             <div className="ml-3 ">
+                                    <span className="text-sm font-semibold antialiased block leading-tight"> {post.userName}</span>
+                                    {post.Location &&  <span className="text-gray-600 text-xs block">{post.Location}</span>}
                                    
                                     {/* <div className='text-xs'></div> */}
 
@@ -136,7 +136,7 @@ function MappedPosts({ post, index }) {
                             <a
                                 className="cursor-pointer"
                                 onClick={() => {
-                                    console.log("three dot");
+                                    console.log("three dot"+post.userId);
                                     setShowReport(true)
                                     setPostId(post.postId)
                                     setUserId(post.userId)
@@ -175,11 +175,6 @@ function MappedPosts({ post, index }) {
                                     <AiOutlineLike size={30} />
                                 </a>
                         }
-
-
-
-
-
                         <a
                             className="mr-3 hover:text-gray-500 cursor-pointer"
                             onClick={(e) => {
@@ -252,7 +247,7 @@ function MappedPosts({ post, index }) {
             </div>
             {
                 showComments &&
-                <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} />
+                <CommentsModal open={showComments} onClose={() => { setShowComments(false) }} postId={postId} userId={postUserId} currentId={userId} />
 
             }
             {

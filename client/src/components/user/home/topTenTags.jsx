@@ -11,7 +11,7 @@ function TopTenTags({ data }) {
     dispatch(control())
   }
   return (
-    <div className="flex py-2 my-auto bg-zinc-100 justify-between" >
+    <div className="flex py-2 my-auto bg-zinc-100 justify-between" key={data._id} >
       <div className="flex cursor-pointer"
         onClick={(e) => handelTags()}>
         {data?._id}

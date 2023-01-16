@@ -8,23 +8,23 @@ import SearchBot from './searchBot';
 import { getNotificationsCount } from '../../../api/userApi';
 function BottomNav() {
     const {
-        auth: { socket,controlState }
+        auth: { socket, controlState }
     } = useSelector(state => state)
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false)
-    const[isSearch,setIsSearch] = useState(false)
+    const [isSearch, setIsSearch] = useState(false)
     const [data, setData] = useState()
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const view = () => {
         setIsOpen(true)
     }
-    const search=()=>{
+    const search = () => {
         setIsSearch(true)
     }
-    const home=()=>{
+    const home = () => {
         navigate(`/home`)
     }
-    const chat=()=>{
+    const chat = () => {
         dispatch(removeId())
         navigate(`/chat`)
     }
@@ -33,41 +33,36 @@ function BottomNav() {
     }
     useEffect(() => {
         socket?.on("getNotification", (DATA) => {
-             setTimeout(() => {
+            setTimeout(() => {
                 fetchNOtifications()
-                console.log("getNotification", DATA);
-              }, 100);
+            }, 100);
         })
-    }, [socket,data])
+    }, [socket, data])
     const fetchNOtifications = async () => {
-        // console.log("fetchNOtifications");
-        const { data } = await getNotificationsCount()
-        // console.log("data: " + data.length);
-        setData(data.length)
+        try {
+            const { data } = await getNotificationsCount()
+            setData(data.length)
+        } catch (e) {
+            navigate('/error')
+        }
     }
     useEffect(() => {
         fetchNOtifications()
-    }, [socket,controlState])
+    }, [socket, controlState])
     const user = localStorage.getItem("user")
     const users = JSON.parse(user)
     const Menus = [
-        { name: "Home", icon: "home-outline", dis: "translate-x-0",clickHandler:home },
-        { name: "Profile", icon: "search-outline", dis: "translate-x-16",clickHandler:search },
+        { name: "Home", icon: "home-outline", dis: "translate-x-0", clickHandler: home },
+        { name: "Profile", icon: "search-outline", dis: "translate-x-16", clickHandler: search },
         { name: "create", icon: "add-circle-outline", dis: "translate-x-32", clickHandler: view },
-        { name: "Chat", icon: "chatbubble-outline", dis: "translate-x-48",clickHandler:chat },
-        // { name: "Search", icon: "person-outline", dis: "translate-x-64" ,clickHandler: logouthandel  },
+        { name: "Chat", icon: "chatbubble-outline", dis: "translate-x-48", clickHandler: chat },
     ];
-    // const [active, setActive] = useState(0);
     return (
         <div className='sticky bottom-2 w-full max-h-[3rem] lg:hidden block '>
 
             <div className="flex justify-center items-center">
                 <div className="bg-white max-h-[4rem] px-6 rounded-t-xl">
                     <ul className="flex relative">
-                        {/* <span
-                            className={`bg-gray-400 duration-500 ${Menus[active].dis} h-16 w-16 absolute
-         -top-5 rounded-full`}
-                        > */}
                         <span
                             className="w-3.5 h-3.5 bg-transparent absolute top-4 -left-[18px] 
           rounded-tr-[11px] shadow-myShadow1"
@@ -76,7 +71,6 @@ function BottomNav() {
                             className="w-3.5 h-3.5 bg-transparent absolute top-4 -right-[18px] 
           rounded-tl-[11px] shadow-myShadow2"
                         ></span>
-                        {/* </span> */}
                         {Menus.map((menu, i) => (
                             <li key={i} className="w-16">
                                 <a
@@ -91,7 +85,7 @@ function BottomNav() {
                                     >
                                         <ion-icon name={menu.icon} size="large"></ion-icon>
                                     </span>
-                                    
+
 
 
                                 </a>
@@ -106,14 +100,13 @@ function BottomNav() {
                                     <Menu.Button className=" w-10 h-10 justify-center bg-white text-sm font-medium text-gray-700">
                                         <img
                                             className="rounded-full border-black"
-                                            // src={data.me.image}
                                             src={`http://localhost:4000/DP/${users?.profilePhoto}`}
 
                                             width="40"
-                                            />
+                                        />
                                     </Menu.Button>
-                                            {data>0 && <div class="inline-flex absolute  right-1 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
-                                                          }
+                                    {data > 0 && <div className="inline-flex absolute  right-1 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                    }
                                 </div>
 
                                 <Transition
@@ -159,8 +152,8 @@ function BottomNav() {
                                                                 block px-4 py-2 text-sm"
                                                     >
                                                         Notifications
-                                                        {data>0 && <div class="inline-flex absolute  right-4 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
-                                                       }
+                                                        {data > 0 && <div className="inline-flex absolute  right-4 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                                        }
                                                     </Link>
                                                 )}
                                             </Menu.Item>

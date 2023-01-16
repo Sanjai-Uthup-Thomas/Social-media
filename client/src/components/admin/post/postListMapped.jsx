@@ -17,12 +17,12 @@ function PostListMapped({item}) {
     
       }
     return (
-        <tr key={item._id} class="bg-gray-100 border-b">
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">{item.userName}</td>
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        <tr key={item._id} className="bg-gray-100 border-b">
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">{item.userName}</td>
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
 
             </td>
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                 <img
                     className="rounded-full"
                     // src={data.me.image}
@@ -31,10 +31,10 @@ function PostListMapped({item}) {
                     width="50"
                 />
             </td>
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                 {item.description}
             </td>
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap cursor-pointer"
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap cursor-pointer"
             onClick={()=>{
                 setOpen(true)
                 setPostId(item._id)
@@ -42,7 +42,7 @@ function PostListMapped({item}) {
             >
                 {item.Reports.length}
             </td>
-            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                 <button onClick={() => submitData(item._id)}
                             className={`shadow ${item.Status ? 'bg-green-600 rounded-full hover:bg-green-700' : 'bg-red-600 rounded-full hover:bg-red-700'} focus:shadow-outline w-[140px] focus:outline-none text-white font-bold py-1 px-4`}>
                             {item.Status ? 'Unblock Post' : 'Block Post'}

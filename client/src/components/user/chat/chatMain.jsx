@@ -196,10 +196,10 @@ useEffect(() => {
               </ul>
             </div>
             {currentChat ?
-              <div class={`${responsive ? '' : 'hidden'} lg:col-span-2 lg:block`}>
-                <div class="w-full">
-                  <div class="relative flex items-center p-3 border-b border-gray-300">
-                    <button class="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 lg:hidden"
+              <div className={`${responsive ? '' : 'hidden'} lg:col-span-2 lg:block`}>
+                <div className="w-full">
+                  <div className="relative flex items-center p-3 border-b border-gray-300">
+                    <button className="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 lg:hidden"
                       onClick={() => setResponsive(false)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title"
                         aria-describedby="desc" role="img" xlink="http://www.w3.org/1999/xlink">
@@ -209,15 +209,15 @@ useEffect(() => {
                           fill="#202020" d="M28.001 48L12 32l16.001-16 4.242 4.243-8.759 8.758H52v6H23.486l8.757 8.757L28.001 48z"></path>
                       </svg>
                     </button>
-                    <img class="object-cover w-10 h-10 rounded-full"
+                    <img className="object-cover w-10 h-10 rounded-full"
                       src={`http://localhost:4000/DP/${currentChat?.profilePhoto}`} alt="userName"
                     />
-                    <span class="block ml-2 font-bold text-gray-600">{currentChat?.userName}</span>
-                    {/* <span class="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
+                    <span className="block ml-2 font-bold text-gray-600">{currentChat?.userName}</span>
+                    {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
                     </span> */}
                   </div>
-                  <div class="relative w-full p-6 overflow-y-auto h-[40rem]">
-                    <div class="space-y-2">
+                  <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
+                    <div className="space-y-2">
                       {Messages?.map((m) => (
                         <div ref={scrollRef}>
                           <ChatRight message={m} own={m?.UID === user.id} />
@@ -226,16 +226,16 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div class="flex items-center justify-between w-full p-3 border-t border-gray-300">
+                  <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
                     {/* <button>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24"
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </button> */}
                     {/* <button>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -244,19 +244,19 @@ useEffect(() => {
 
                     <input type="text"
                       placeholder="Message"
-                      class="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
+                      className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
                       onChange={(e) => setNewMessage(e.target.value)}
                       value={newMessage}
                     />
                     {/* <button>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
                     </button> */}
                     <button onClick={handelSubmit}>
-                      <svg class="w-5 h-5 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
+                      <svg className="w-5 h-5 text-gray-500 origin-center transform rotate-90" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20" fill="currentColor">
                         <path
                           d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />

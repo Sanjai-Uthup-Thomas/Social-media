@@ -99,7 +99,7 @@ const handelHome=()=>{
                 <div className="container max-w-full">
                     <div className="flex flex-row py-1 items-center h-14">
                         <div className="lg:basis-1/2 pl-3 lg:p-0 mx-auto">
-                            <Link to="/">
+                            <Link to="/" >
                                 <img
                                     className=""
                                     src="https://img.icons8.com/ios/2x/brave-web-browser.png"
@@ -184,7 +184,7 @@ const handelHome=()=>{
                                         to={'/notifications'}>
                                         <a className="cursor-pointer relative">
                                             <FaRegBell size={28} />
-                                            {data>0 && <div class="inline-flex absolute  -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
+                                            {data>0 && <div className="inline-flex absolute  -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">{data}</div>
                                             }
                                         </a>
                                     </Link>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { GoSearch } from 'react-icons/go';
+import { useNavigate } from 'react-router-dom';
 import { getSearchedUser } from '../../../api/userApi';
 import SearchUser from '../navbar/searchUser';
 
@@ -9,14 +10,21 @@ import SearchUser from '../navbar/searchUser';
 
 const SearchBot = ({ open, onClose }) => {
 const [search,setSearch]=useState([])
+const navigate=useNavigate()
     const searchUser = async (e) => {
-        const searchValue = e.target.value;
-        if (searchValue) {
-            const { data } = await getSearchedUser(searchValue)
-            setSearch(data)
-        } else {
-            setSearch()
+        try{
+            const searchValue = e.target.value;
+            if (searchValue) {
+                const { data } = await getSearchedUser(searchValue)
+                setSearch(data)
+            } else {
+                setSearch()
+            }
+
+        }catch(err){
+            navigate('/error')
         }
+      
     };
 
     if (!open) { return null } else {

@@ -24,7 +24,6 @@ module.exports = {
             const User = await userSchema.findOne(
                 {
                     $or: [
-
                         { userName: data },
                         { email: data },
                         { phoneNumber: data }
@@ -55,7 +54,7 @@ module.exports = {
     checkBlock: async (userId) => {
         try {
             const userBlock = await userSchema.findById(userId)
-            return userBlock.Status
+            return userBlock
         } catch (error) {
             return error.message
         }
@@ -74,7 +73,6 @@ module.exports = {
                 message: error.message,
             })
         }
-
     },
     sentOTPverificationmail: (email, otp) => {
         try {
@@ -87,16 +85,11 @@ module.exports = {
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log("errr");
-                    console.log(error);
                 } else {
-                    console.log("Verification otp mail sent");
-                    console.log(info.response);
                     res.json({
                         status: "pending",
                         message: "Verification otp mail sent",
                         mail: email,
-
                     })
                 }
             });
@@ -110,65 +103,39 @@ module.exports = {
     Posts: (Data, UserId) => {
         try {
             const array = []
-            const { description, postImage,Location } = Data
+            const { description, postImage, Location } = Data
             const tags = description.match(/#\w+/g)
             //tags=[#happy,#2]=>[id[#happy], id[#2]]
             const Tags = tags.map(async (tag) => {
-                console.log(tag, 'taggggggggggggg');
                 const value = await tagsSchema.findOne({ tags: tag })
-                console.log(value, 'valueeeeeeeeeeeeeeeeeeeee');
-                if(!value){
-                    console.log('firstttttttttt');
+                if (!value) {
                     const newTag = new tagsSchema({
-                        tags: tag,    
+                        tags: tag,
                     })
-        
-                    newTag.save().then(async()=>{
-                        console.log(newTag);
+                    newTag.save().then(async () => {
+                        console.log("new tag saved", newTag);
                         await postSchema.findByIdAndUpdate(post?._id, {
                             $push: { tags: newTag._id }
                         })
                     })
-                }else{
+                } else {
                     await postSchema.findByIdAndUpdate(post?._id, {
                         $push: { tags: value._id }
                     })
-                    console.log("why thissssssssssssss");
                 }
-                
-
-
-                // tagsSchema.findOneAndUpdate({ tags: tag }, { tags: tag },{ upsert: true } ).then(async (value) => {
-                //     console.log("value: " +value);
-                //     const { _id } = value
-                //     await postSchema.findByIdAndUpdate(post?._id, {
-                //         $push: { tags: _id }
-                //     })
-
-                // }).catch((error) => {
-                //     console.log(error);
-                // })
             })
-
-            console.log("id: " + Tags);
             const post = new postSchema({
                 userId: UserId,
                 description: description,
                 postImage: postImage,
-                Location:Location,
+                Location: Location,
                 tags: array
 
             })
-
-            console.log(post);
             post.save()
-
-
         } catch (error) {
             return error.message
         }
-
-
     },
     listPosts: async (userId) => {
         try {
@@ -176,7 +143,6 @@ module.exports = {
                 {
                     $match: {
                         _id: ObjectId(userId),
-
                     }
                 },
                 {
@@ -230,7 +196,7 @@ module.exports = {
                         reportStatus: '$user.reportStatus',
                         userName: '$user.userName',
                         date: '$posts.date',
-                        Location:'$posts.Location',
+                        Location: '$posts.Location',
                         description: '$posts.description',
                         Likes: '$posts.Likes',
                         Comments: '$comments',
@@ -268,14 +234,12 @@ module.exports = {
                     $sort: { 'date': -1 }
                 }
             ])
-            console.log("posts", posts);
             return posts
         } catch (error) {
             return error.message
         }
     },
     tagedPosts: async (TID) => {
-        console.log(TID, "TID");
         try {
             const posts = await postSchema.aggregate([
                 {
@@ -313,7 +277,7 @@ module.exports = {
                         reportStatus: '$user.reportStatus',
                         userName: '$user.userName',
                         date: '$date',
-                        Location:'$Location',
+                        Location: '$Location',
                         description: '$description',
                         Likes: '$Likes',
                         Comments: '$comments',
@@ -332,7 +296,6 @@ module.exports = {
                     $sort: { 'date': -1 }
                 }
             ])
-            console.log(posts, "taged posts");
             return posts;
         } catch (error) {
             return error.message
@@ -343,12 +306,10 @@ module.exports = {
             const posts = await postSchema.aggregate([
                 {
                     $lookup: {
-
                         from: 'users',
                         localField: 'userId',
                         foreignField: '_id',
                         as: "user"
-
                     }
                 },
                 {
@@ -364,7 +325,7 @@ module.exports = {
                         Status: '$user.Status',
                         date: '$date',
                         description: '$description',
-                        Location:'$Location',
+                        Location: '$Location',
                         DP: '$user.profilePhoto',
                     }
                 },
@@ -380,32 +341,27 @@ module.exports = {
                     $limit: 1
                 }
             ])
-            console.log("latestPost", posts);
             return posts
         } catch (error) {
             return error.message
         }
     },
     doLikePost: async (postId, userId) => {
-
         try {
             const like = await postSchema.findByIdAndUpdate(postId, {
                 $push: { Likes: userId }
             })
             return json({ msg: "sucessfully" })
-
         } catch (error) {
             return error.message
         }
     },
     doUnLikePost: async (postId, userId) => {
-
         try {
             const unlike = await postSchema.findByIdAndUpdate(postId, {
                 $pull: { Likes: userId }
             })
             return json({ msg: "sucessfully" })
-
         } catch (error) {
             return error.message
         }
@@ -465,7 +421,6 @@ module.exports = {
                 }
             ])
             return post;
-
         } catch (error) {
             return error.message
         }
@@ -516,7 +471,6 @@ module.exports = {
     },
     getUserPosts: async (userId) => {
         try {
-            console.log(userId);
             let userHead = await postSchema.aggregate([
                 {
                     $match: { userId: ObjectId(userId) }
@@ -529,22 +483,17 @@ module.exports = {
                 }
             ])
             return userHead
-
         } catch (error) {
             return error.message
         }
     },
     getUserProfileForEdit: async (userId) => {
         try {
-            console.log(userId);
             let userDetails = await userSchema.findById(userId)
-            console.log(userDetails);
             return userDetails
         } catch (error) {
             return error.message
         }
-
-
     },
     doUserProfileEdit: async (userId, data) => {
         try {
@@ -569,13 +518,11 @@ module.exports = {
                     }
                 })
                 const result = await userSchema.findById(userId)
-                console.log(result, "created");
                 return ({ message: "success", status: true, data: { id: result._id, username: result.userName, profilePhoto: result.profilePhoto } })
             }
         } catch (error) {
             return error.message
         }
-
     },
     changeDp: async (userId, photo) => {
         try {
@@ -585,9 +532,7 @@ module.exports = {
                 }
             })
             const result = await userSchema.findById(userId)
-            console.log(result, "created");
             return ({ message: "success", status: true, data: { id: result._id, username: result.userName, profilePhoto: result.profilePhoto } })
-
         } catch (error) {
             return error.message
         }
@@ -605,7 +550,7 @@ module.exports = {
     },
     doBookPost: async (postId, userId) => {
         try {
-            const save = await postSchema.findByIdAndUpdate(postId, {
+            await postSchema.findByIdAndUpdate(postId, {
                 $push: { Bookmarks: userId }
             })
             return json({ msg: "sucessfully" })
@@ -616,19 +561,16 @@ module.exports = {
     },
     doUnBookPost: async (postId, userId) => {
         try {
-            const unsave = await postSchema.findByIdAndUpdate(postId, {
+            await postSchema.findByIdAndUpdate(postId, {
                 $pull: { Bookmarks: userId }
             })
             return json({ msg: "sucessfully" })
-
         } catch (error) {
             return error.message
         }
-
     },
     getSavedPosts: async (userId) => {
         try {
-            console.log(userId);
             let userHead = await postSchema.aggregate([
                 {
                     $match: { Bookmarks: userId }
@@ -638,11 +580,8 @@ module.exports = {
                         userId: '$userId'
                     }
                 }
-
             ])
-            console.log(userHead);
             return userHead
-
         } catch (error) {
             return error.message
         }
@@ -669,30 +608,18 @@ module.exports = {
     },
     userFollow: async (userId, friendId) => {
         try {
-            await userSchema.findByIdAndUpdate(userId, {
-                $push: { Following: friendId }
-            })
-            await userSchema.findByIdAndUpdate(friendId, {
-                $push: { Followers: userId }
-            }).then((response) => {
-                return json({ msg: "sucessfully" })
-            })
-
+            await userSchema.findByIdAndUpdate(userId, { $push: { Following: friendId } })
+            await userSchema.findByIdAndUpdate(friendId, { $push: { Followers: userId } })
+            return json({ msg: "sucessfully" })
         } catch (error) {
             return error.message
         }
     },
     userUnfollow: async (userId, friendId) => {
         try {
-            await userSchema.findByIdAndUpdate(userId, {
-                $pull: { Following: friendId }
-            })
-            await userSchema.findByIdAndUpdate(friendId, {
-                $pull: { Followers: userId }
-            }).then((response) => {
-                return json({ msg: "sucessfully" })
-            })
-
+            await userSchema.findByIdAndUpdate(userId, { $pull: { Following: friendId } })
+            await userSchema.findByIdAndUpdate(friendId, { $pull: { Followers: userId } })
+            return json({ msg: "sucessfully" })
         } catch (error) {
             return error.message
         }
@@ -711,8 +638,6 @@ module.exports = {
                 }
             ])
             return result
-
-
         } catch (error) {
             return error.message
         }
@@ -727,34 +652,20 @@ module.exports = {
     },
     reportPost: async (user, data) => {
         try {
-            // console.log("report", user, data);
             const postId = new ObjectId(data.postId)
-            // console.log(postId);
             const result = await postSchema.findByIdAndUpdate(postId, {
                 $push: { Reports: { Reason: data.reason, UserId: user } }
-            },
-                function (err, docs) {
-                    if (err) {
-                        // console.log(err)
-                    }
-                    else {
-                        // console.log("Updated User : ", docs);
-                    }
-                })
-            // console.log(result);
+            })
             return json({ msg: "sucessfully" })
-
         } catch (error) {
             return error.message
         }
     },
     followers: async (userId) => {
         const user = await userSchema.findById(userId);
-
         const Followers = await Promise.all(
             user.Followers.map((id) => userSchema.findById(id))
         )
-
         const formattedFollowers = Followers.map(
             ({ _id, userName, profilePhoto }) => {
                 return { _id, userName, profilePhoto };
@@ -764,7 +675,6 @@ module.exports = {
     },
     following: async (userId) => {
         const user = await userSchema.findById(userId);
-
         const Following = await Promise.all(
             user.Following.map((id) => userSchema.findById(id))
         )
@@ -774,20 +684,17 @@ module.exports = {
                 return { _id, userName, profilePhoto, Followers, Following };
             }
         )
-        // console.log("formattedFollowing", formattedFollowing);
         return formattedFollowing
     },
     addNotifications: async (data) => {
         try {
             const { receiverId, senderId, postId, type } = data
-            // console.log("data", data);
             const res = await notificationSchema.findOne({
                 triggered_by: senderId,
                 notify: receiverId,
                 postId: postId,
                 notification: type
             })
-            console.log(res, "res");
             if (!res) {
                 const notifications = new notificationSchema({
                     triggered_by: senderId,
@@ -797,12 +704,10 @@ module.exports = {
                 })
                 notifications.save()
             } else {
-                // console.log("already saved");
                 await notificationSchema.findByIdAndUpdate(ObjectId(res._id), {
                     notification: type
                 })
             }
-
             return { msg: "sucessfully" }
         } catch (error) {
             return error.message
@@ -810,7 +715,6 @@ module.exports = {
     },
     getUserNotifications: async (UID) => {
         try {
-            // console.log("UID", UID);
             const notifications = await notificationSchema.aggregate([
                 {
                     $match: {
@@ -837,34 +741,26 @@ module.exports = {
                 }, {
                     $sort: { 'time': -1 }
                 }
-
             ])
-            // console.log(notifications, "notifications")
             return notifications
-
         } catch (error) {
             return error.message
         }
     },
     doNotifications: async (NID) => {
         try {
-            // console.log("NID", NID);
             const notification = await notificationSchema.findByIdAndUpdate(NID, {
                 $set: {
                     read: true,
                 }
             })
-            // console.log("notification",notification);
             return { msg: "sucessfully" }
-
         } catch (error) {
             return error.message
         }
-
     },
     getUserNotificationsCount: async (UID) => {
         try {
-            // console.log("UID getNotificationsCount", UID);
             const notifications = await notificationSchema.aggregate([
                 {
                     $match: {
@@ -872,18 +768,14 @@ module.exports = {
                         read: false
                     }
                 }
-
             ])
-            // console.log(notifications, "notifications count")
             return notifications
-
         } catch (error) {
             return error.message
         }
     },
     getAllTags: async (data) => {
         try {
-            // console.log("UID getNotificationsCount", UID);
             const result = await tagsSchema.aggregate([
                 {
                     $match: {
@@ -898,16 +790,13 @@ module.exports = {
                 { $limit: 5 }
 
             ])
-            console.log(result, "tags")
             return result
-
         } catch (error) {
             return error.message
         }
     },
     TopTenTags: async () => {
         try {
-            // console.log("UID getNotificationsCount", UID);
             const result = await postSchema.aggregate([
                 {
                     $unwind: '$tags'
@@ -936,12 +825,10 @@ module.exports = {
                 },
                 {
                     $sort: { 'count': -1 }
-                },{
-                    $limit:10
+                }, {
+                    $limit: 10
                 }
-
             ])
-            console.log(result, "topten tags")
             return result
 
         } catch (error) {
@@ -950,18 +837,15 @@ module.exports = {
     },
     doDeactiveAccount: async (UID) => {
         try {
-            console.log("UID getNotificationsCount", UID);
             const result = await userSchema.findByIdAndUpdate(UID,
                 {
                     $set: {
                         reportStatus: true,
                     }
                 })
-            console.log(result, "DeactiveAccount")
             return result
         } catch (error) {
             return error.message
         }
     }
-
 }

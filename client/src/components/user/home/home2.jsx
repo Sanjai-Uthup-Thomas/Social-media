@@ -39,7 +39,8 @@ function HomePage() {
 
 
 
-    return (<>
+    return (
+    <>
         {
             // loading ? <div className="flex flex-col justify-center items-center w-full h-full">
             //     <ThreeCircles
@@ -51,15 +52,18 @@ function HomePage() {
 
             //     />
             // </div> : 
-            <main className=" grid grid-cols-4 container md:w-10/12 mx-auto pt-4   ">
-                <div className="col-span-1 hidden lg:block px-4">
-                    <div className="fixed p-5 w-80 bg-zinc-100">
-                        <div className="flex flex-row justify-center p-2 w-72 font-bold text-gray-500 text-sm bg-zinc-100">
+            // <main className=" grid grid-cols-3 container md:w-10/12 mx-auto pt-4 ">
+            <main className=" flex gap-5 container w-full md:w-10/12 mx-auto pt-4 ">
+                {/* <div className="col-span-1  hidden lg:block  "> */}
+                <div className=" w-3/12 hidden lg:block
+                  ">
+                    <div className=" p-5 bg-zinc-100 hidden lg:block ">
+                        <div className="flex flex-row justify-center p-2 w-full font-bold text-gray-500 text-sm bg-zinc-100">
                             Trending tags
                         </div>
                         {array.map((data) => {
                             return (
-                                <TopTenTags data={data}/>
+                                <TopTenTags data={data} key={data._id}/>
                             )
                         })}
 
@@ -67,11 +71,12 @@ function HomePage() {
 
                     </div>
                 </div>
-                <div className="md:pl-12 col-span-4 lg:col-span-2 ">
-
+                {/* <div className="md:pl-12 col-span-3 lg:col-span-1 "> */}
+                <div className="w-full lg:w-6/12 ">
                     <Posts />
                 </div>
-                <div className="col-span-1 hidden lg:block md:pl-12">
+                {/* <div className="col-span-1 hidden lg:block md:pl-12"> */}
+                <div className="w-3/12 hidden lg:block ">
                     <div className="fixed p-5 w-80 bg-zinc-100">
                         <div className="flex flex-row p-2 bg-zinc-100">
                             <a href="">

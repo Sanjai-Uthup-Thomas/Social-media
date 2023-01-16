@@ -5,8 +5,6 @@ const adminHelpers = require('../Helpers/adminHelpers')
 const { response } = require('express')
 
 module.exports = {
-
-    //adminSignup
     doSignup: async (req, res) => {
         try {
             const { email, password } = req.body
@@ -36,28 +34,30 @@ module.exports = {
         }
 
     },
-
     doLogin: async (req, res) => {
         try {
             const { email, password } = req.body
+            if (!email || !password)
+                return res
+                    .status(400)
+                    .json({ msg: "Not all fields have been entered." })
             const user = await adminSignUp.findOne({ email: email })
             if (!user)
                 return res
-                    .status(200)
-                    .json({ msg: "No account found" });
+                    .status(400)
+                    .json({ msg: "No account with this email has been registered." });
             const isMatch = await bcrypt.compare(password, user.password);
 
 
-            if (!isMatch) return res.status(200).json({ msg: "Invalid password" });
-            const token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET,
+            if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
+            const token = jwt.sign({ email: email }, process.env.JWT_SECRET,
                 { expiresIn: "3d" })
             console.log("token: " + token);
 
             res.json({
                 token,
                 user: {
-                    id: user._id,
-                    username: user.email,
+                    username: email,
                 },
             });
         } catch (err) {
@@ -66,62 +66,45 @@ module.exports = {
     },
     getUsers: async (req, res) => {
         try {
-            adminHelpers.users().then((response) => {
-                console.log(response);
-                res.status(200).json(response)
-            })
-
-
+            const response = await adminHelpers.users()
+            res.status(200).json(response)
         }
-
         catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    doBlockUser: (req, res) => {
+    doBlockUser: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const response = await adminHelpers.blockUser(id)
+            res.status(200).json(response)
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+    getPosts: async (req, res) => {
+        try {
+            const response = await adminHelpers.PostsList()
+            res.status(200).json(response)
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    },
+    doBlockPost: async (req, res) => {
         console.log(req.params.id);
         const id = req.params.id;
         try {
-            adminHelpers.blockUser(id).then((response) => {
-                console.log(response);
-                res.status(200).json(response)
-            })
-
+            const response = await adminHelpers.blockPost(id)
+            res.status(200).json(response)
         } catch (err) {
             res.status(500).json({ msg: err.message });
         }
     },
-    getPosts: (req, res) => {
-        try {
-            adminHelpers.PostsList().then((response) => {
-                console.log(response);
-                res.status(200).json(response)
-
-            })
-        } catch (err) {
-            res.status(500).json({ msg: err.message });
-        }
-    },
-    doBlockPost: (req, res) => {
-        console.log(req.params.id);
-        const id = req.params.id;
-        try {
-            adminHelpers.blockPost(id).then((response) => {
-                console.log(response);
-                res.status(200).json(response)
-            })
-        } catch (err) {
-            res.status(500).json({ msg: err.message });
-        }
-    },
-    getReportedUsers:(req,res)=>{
+    getReportedUsers: async (req, res) => {
         try {
             const id = req.params.id
-            console.log("id: " + req.params.id);
-            adminHelpers.ReportedUsers(id).then((response) => {
-                console.log(response);
-                res.status(200).json(response)
-            })
+            const response = await adminHelpers.ReportedUsers(id)
+            res.status(200).json(response)
         } catch (err) {
             res.status(500).json({ msg: err.message });
         }

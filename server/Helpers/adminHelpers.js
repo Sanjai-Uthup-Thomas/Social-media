@@ -4,12 +4,12 @@ const postSchema = require('../models/posts')
 let ObjectId = mongoose.Types.ObjectId
 
 module.exports = {
-
     users: async () => {
         try {
             const res = await userSignUp.find()
             return res
         } catch (error) {
+            console.log(error);
             return ({
                 status: "Failed",
                 message: error.message,
@@ -85,12 +85,12 @@ module.exports = {
                     $match: { _id: ObjectId(postId) }
                 },
                 {
-                    $unwind:'$Reports'
+                    $unwind: '$Reports'
                 }
-                ,{
-                    $project:{
-                        Reason:'$Reports.Reason',
-                        userId:'$Reports.UserId',
+                , {
+                    $project: {
+                        Reason: '$Reports.Reason',
+                        userId: '$Reports.UserId',
                     }
                 },
                 {
@@ -100,7 +100,7 @@ module.exports = {
                         }
                     }
                 }
-                ,{
+                , {
                     $lookup: {
                         from: 'users',
                         localField: 'userId',
@@ -109,20 +109,19 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind:'$user'
+                    $unwind: '$user'
                 },
                 {
-                    $project:{
-                        userName:'$user.userName',
-                        userDP:'$user.profilePhoto',
-                        reason:'$Reason'
+                    $project: {
+                        userName: '$user.userName',
+                        userDP: '$user.profilePhoto',
+                        reason: '$Reason'
                     }
                 }
             ])
-            console.log(posts);
             return posts
         } catch (error) {
-             return ({
+            return ({
                 status: "Failed",
                 message: error.message,
             })

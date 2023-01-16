@@ -5,13 +5,10 @@ let ObjectId = mongoose.Types.ObjectId
 
 module.exports = {
     getAllChats:async(UID)=>{
-        // console.log("uid",UID);
         try{
             const conversation = await chat.find({
                 users:{$in:[UID]}
             }) 
-            // console.log("conversation",conversation);
-
             const result = await chat.aggregate([
                 {
                     $match:{users:{$in:[ObjectId(UID)]}}
@@ -58,9 +55,6 @@ module.exports = {
                 },
                 { $sort : { time : -1 } }
             ])
-            // console.log("result");
-            // console.log(result);
-            // console.log("result");
             return result
         }catch(err){
             return err
@@ -68,8 +62,6 @@ module.exports = {
 
     },
     startChat:async(UID,FID)=>{
-        console.log("uid,fid",UID,FID);
-        console.log("after user");
         const chats = await chat.findOne({
             users:{$all:[UID,FID]}
         })
@@ -79,18 +71,12 @@ module.exports = {
             })
             try{
                 const savedChat=await newChat.save()
-                console.log("savedChat");
-
-                console.log("savedChat",savedChat);
-
                 return savedChat
             }
             catch(err){
                 return err
             }
         }else{
-            console.log("chat is already");
-            console.log("chat",chats);
             const result = await chat.aggregate([
                 {
                     $match:{users:{$all:[ObjectId(FID),ObjectId(UID)]}}
@@ -131,66 +117,71 @@ module.exports = {
                 }
                
             ])
-            console.log(result[0]);
-
             return result[0]
         }
 
     },
     getChatList:async(CID,UID)=>{
-        // console.log("CID",CID);
         try{
             const chatList = await chat.aggregate([
                 {
                     $match:{_id:ObjectId(CID)}
-                },{
+                }
+                ,
+                {
                     $unwind:'$users'
-                },{
+                }
+                ,
+                {
                     $match:{users:{$ne:ObjectId(UID)}}
-                },{
+                }
+                ,
+                {
                     $lookup: {
                         from: 'users',
                         localField: 'users',
                         foreignField: '_id',
                         as: "user"
                     }
-                },{
+                }
+                ,
+                {
                     $lookup: {
                         from: 'messages',
                         localField: 'latestMessage',
                         foreignField: '_id',
                         as: "latestMessage"
                     }
-                },
+                }
+                ,
                 {
                     $unwind: 
                     '$user',        
-                },
+                }
+                ,
                 {
                     $unwind: 
                     '$latestMessage'
                         
                 }
-                ,{
+                ,
+                {
                     $project:{
                         userName:'$user.userName',
                         userDP:'$user.profilePhoto',
                         latestMessage:'$latestMessage.content',
                         time:'$updatedAt'
                     }
-                },
-               
+                }               
             ])
-            // console.log(chatList);
-            return chatList;
-
+            return chatList
         } catch(err){
             return err
         }
     },
     userSearch:async(data,user)=>{
         try {
-            let result = await userSchema.aggregate([
+            const result = await userSchema.aggregate([
                 {
                     $match: {
                         _id:{$ne:ObjectId(user)},
@@ -204,9 +195,6 @@ module.exports = {
                     }
                 }
             ])
-            // console.log(result);
-            // const users=await userSchema.find(result).find({_id:{$ne:ObjectId(user)}})
-            // console.log(users);
             return result
         } catch (error) {
             return error.message

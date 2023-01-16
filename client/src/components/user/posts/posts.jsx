@@ -13,9 +13,6 @@ import MappedPosts from './mappedPosts';
 import NewPost from '../../modals/NewPost';
 // import { control } from '../../../features/auth/authSlice';
 
-
-
-
 function Posts() {
     // const socket = require('socket.io-client')("ws://localhost:3001")
     const [data, setData] = useState([])
@@ -31,13 +28,13 @@ function Posts() {
     const userId = userParse.id
 
     const {
-        auth: { controlState,tag,tagName}
+        auth: { controlState, tag, tagName }
     } = useSelector(state => state)
     const fetchData = async () => {
-        if(tag===null){
+        if (tag === null) {
             const posts = await getPosts()
             setData(posts.data)
-        }else{ 
+        } else {
             console.log("tag selection");
             console.log(tag);
             const posts = await getTagedPosts(tag)
@@ -50,7 +47,7 @@ function Posts() {
     }
     useEffect(() => {
         fetchData()
-    }, [ controlState,control2, user])
+    }, [controlState, control2, user])
     const view = () => {
         setIsOpen(true)
     }
@@ -59,20 +56,20 @@ function Posts() {
 
     return (
         <>{!tag &&
-        <div className='w-100 h-12 mb-4 flex bg-zinc-100 border border-slate-200' 
-        onClick={view}
-        >
-            <div className=' w-10 items-center'>
-            <img
-                                className="rounded-full w-10 max-w-none inline mt-1 ml-1"
-                                // src="https://img.icons8.com/ios/2x/brave-web-browser.png"
+            <div className='w-100 h-12 mb-4 flex bg-zinc-100 border border-slate-200'
+                onClick={view}
+            >
+                <div className=' w-10 items-center'>
+                    <img
+                        className="rounded-full w-10 max-w-none inline mt-1 ml-1"
+                        // src="https://img.icons8.com/ios/2x/brave-web-browser.png"
 
-                                src={`http://localhost:4000/DP/${userParse.profilePhoto}`}
+                        src={`http://localhost:4000/DP/${userParse.profilePhoto}`}
 
-                            />{" "}
-            </div>
-            <div className='w-[620px]'>
-            <div className="flex-1 pr-3 py-1 ">
+                    />{" "}
+                </div>
+                <div className='w-[620px]'>
+                    <div className="flex-1 pr-3 py-1 ">
                         <input
                             className={`w-full px-3 py-auto ml-2 h-8 mt-1 text-sm  outline-0 rounded-xl`}
                             type="text"
@@ -80,18 +77,18 @@ function Posts() {
 
                         />
                     </div>
-            </div>
-            <div className='w-20'>
-            <div className="flex-1 items-center flex justify-end my-2"> 
-            <button className="bg-black rounded-3xl  dark:bg-slate-800 dark:text-white h-8 w-20 items-center cursor-pointer text-sm">ADD POST</button>
-                        </div>
-            </div>
-             </div>}
-             {tag && <div className='w-100 h-8 mb-4 flex bg-zinc-100 rounded-xl border-slate-200 px-auto' 
-        ><div className=' mx-auto'>Posts with {tagName} </div></div>}
+                </div>
+                <div className='w-20'>
+                    <div className="flex-1 items-center flex justify-end my-2">
+                        <button className="bg-black rounded-3xl  dark:bg-slate-800 dark:text-white h-8 w-20 items-center cursor-pointer text-sm">ADD POST</button>
+                    </div>
+                </div>
+            </div>}
+            {tag && <div className='w-100 h-8 mb-4 flex bg-zinc-100 rounded-xl border-slate-200 px-auto'
+            ><div className=' mx-auto'>Posts with {tagName} </div></div>}
             {data && data.map((post, index) => {
                 return (
-                    <MappedPosts post={post} index={index}/>
+                    <MappedPosts post={post} key={index} />
                 )
 
             })}
@@ -107,7 +104,7 @@ function Posts() {
             }
 
 
-<NewPost open={isOpen} onClose={() => { setIsOpen(false) }} />
+            <NewPost open={isOpen} onClose={() => { setIsOpen(false) }} />
 
         </>
     );

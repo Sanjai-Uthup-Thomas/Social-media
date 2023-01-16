@@ -9,7 +9,6 @@ module.exports = {
 
     //userSignup
     doSignup: async (req, res) => {
-        // console.log(req.body);
         const { userName, phoneNumber, email, password } = req.body
         const UserName = await userSignUp.findOne({ userName: userName })
         if (UserName) {
@@ -29,9 +28,6 @@ module.exports = {
                 .status(200)
                 .json({ msg: "Phone number is already in use" });
         }
-
-
-
         const otp = userHelpers.OTPgenerator()
         userHelpers.sentOTPverificationmail(email, otp)
         const saltPassword = await bcrypt.genSalt(10)
@@ -43,28 +39,19 @@ module.exports = {
             email: email,
             password: securePassword,
             otp: secureOTP
-
         }
         res.json(signedUpUser)
-
-
     },
 
     doOtpVerify: async (req, res) => {
-
-        // console.log(req.body);
         const { userName, phoneNumber, email, password, otp, OTP } = req.body
         const isMatch = await bcrypt.compare(OTP, otp);
-
-
         if (isMatch) {
-
             const signedUpUser = new userSignUp({
                 userName: userName,
                 phoneNumber: phoneNumber,
                 email: email,
                 password: password
-
             })
             signedUpUser.save()
                 .then(data => {
@@ -84,34 +71,25 @@ module.exports = {
     //userLogin
     doLogin: async (req, res) => {
         try {
-            // console.log(req.body);
             const { email, password } = req.body
             const user = await userSignUp.findOne({ email: email })
-            // console.log(user);
             if (!user) {
                 return res
-                    .status(200)
+                    .status(400)
                     .json({ msg: "No account found" });
             }
             const id = user.id
-            // console.log(id);
-            const blockUser = await userSignUp.findById(id, { Status: true })
-            if (!blockUser) {
+            const blockUser = await userSignUp.findById(id)
+            if (!blockUser?.Status) {
                 return res
-                    .status(200)
+                    .status(400)
                     .json({ msg: "Your account has been blocked" })
             }
-
-
             const isMatch = await bcrypt.compare(password, user.password);
-
-
-            if (!isMatch) return res.status(200).json({ msg: "Invalid password" });
+            if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
             await userSignUp.findByIdAndUpdate(id, { $set: { reportStatus: false } })
             const token = jwt.sign({ email: user.userName, id: user._id }, process.env.JWT_SECRET,
                 { expiresIn: "3d" })
-            // console.log("token: " + token);
-
             res.json({
                 token,
                 user: {
@@ -125,16 +103,13 @@ module.exports = {
         }
     },
     doForgetPassword: async (req, res) => {
-        console.log(req.body);
         const { data } = req.body;
         try {
             const user = await userHelpers.findUser(data)
-            console.log(user);
             if (user.error) {
-                res.json(user)
+                res.status(400).json(user)
             } else {
                 const { _id, email } = user
-                console.log(email);
                 const otp = userHelpers.OTPgenerator()
                 userHelpers.sentOTPverificationmail(email, otp)
                 const saltPassword = await bcrypt.genSalt(10)
@@ -143,14 +118,12 @@ module.exports = {
                 res.json(encryptedOTP)
 
             }
-
         } catch (err) {
-            res.json({ error: err?.message })
+            res.status(500).json({ error: err?.message })
         }
     },
     doOtpLogin: async (req, res) => {
         try {
-            console.log(req.body);
             const { userId, otp, password } = req.body
             const user = await userSignUp.findById(userId)
             const isMatch = await bcrypt.compare(otp, user.otp);
@@ -170,12 +143,9 @@ module.exports = {
     //check if token is valid
     doTokenIsValid: async (req, res) => {
         try {
-            // console.log("req.user", req.user);
-            const token = req.headers("x-auth-token")
-            // console.log(token, "usrcon 63");
+            const token = req.header("x-auth-token")
             if (!token) return res.json(false)
             const verified = jwt.verify(token, process.env.JWT_SECRET)
-            // console.log(verified);
             if (!verified) return res.json(false)
             const user = await userSignUp.findById(verified.id)
             if (!user) return res.json(false)
@@ -186,296 +156,251 @@ module.exports = {
 
     },
     doPost: async (req, res) => {
-        req.body.postImage = req.file.filename
-        await userHelpers.Posts(req.body, req.user)
-        res.json(req.body)
+        try {
+            req.body.postImage = req.file.filename
+            await userHelpers.Posts(req.body, req.user)
+            res.status(201).json(true)
+        } catch (err) {
+            res.json({ error: err?.message })
+        }
     },
-    getPost: (req, res) => {
-        // console.log("get post");
+    getPost: async (req, res) => {
+        const userId = req.user
+        try {
+            const response = await userHelpers.listPosts(userId)
+            res.json(response)
+        } catch (err) {
+            res.json({ error: err })
+        }
 
-        const userId = req.user
-        // console.log("get post");
-        // console.log("userId: ", userId);
-        userHelpers.listPosts(userId).then((response) => {
-            res.json(response)
-        })
     },
-    getTagedPosts:(req,res)=>{
-        console.log(req.params);
-        const tagId=req.params.id
-        userHelpers.tagedPosts(tagId).then((response) => {
+    getTagedPosts: async (req, res) => {
+        try {
+            const tagId = req.params.id
+            const response = await userHelpers.tagedPosts(tagId)
             res.json(response)
-        })
+        } catch (err) {
+            res.status(500).json({ error: err })
+
+        }
+
     },
-    getLatestPost: (req, res) => {
-        console.log("ghjk");
-        userHelpers.latestPosts().then((response) => {
+    getLatestPost: async (req, res) => {
+        try {
+            const response = await userHelpers.latestPosts()
             res.json(response)
-        })
+        } catch (err) {
+            res.status(500).json({ error: err })
+
+        }
+
     },
-    doLikePost: (req, res) => {
-        // console.log(req.body.id);
-        // console.log(req.user);
-        const postId = req.body.id
-        const userId = req.user
-        userHelpers.doLikePost(postId, userId).then((response) => {
+    doLikePost: async (req, res) => {
+        try {
+            const postId = req.body.id
+            const userId = req.user
+            const response = await userHelpers.doLikePost(postId, userId)
             res.json(response)
-        })
+        } catch (err) {
+            res.status(500).json({ error: err })
+
+        }
+
     },
-    doUnLikePost: (req, res) => {
-        const postId = req.body.id
-        const userId = req.user
-        userHelpers.doUnLikePost(postId, userId).then((response) => {
+    doUnLikePost: async (req, res) => {
+        try {
+            const postId = req.body.id
+            const userId = req.user
+            const response = await userHelpers.doUnLikePost(postId, userId)
             res.json(response)
-        })
+        } catch (err) {
+            res.status(500).json({ error: err })
+        }
     },
-    doComment: (req, res) => {
+    doComment: async (req, res) => {
         try {
             const { postId, comment } = req.body
             const userId = req.user
-            userHelpers.docommentPost(postId, userId, comment).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.docommentPost(postId, userId, comment)
+            res.status(500).json(response)
         } catch (err) {
             res.json({ error: err.message })
         }
     },
     getComment: async (req, res) => {
         try {
-            await userHelpers.getCommentPosts(req.params.id).then((response) => {
-                res.json(response)
-            })
-
-
+            const response = await userHelpers.getCommentPosts(req.params.id)
+            res.json(response)
         } catch (err) {
             res.json({ error: err.message })
         }
     },
     getCommentPost: async (req, res) => {
         try {
-            // console.log("postId", req.params.id)
-            await userHelpers.getPost(req.params.id).then((response) => {
-                // console.log(response);
-                res.json(response)
-
-            })
+            const response = await userHelpers.getPost(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
-
     },
     doUserNames: async (req, res) => {
         try {
-            await userHelpers.getUserNames().then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.getUserNames()
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     doUserHead: async (req, res) => {
         try {
-            // console.log(req.params.id);
-            await userHelpers.getUserHead(req.params.id).then((response) => {
-
-                res.json(response)
-            })
+            const response = await userHelpers.getUserHead(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     doUserPosts: async (req, res) => {
         try {
-            // console.log(req.params.id);
-            await userHelpers.getUserPosts(req.params.id).then((response) => {
-                // console.log(response);
-                res.json(response)
-            })
+            const response = await userHelpers.getUserPosts(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     getUserProfileForEdit: async (req, res) => {
         try {
-            // console.log(req.params.id);
-            await userHelpers.getUserProfileForEdit(req.params.id).then((response) => {
-                // console.log(response);
-                res.json(response)
-            })
+            const response = await userHelpers.getUserProfileForEdit(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doEditProfile: (req, res) => {
+    doEditProfile: async (req, res) => {
         try {
-            userHelpers.doUserProfileEdit(req.params.id, req.body).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.doUserProfileEdit(req.params.id, req.body)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doChangeDP: (req, res) => {
+    doChangeDP: async (req, res) => {
         try {
             req.body.photo = req.file.filename
-            userHelpers.changeDp(req.user, req.body.photo).then((response) => {
-                // console.log(response);
-                res.json(response);
-            })
-
+            const response = await userHelpers.changeDp(req.user, req.body.photo)
+            res.json(response);
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     changePassword: async (req, res) => {
         try {
-            // console.log(req.params);
-            // console.log("req.body ",req.body);
             const { password } = req.body
             const saltPassword = await bcrypt.genSalt(10)
             const securePassword = await bcrypt.hash(password, saltPassword)
             await userHelpers.doChangePassword(req.user, securePassword)
-            // console.log(response);
             res.json(response);
-
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doSavePost: (req, res) => {
+    doSavePost: async (req, res) => {
         try {
-            // console.log(req.body.id);
-            // console.log("req.user",req.user);
             const postId = req.body.id
             const userId = req.user
-            userHelpers.doBookPost(postId, userId).then((response) => {
-                res.json(response)
-            })
-
+            const response = await userHelpers.doBookPost(postId, userId)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
-
     },
-    doUnsavePost: (req, res) => {
+    doUnsavePost: async (req, res) => {
         try {
-            // console.log(req.body.id);
-            // console.log(req.user);
             const postId = req.body.id
             const userId = req.user
-            userHelpers.doUnBookPost(postId, userId).then((response) => {
-                res.json(response)
-            })
-
+            const response = await userHelpers.doUnBookPost(postId, userId)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     doSavedPosts: async (req, res) => {
         try {
-            // console.log(req.params.id);
-            await userHelpers.getSavedPosts(req.params.id).then((response) => {
-                console.log(response);
-                res.json(response)
-            })
-
+            const response = await userHelpers.getSavedPosts(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     doSearch: async (req, res) => {
         try {
-            // console.log(req.params.data);
-            await userHelpers.userSearch(req.params.data).then((response) => {
-                res.json(response)
-            })
-
-
+            const response = await userHelpers.userSearch(req.params.data)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doFollow: (req, res) => {
+    doFollow: async (req, res) => {
         try {
-            // console.log("req.params in follow", req.params.id);
-            // console.log("req.user in follow", req.user);
-            userHelpers.userFollow(req.user, req.params.id).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.userFollow(req.user, req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doUnfollow: (req, res) => {
+    doUnfollow: async (req, res) => {
         try {
-            // console.log("req.params in follow", req.params.id);
-            // console.log("req.user in follow", req.user);
-            userHelpers.userUnfollow(req.user, req.params.id).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.userUnfollow(req.user, req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    getSuggestions: (req, res) => {
+    getSuggestions: async (req, res) => {
         try {
-            userHelpers.doSuggestions(req.params.id).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.doSuggestions(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doDeletePost: (req, res) => {
+    doDeletePost: async (req, res) => {
         try {
-            // console.log("req.params in delete", req.params.id);
-            userHelpers.deletePost(req.params.id).then((response) => {
-                res.json(response)
-            })
-
+            const response = await userHelpers.deletePost(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    doReportPost: (req, res) => {
+    doReportPost: async (req, res) => {
         try {
-            console.log(req.body)
-            console.log(req.user)
-            userHelpers.reportPost(req.user, req.body).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.reportPost(req.user, req.body)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    getFollowers: (req, res) => {
+    getFollowers: async (req, res) => {
         try {
-            console.log(req.params.id)
-            userHelpers.followers(req.params.id).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.followers(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    getFollowing: (req, res) => {
+    getFollowing: async (req, res) => {
         try {
-            console.log(req.params.id)
-            userHelpers.following(req.params.id).then((response) => {
-                res.json(response)
-            })
+            const response = await userHelpers.following(req.params.id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     doNotifications: async (req, res) => {
         try {
-            console.log(req.body);
             const result = await userHelpers.addNotifications(req.body)
             res.json(result)
-
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     getNotifications: async (req, res) => {
@@ -483,66 +408,50 @@ module.exports = {
             const result = await userHelpers.getUserNotifications(req.user)
             res.json(result)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     EditNotifications: async (req, res) => {
         try {
-            console.log(req.params.id);
             const result = await userHelpers.doNotifications(req.params.id)
             res.json(result)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     getNotificationsCount: async (req, res) => {
         try {
-            // console.log("getNotificationsCount");
             const result = await userHelpers.getUserNotificationsCount(req.user)
             res.json(result)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
     getTags: async (req, res) => {
         try {
-            console.log(req.query.data);
             var str = req.query.data;
             var result = '#' + str;
-            console.log(result)
-
             const response = await userHelpers.getAllTags(result)
             res.json(response)
-
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    getTopTenTags: (req, res) => {
+    getTopTenTags: async (req, res) => {
         try {
-            userHelpers.TopTenTags().then((response) => {
-                res.json(response)
-            }).catch((err) => {
-                console.log(err);
-            })
-
+            const response = await userHelpers.TopTenTags()
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     },
-    deactiveAccount: (req, res) => {
+    deactiveAccount: async (req, res) => {
         try {
-            console.log(req.params);
             const { id } = req.params
-            userHelpers.doDeactiveAccount(id).then((response) => {
-                res.json(response)
-            }).catch((err) => {
-                console.log(err);
-            })
-
+            const response = await userHelpers.doDeactiveAccount(id)
+            res.json(response)
         } catch (err) {
-            res.json({ error: err.message })
+            res.status(500).json({ error: err.message })
         }
     }
-
 }

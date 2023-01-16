@@ -13,6 +13,8 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
     const [showReport,setShowReport] = useState(false)
     // const [postId, setPostId] = useState(PostId)
     // const [postUserId,setUserId] = useState('')
+    const userParse = localStorage.getItem("user")
+    const  user= JSON.parse(userParse)
 
 
 
@@ -52,16 +54,17 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
                             <div className='p-2 w-[335px] md:w-1/2'>
                                 <div className='overflow-y-auto h-96 pb-2'>
                                 <div className=" flex justify-end">
-                                <a
+                                      <a
                                     className="cursor-pointer"
                                     onClick={()=>{
-                                        console.log("three dot");
+                                        console.log(userId+"three dot"+user.id);
                                         setShowReport(true)
                                     }}
                                
                                 >
                                     <BsThreeDotsVertical />
                                 </a>
+                              
                             </div>
                                     <p>comments</p>
                                     {comments ? comments?.map((comments, index) => {

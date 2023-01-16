@@ -1,22 +1,26 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch} from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { signInAdmin } from '../../../features/auth/authSlice'
 function AdminLogin() {
     const Navigate= useNavigate()
     const dispatch = useDispatch()
-    const {
-        auth: { error },
-      } = useSelector(state => state);
-
+    const [error,setError]=useState('')
     const [email,setEmail]= useState("")
     const [password,setPassword]=useState("")
     const handelLogin =async()=>{
         dispatch(signInAdmin({email,password})).then((res)=>{
-            console.log(res.payload.data.token);
-            if(res.payload.data.token!==undefined){
-                 Navigate('/admin/dashboard')
-             }
+            console.log(res);
+            console.log(res?.payload?.data);
+            if(res?.payload?.status===400){
+                const msg=res?.payload?.data?.msg
+                setError(msg)
+            }else{
+                console.log("else");
+                Navigate('/admin/users')
+            }
+        }).catch((err) => {
+            console.log(err.status);
         })
        
         

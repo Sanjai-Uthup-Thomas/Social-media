@@ -23,9 +23,9 @@ function ReportedUsers({ open, onClose, postId }) {
                     <div className='bg-white p-2 h-[500px] text-black rounded align-middle text-center uppercase overflow-y-auto'>
                         {
                             data.length > 0 ? data.map((value) => <UsersMapped value={value} />) :
-                                <div class="place-items-center mt-52 h-100">
+                                <div className="place-items-center mt-52 h-100">
 
-                                    <div class="text-2xl uppercase text-center text-gray-800"> No one reported this post</div>
+                                    <div className="text-2xl uppercase text-center text-gray-800"> No one reported this post</div>
 
                                 </div>}
                     </div>
