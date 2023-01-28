@@ -14,6 +14,7 @@ import { GoSearch } from 'react-icons/go';
 import NewPost from '../../modals/NewPost'
 import { getNotificationsCount, getSearchedUser, getUserHead } from '../../../api/userApi';
 import SearchUser from './searchUser';
+import DPurl from '../../../api/DPapi';
 
 function Navbar() {
     const [data, setData] = useState([])
@@ -197,9 +198,9 @@ const handelHome=()=>{
                                         <div>
                                             <Menu.Button className="inline-block w-10 h-10 justify-center bg-white text-sm font-medium text-gray-700">
                                                 <img
-                                                    className="rounded-full"
+                                                    className="rounded-full w-9 h-9"
                                                     // src={data.me.image}
-                                                    src={`http://localhost:4000/DP/${users.profilePhoto}`}
+                                                    src={`${DPurl}/${users.profilePhoto}`}
                                                     // src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1780&q=80"
                                                     width="40"
                                                 />

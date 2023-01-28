@@ -17,10 +17,10 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 },resave: true
 app.use(express.json())
 app.use(cors())
 
-app.use('/',userUrls)
-app.use('/admin',adminUrls)
-app.use('/chat',chatUrls)
-app.use('/message',messageUrls)
+app.use('/api/',userUrls)
+app.use('/api/admin',adminUrls)
+app.use('/api/chat',chatUrls)
+app.use('/api/message',messageUrls)
 
 app.use('/images', express.static('public/Posts'))
 app.use('/DP', express.static('public/DP'))

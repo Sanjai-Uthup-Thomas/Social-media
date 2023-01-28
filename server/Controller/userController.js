@@ -9,6 +9,7 @@ module.exports = {
 
     //userSignup
     doSignup: async (req, res) => {
+        console.log(req.body);
         const { userName, phoneNumber, email, password } = req.body
         const UserName = await userSignUp.findOne({ userName: userName })
         if (UserName) {
@@ -72,6 +73,7 @@ module.exports = {
     doLogin: async (req, res) => {
         try {
             const { email, password } = req.body
+            console.log(email);
             const user = await userSignUp.findOne({ email: email })
             if (!user) {
                 return res

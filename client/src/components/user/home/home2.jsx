@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 // import { ThreeCircles } from 'react-loader-spinner'
 import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
+import DPurl from '../../../api/DPapi'
 import { getTopTenTags } from '../../../api/userApi'
 import { logout } from '../../../features/auth/authSlice'
 import Posts from '../posts/posts'
@@ -79,28 +81,25 @@ function HomePage() {
                 <div className="w-3/12 hidden lg:block ">
                     <div className="fixed p-5 w-80 bg-zinc-100">
                         <div className="flex flex-row p-2 bg-zinc-100">
-                            <a href="">
+                            <Link to={`/${userParse?.username}`}>
                                 <img
-                                    className="rounded-full"
-                                    src={`http://localhost:4000/DP/${userParse.profilePhoto}`}
+                                    className="rounded-full w-10 h-10 max-w-none inline "
+                                    src={`${DPurl}/${userParse.profilePhoto}`}
                                     width="100"
                                 />
-                            </a>
+                            </Link>
                             <div className="w-72 pl-2 m-auto">
                                 <div className="text-sm font-medium">
                                     {/* <Link to={`/${dataCurrentUser.me.username}`}>
                                  {dataCurrentUser.me.username}
                              </Link> */}
-                                    {userParse?.userName}
-                                </div>
-                                <div className="text-gray-500 text-sm leading-4">
                                     {userParse?.username}
-
                                 </div>
                             </div>
+                            
                             <div className="w-32 text-right m-auto">
                                 <a
-                                    className="text-xs text-sky-500 font-bold cursor-pointer"
+                                    className="bg-black rounded-3xl  dark:bg-slate-800 dark:text-white h-8 w-20 items-center cursor-pointer text-sm p-2"
                                     onClick={logouthandel}
 
                                 >

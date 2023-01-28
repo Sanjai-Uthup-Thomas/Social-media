@@ -3,39 +3,45 @@ import OTPInput from "otp-input-react";
 import axios from 'axios'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { otpverify } from '../../../api/userApi';
 
 function SignupOTP() {
   const navigate = useNavigate()
   const {
     auth: { user },
   } = useSelector(state => state);
- 
-  const [OTP, setOTP] = useState("");
-  const handelSubmit = async(e) => {
-    e.preventDefault()
-    console.log(user);
-    if (user === "") {
-      navigate('/signup')
-    }
-    if (OTP.length === 4) {
-    let data={
-      ...user,
-      OTP:OTP
-    }
-    console.log(data);
-    let res=await axios.post('http://localhost:4000/otpverify',data)
-    if(res){
-      console.log(res);
-      navigate('/')
-    }
-  } else {
-    console.log("enter a valid otp");
-    navigate('/signup')
-  }
-  }
-  
 
-  
+  const [OTP, setOTP] = useState("");
+  const handelSubmit = async (e) => {
+    try {
+      e.preventDefault()
+      console.log(user);
+      if (user === "") {
+        navigate('/signup')
+      }
+      if (OTP.length === 4) {
+        let data = {
+          ...user,
+          OTP: OTP
+        }
+        console.log(data);
+        let res=await otpverify(data)
+        if (res) {
+          console.log(res);
+          navigate('/')
+        }
+      } else {
+        console.log("enter a valid otp");
+        navigate('/signup')
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+  }
+
+
+
 
   return (
     <>
@@ -44,9 +50,6 @@ function SignupOTP() {
 
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-200 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-center text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-blue-700">
-                Logo
-              </h1>
               <form className="space-y-4 md:space-y-6" action="#">
                 <label for="OTP" className="block mb-2 text-sm font-medium text-gray-900 dark:text-blue-700 text-center">Enter OTP</label>
                 <div className='flex justify-center'>

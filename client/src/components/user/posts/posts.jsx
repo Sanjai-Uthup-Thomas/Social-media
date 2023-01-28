@@ -11,6 +11,7 @@ import CommentsModal from '../../modals/comments';
 import ReportModal from '../../modals/reportModal';
 import MappedPosts from './mappedPosts';
 import NewPost from '../../modals/NewPost';
+import DPurl from '../../../api/DPapi';
 // import { control } from '../../../features/auth/authSlice';
 
 function Posts() {
@@ -61,10 +62,10 @@ function Posts() {
             >
                 <div className=' w-10 items-center'>
                     <img
-                        className="rounded-full w-10 max-w-none inline mt-1 ml-1"
+                        className="rounded-full w-10 h-10 max-w-none inline mt-1 ml-1"
                         // src="https://img.icons8.com/ios/2x/brave-web-browser.png"
 
-                        src={`http://localhost:4000/DP/${userParse.profilePhoto}`}
+                        src={`${DPurl}/${userParse.profilePhoto}`}
 
                     />{" "}
                 </div>

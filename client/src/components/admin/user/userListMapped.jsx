@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { blockUser } from '../../../api/adminApi'
+import DPurl from '../../../api/DPapi'
 import { control } from '../../../features/auth/authSlice'
 
 
@@ -21,9 +22,9 @@ function UserListMapped({ item, index }) {
             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">{item.userName}</td>
             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                 <img
-                    className="rounded-full"
-                    src={`http://localhost:4000/DP/${item.profilePhoto}`}
-                    width="40"
+                    className="rounded-full w-12 h-12"
+                    src={`${DPurl}/${item.profilePhoto}`}
+                    
                 />
             </td>
             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">

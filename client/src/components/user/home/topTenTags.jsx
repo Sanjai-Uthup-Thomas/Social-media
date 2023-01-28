@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addTag, addTagName, control } from '../../../features/auth/authSlice';
 
 function TopTenTags({ data }) {
+  console.log(data);
   const dispatch=useDispatch()
   const handelTags = () => {
     console.log(data?.tag);

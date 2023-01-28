@@ -10,6 +10,8 @@ import { BookmarkPost, createComment, createNotification, getPosts, likePost, Un
 import CommentsModal from '../../modals/comments';
 import ReportModal from '../../modals/reportModal';
 import { control } from '../../../features/auth/authSlice';
+import DPurl from '../../../api/DPapi';
+import postsImages from '../../../api/imagesApi';
 
 
 function MappedPosts({ post, index }) {
@@ -105,6 +107,8 @@ function MappedPosts({ post, index }) {
 
         })
     }
+    let {description}=post
+    const words = description.split(' ');
     return (
         <div>
             <div className="border border-slate-200 mb-5 bg-zinc-100" key={post.postId}>
@@ -113,9 +117,9 @@ function MappedPosts({ post, index }) {
                         <Link to={`/${post.userName}`}>
                             <div className='flex'>
                             <img
-                                className="rounded-full w-8 max-w-none inline "
+                                className="rounded-full w-8 h-8 max-w-none inline "
 
-                                src={`http://localhost:4000/DP/${post.DP}`}
+                                src={`${DPurl}/${post.DP}`}
 
                             />{" "}
                              <div className="ml-3 ">
@@ -147,14 +151,19 @@ function MappedPosts({ post, index }) {
                             </a>}
                     </div>
                 </div>
-                <div className='pl-2 mb-2 text-base'>
+                <div className='px-7 mb-2 text-base'>
                     
-                         {post.description}
+                {words.map((word, index) => {
+        const style = {
+          color: word.startsWith('#') ? '#1134A6' : 'black'
+        };
+        return <span key={index} style={style}>{word} </span>;
+      })}
                     </div>
                 <img
-                    className="w-100 mx-auto"
+                    className="w-full h-96 mx-auto px-7"
                     alt={`Photo by user`}
-                    src={`http://localhost:4000/images/${post.postImage}`}
+                    src={`${postsImages}/${post.postImage}`}
                 />
 
                 <div className="header p-3 pl-8 flex flex-row text-2xl justify-between">

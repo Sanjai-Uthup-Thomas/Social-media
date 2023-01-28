@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './newPost.css'
 import { useDispatch, } from 'react-redux';
 import { createPost, getTag } from '../../api/userApi';
 import { control } from '../../features/auth/authSlice';
@@ -19,14 +20,14 @@ const NewPost = ({ open, onClose }) => {
         setAddress(newAddress);
         geocodeByAddress(newAddress)
             .then((results) => getLatLng(results[0]))
-            .then((latLng) =>{
-                
+            .then((latLng) => {
+
                 console.log("Success", newAddress)
                 setForm({
                     ...form,
                     Location: newAddress
                 })
-            } 
+            }
             )
             .catch((error) => console.error("Error", error));
     };
@@ -81,7 +82,7 @@ const NewPost = ({ open, onClose }) => {
         if (!img?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
             console.log('Please select valid image JPG,JPEG,PNG');
             setError(true)
-            form.Posts = false
+            form.Posts = null
             toast.warn('Please select valid image', {
                 position: "bottom-right",
                 autoClose: 5000,
@@ -136,67 +137,72 @@ const NewPost = ({ open, onClose }) => {
                         <p className='text-black'>Create New Post</p>
                         <div >
                             <form onSubmit={submit} encType="multipart/form-data">
-                                <div >{form.Posts ?
-                                    <img className='' src={URL.createObjectURL(form.Posts)} />
+                                <div >{form.Posts!==null ?
+                                    <img className='w-full h-80' src={URL.createObjectURL(form.Posts)} />
                                     : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
 
                                 </div>
-                                <div className='p-2'>
-                                <PlacesAutocomplete
-                                    value={address}
-                                    onChange={handleChangeAddress}
-                                    onSelect={handleSelectAddress}
-                                >
-                                    {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                                        <div>
-                                            <input
-                                                {...getInputProps({
-                                                    placeholder: "Add location",
-                                                    className: "location-search-input p-1 w-full outline-0 h-30 border-2 rounded-md"
-                                                })}
-                                            />
-                                            <div className="autocomplete-dropdown-container">
-                                                {loading && <div>Loading...</div>}
-                                                {suggestions.map((suggestion) => {
-                                                    const className = suggestion.active
-                                                        ? "suggestion-item--active"
-                                                        : "suggestion-item";
-                                                    // inline style for demonstration purpose
-                                                    const style = suggestion.active
-                                                        ? { backgroundColor: "#fafafa", cursor: "pointer" }
-                                                        : { backgroundColor: "#ffffff", cursor: "pointer" };
-                                                    return (
-                                                        <div
-                                                            key={suggestion.placeId}
-                                                            {...getSuggestionItemProps(suggestion, {
-                                                                className,
-                                                                style
-                                                            })}
-                                                        >
-                                                            <span>{suggestion.description}</span>
-                                                        </div>
-                                                    );
-                                                })}
+                                <div className='py-2'>
+                                    <PlacesAutocomplete
+                                        value={address}
+                                        onChange={handleChangeAddress}
+                                        onSelect={handleSelectAddress}
+                                    >
+                                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                                            <div>
+                                                <input
+                                                    {...getInputProps({
+                                                        placeholder: "Add location",
+                                                        className: "location-search-input p-1 w-full outline-0 h-30 border-2 rounded-md"
+                                                    })}
+                                                />
+                                                <div className="autocomplete-dropdown-container"
+                                                    styles={{
+                                                        listView:{
+                                                         position: 'absolute',
+                                                         backgroundColor: 'white',
+                                                         zIndex: 2,
+                                                        }
+                                                      }}>
+                                                    {loading && <div>Loading...</div>}
+                                                    {suggestions.map((suggestion) => {
+                                                        const className = suggestion.active
+                                                            ? "suggestion-item--active"
+                                                            : "suggestion-item";
+                                                        // inline style for demonstration purpose
+                                                        const style = suggestion.active
+                                                            ? { backgroundColor: "#fafafa", cursor: "pointer" }
+                                                            : { backgroundColor: "#ffffff", cursor: "pointer" };
+                                                        return (
+                                                            <div
+                                                                key={suggestion.placeId}
+                                                                {...getSuggestionItemProps(suggestion, {
+                                                                    className,
+                                                                    style
+                                                                })}
+                                                            >
+                                                                <span>{suggestion.description}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </PlacesAutocomplete>
+                                        )}
+                                    </PlacesAutocomplete>
                                 </div>
-                                
+
                                 {/* <div ><img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' /></div> */}
                                 <div>
                                     <textarea
                                         type="text"
-                                        className="p-1 w-full outline-0 h-30 border-2 rounded-md"
+                                        className="p-1 w-full outline-0 h-30 border-2 rounded-md addOn"
                                         placeholder="Write a caption..."
                                         name='description'
                                         onChange={handleChange}
                                         value={tagsInText}
-
-
                                     />
                                     {tags.length > 0 &&
-                                        <div className='py-2'>{tags.map((res) => {
+                                        <div className='py-2 hashTags'>{tags.map((res) => {
                                             return (
                                                 <div className='' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
                                             )
@@ -209,7 +215,7 @@ const NewPost = ({ open, onClose }) => {
                                 </div>
                                 <div>
 
-                                    <button className="bg-gray-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded mt-2" type="submit">
+                                    <button className="bg-gray-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded my-3" type="submit">
                                         Post
                                     </button>
 

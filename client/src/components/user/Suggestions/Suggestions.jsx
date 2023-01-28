@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ThreeCircles } from 'react-loader-spinner'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
+import DPurl from '../../../api/DPapi';
 import { getSuggestions, userFollow } from '../../../api/userApi'
 import { control } from '../../../features/auth/authSlice';
 
@@ -72,8 +73,8 @@ return (
             <Link to={`/${data.userName}`}>
                 <div className="inline-block align-top">
                     <img
-                        className="rounded-full"
-                        src={`http://localhost:4000/DP/${data.profilePhoto}`}
+                        className="rounded-full w-12 h-12"
+                        src={`${DPurl}/${data.profilePhoto}`}
                         width="35"
                     />
 

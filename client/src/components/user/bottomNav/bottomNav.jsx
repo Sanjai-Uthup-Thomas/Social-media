@@ -6,6 +6,7 @@ import NewPost from '../../modals/NewPost';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBot from './searchBot';
 import { getNotificationsCount } from '../../../api/userApi';
+import DPurl from '../../../api/DPapi';
 function BottomNav() {
     const {
         auth: { socket, controlState }
@@ -99,8 +100,8 @@ function BottomNav() {
                                 <div>
                                     <Menu.Button className=" w-10 h-10 justify-center bg-white text-sm font-medium text-gray-700">
                                         <img
-                                            className="rounded-full border-black"
-                                            src={`http://localhost:4000/DP/${users?.profilePhoto}`}
+                                            className="rounded-full border-black w-8 h-8 max-w-none inline"
+                                            src={`${DPurl}/${users?.profilePhoto}`}
 
                                             width="40"
                                         />

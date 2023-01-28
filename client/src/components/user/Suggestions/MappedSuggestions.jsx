@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import DPurl from '../../../api/DPapi';
 import { createNotification, userFollow } from '../../../api/userApi';
 import { control } from '../../../features/auth/authSlice';
 
@@ -57,7 +58,7 @@ function MappedSuggestion({ data }) {
                                     <div className='my-auto'>
 
                                 <img className="w-11 h-11 rounded-full mr-7 "
-                                        src={`http://localhost:4000/DP/${data?.profilePhoto}`} 
+                                        src={`${DPurl}/${data?.profilePhoto}`} 
                                         alt='dfgh'
                                         />
                                     </div>

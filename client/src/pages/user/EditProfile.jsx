@@ -16,6 +16,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChangePassword from '../../components/user/home/changePassword';
 import Settings from './settings';
+import DPurl from '../../api/DPapi';
 
 
 function EditProfile({ userId }) {
@@ -119,8 +120,8 @@ function EditProfile({ userId }) {
                             <div className="w-1/3 p-3">
                                 <p className="float-right mr-5">
                                     <img
-                                        className="rounded-full"
-                                        src={`http://localhost:4000/DP/${userDetails.profilePhoto}`}
+                                        className="rounded-full h-12 w-12"
+                                        src={`${DPurl}/${userDetails.profilePhoto}`}
                                         width="65"
                                     />
                                 </p>
@@ -228,13 +229,13 @@ function EditProfile({ userId }) {
                                     </button>
                                     
                                     
-                                        <div className='pt-5 px-5' >
+                                        
 
                                     <a
-                                        className="className='py-6 bg-black rounded-3xl p-1 px-auto mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-16 items-center"
+                                        className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center cursor-pointer"
                                         onClick={()=>setPassword(!password)}
-                                    >Change Password</a>
-                                        </div>
+                                    >Password</a>
+                                       
                                         <a className="bg-black rounded-3xl px-4 mb-4 mt-5 ml-5 dark:bg-slate-800 dark:text-white h-7 items-center cursor-pointer"
                                            onClick={()=>setSettings(true)}
                                         >Deactivate

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import DPurl from '../../../api/DPapi'
 
 function SearchUser({ user, index }) {
     return (
@@ -8,7 +9,7 @@ function SearchUser({ user, index }) {
                 <div className="flex flex-row ">
 
                     <img className="w-12 h-12  border-gray-300 rounded-full" alt="User avatar"
-                        src={`http://localhost:4000/DP/${user.userDp}`}
+                        src={`${DPurl}/${user.userDp}`}
                     />
                     <div className="flex-col mt-1">
                         <div className="flex items-center flex-1 px-4 font-medium leading-tight">{user.userName}

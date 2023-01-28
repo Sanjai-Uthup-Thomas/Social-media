@@ -1,5 +1,6 @@
 import React from 'react'
 import { format, render, cancel, register } from 'timeago.js';
+import DPurl from '../../../api/DPapi';
 
 
 function ChatRight({ message, own }) {
@@ -7,7 +8,7 @@ function ChatRight({ message, own }) {
     <>
       {!own ? <div className='flex justify-start'>
         <img
-          src={`http://localhost:4000/DP/${message?.userDP}`}
+          src={`${DPurl}/${message?.userDP}`}
           className='w-8 h-8 rounded-full my-auto' />
         <div className='flex item-end bg-gray-200 rounded-md w-content ml-2 '>
           <div className='p-2'>
@@ -25,7 +26,7 @@ function ChatRight({ message, own }) {
           </div>
         </div>
         <img 
-                 src={`http://localhost:4000/DP/${message?.userDP}`}
+                 src={`${DPurl}/${message?.userDP}`}
 
          className='w-10 h-10 rounded-full my-auto' />
       </div>}

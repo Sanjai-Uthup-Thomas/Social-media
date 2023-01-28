@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
+import DPurl from '../../../api/DPapi';
 import { createNotification, getSavedPosts, getUserHead, getUserPosts, userFollow, userUnfollow } from '../../../api/userApi';
 import { addMessage } from '../../../features/auth/authSlice';
 import Friends from '../../modals/friends';
@@ -101,8 +102,8 @@ const handelMessage=()=>{
                 <div className="md:grid grid-cols-3 container py-10 ">
                     <div className="bg-green p-3 rounded flex items-start justify-center">
                         <img
-                            className="rounded-full"
-                            src={`http://localhost:4000/DP/${name.DP}`}
+                            className="rounded-full w-36 h-36"
+                            src={`${DPurl}/${name.DP}`}
                             width="150"
                         />
                     </div>

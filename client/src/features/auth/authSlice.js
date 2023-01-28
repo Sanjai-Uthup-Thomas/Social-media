@@ -22,7 +22,7 @@ const initialState = {
 export const signInAdmin = createAsyncThunk('signInAdmin', async (body) => {
     try{
 
-        const res = await axios.post('http://localhost:4000/admin/adminLogin', body)
+        const res = await axios.post('http://localhost:4000/api/admin/adminLogin', body)
         console.log(res?.response);
             console.log();
         return res
@@ -33,7 +33,8 @@ export const signInAdmin = createAsyncThunk('signInAdmin', async (body) => {
     }
 })
 export const signUpUser = createAsyncThunk('signUpUser', async (body) => {
-    const res = await axios.post('http://localhost:4000/signup', body)
+    console.log("body ",body);
+    const res = await axios.post('http://localhost:4000/api/signup/', body)
     return res.data
 })
 

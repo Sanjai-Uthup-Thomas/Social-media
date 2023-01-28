@@ -2,6 +2,7 @@ import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import postsImages from '../../../api/imagesApi';
 import CommentsModal from '../../modals/comments';
 
 function UserBody({ data }) {
@@ -25,7 +26,7 @@ function UserBody({ data }) {
     >
 
       <img
-        src={`http://localhost:4000/images/${data.postImages}`}
+        src={`${postsImages}/${data.postImages}`}
         className="absolute inset-0 object-cover w-full h-full"
         onClick={(e)=>{setShowComments(true)
           setPostId(data._id)}}

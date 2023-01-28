@@ -5,6 +5,7 @@ import ChatRight from './chatRight'
 import ChatList from './chatList'
 // import { io } from 'socket.io-client'
 import SearchValue from './searchValue'
+import DPurl from '../../../api/DPapi'
 
 
 function ChatMain() {
@@ -210,7 +211,7 @@ useEffect(() => {
                       </svg>
                     </button>
                     <img className="object-cover w-10 h-10 rounded-full"
-                      src={`http://localhost:4000/DP/${currentChat?.profilePhoto}`} alt="userName"
+                      src={`${DPurl}/${currentChat?.profilePhoto}`} alt="userName"
                     />
                     <span className="block ml-2 font-bold text-gray-600">{currentChat?.userName}</span>
                     {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">

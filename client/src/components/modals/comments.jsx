@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import postsImages from '../../api/imagesApi';
 import { getCommentPost, getComments } from '../../api/userApi';
 import CommentsInModal from '../user/home/commentsInModal';
 import ReportModal from './reportModal';
@@ -45,7 +46,7 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
                                 return (
                                     //post image in comment
                                     <div key={comments._id}><img className='w-[400px] hidden md:block p-2'
-                                        src={`http://localhost:4000/images/${comments.image}`} />
+                                        src={`${postsImages}/${comments.image}`} />
                                     </div>
 
                                 )

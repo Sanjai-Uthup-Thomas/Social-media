@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { getChatList } from '../../../api/userApi'
 import { format, render, cancel, register } from 'timeago.js';
+import DPurl from '../../../api/DPapi';
 
 
 
@@ -26,7 +27,7 @@ function ChatList({chat,currentUser}) {
         <a
             className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">
             <img className="object-cover w-10 h-10 rounded-full"
-                src={`http://localhost:4000/DP/${chat?.profilePhoto}`}
+                src={`${DPurl}/${chat?.profilePhoto}`}
                 />
             <div className="w-full pb-2">
                 <div className="flex justify-between">

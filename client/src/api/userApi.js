@@ -2,6 +2,8 @@ import axios from '../axios/userAxios'
 
 export const login=(Data)=>axios.post('/login', Data)
 
+export const otpverify=(Data)=>axios.post('/otpverify', Data)
+
 export const otpLogin=(Data)=>axios.post('/otplogin', Data)
 
 export const forgetPassword=(Data)=>axios.post('/forgetpassword', Data)
