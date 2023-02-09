@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-
-// import {signUpHandler} from './helpers/signUpHandler'
-
 const initialState = {
     msg: "",
     user: JSON.parse(localStorage.getItem("user")) || "",
