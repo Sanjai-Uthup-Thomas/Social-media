@@ -20,30 +20,19 @@ export const signInAdmin = createAsyncThunk('signInAdmin', async (body) => {
     try{
 
         const res = await axios.post('http://localhost:4000/api/admin/adminLogin', body)
-        console.log(res?.response);
-            console.log();
         return res
     }catch(err){
         const errMsg = err.response
-        console.log(err.response);
         return errMsg
     }
 })
 export const signUpUser = createAsyncThunk('signUpUser', async (body) => {
-    console.log("body ",body);
     const res = await axios.post('http://localhost:4000/api/signup/', body)
     return res.data
 })
 
 export const signInUser = createAsyncThunk('signInUser', async (body) => {
     const res = await axios.post('http://localhost:4000/login', body)
-    if (res) {
-        console.log("res");
-        console.log(res);
-    } else {
-        console.log("no res");
-    }
-
     return res
 })
 
