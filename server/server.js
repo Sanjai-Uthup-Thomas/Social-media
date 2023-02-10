@@ -11,7 +11,7 @@ const messageUrls= require('./routes/messageRoutes')
 
 morgan('tiny')
 const cors = require('cors')
-dotenv.config({path:'./var/.env'})
+dotenv.config()
 mongoose.connect(process.env.DATABASE_ACCESS ,()=>console.log("database connected"))
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 },resave: true,saveUninitialized: true}))
 app.use(express.json())
