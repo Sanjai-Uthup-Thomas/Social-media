@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const adminSignUp = require('../models/adminSignUp')
+const adminSignUp = require('../models/adminSignup')
 const bcrypt = require('bcrypt')
 const adminHelpers = require('../Helpers/adminHelpers')
 const { response } = require('express')
