@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const express = require('express')
 const router = express.Router()
-const controller = require('../controller/userController')
+const controller = require('../Controller/userController')
 const auth = require('../middleware/auth')
 const upload = require('../middleware/postMulter')
 const DPupload = require('../middleware/DPMulter')

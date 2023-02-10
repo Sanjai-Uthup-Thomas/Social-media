@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../controller/adminController')
+const controller = require('../Controller/adminController')
 const auth = require('../middleware/adminAuth')
 
 router.post('/adminSignup',controller.doSignup)

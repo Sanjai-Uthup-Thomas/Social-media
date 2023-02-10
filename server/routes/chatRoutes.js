@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth')
-const controller = require('../controller/chatController')
+const controller = require('../Controller/chatController')
 
 router.get('/',auth,controller.getAllChats)
 router.post('/:id',auth,controller.createChat)
