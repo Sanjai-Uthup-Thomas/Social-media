@@ -1,5 +1,7 @@
 import axios from "axios";
-const baseURL = "http://localhost:4000/api/admin"
+// const baseURL = "http://localhost:4000/api/admin"
+const baseURL = "https://sanjaiuthupthomas.in/api/admin/"
+
 
 const defaultOptions = {
     baseURL: baseURL,
