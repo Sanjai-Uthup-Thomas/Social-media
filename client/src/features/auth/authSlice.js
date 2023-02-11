@@ -19,7 +19,7 @@ const initialState = {
 export const signInAdmin = createAsyncThunk('signInAdmin', async (body) => {
     try{
 
-        const res = await axios.post('http://localhost:4000/api/admin/adminLogin', body)
+        const res = await axios.post('https://sanjaiuthupthomas.in/api/admin/adminLogin', body)
         return res
     }catch(err){
         const errMsg = err.response
@@ -27,12 +27,12 @@ export const signInAdmin = createAsyncThunk('signInAdmin', async (body) => {
     }
 })
 export const signUpUser = createAsyncThunk('signUpUser', async (body) => {
-    const res = await axios.post('http://localhost:4000/api/signup/', body)
+    const res = await axios.post('https://sanjaiuthupthomas.in/api/signup/', body)
     return res.data
 })
 
 export const signInUser = createAsyncThunk('signInUser', async (body) => {
-    const res = await axios.post('http://localhost:4000/login', body)
+    const res = await axios.post('https://sanjaiuthupthomas.in/login', body)
     return res
 })
 
