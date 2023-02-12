@@ -34,7 +34,7 @@ export const PrivateRoutes = () => {
     }, [token])
 
     useEffect(() => {
-        const socketio = require('socket.io-client')("ws://localhost:3001")
+        const socketio = require('socket.io-client')("https://sanjaiuthupthomas.in", {path: "/api/socket.io"})
         socketio?.emit("addUser", user?.id)
         console.log(user?.id,"addUser");
         socketio.on("getUser", users => {

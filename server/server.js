@@ -22,7 +22,7 @@ app.use('/api/admin',adminUrls)
 app.use('/api/chat',chatUrls)
 app.use('/api/message',messageUrls)
 
-app.use('/api/images', express.static('public/Posts'))
-app.use('/api/DP', express.static('public/DP'))
+app.use('/api/images', express.static('./public/Posts'))
+app.use('/api/DP', express.static('./public/DP'))
 
 app.listen(4000,()=> console.log("server is running"))
