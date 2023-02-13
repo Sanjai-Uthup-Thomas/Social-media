@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
-dotenv.config({ path: './var/.env' })
+dotenv.config()
 const userSchema = require('../models/userSignUp')
 const postSchema = require('../models/posts');
 const commentSchema = require('../models/comments');
