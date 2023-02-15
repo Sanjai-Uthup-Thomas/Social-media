@@ -102,28 +102,34 @@ module.exports = {
     },
     Posts: (Data, UserId) => {
         try {
+            console.log();
             const array = []
+            console.log(Data);
             const { description, postImage, Location } = Data
-            const tags = description.match(/#\w+/g)
+            if(description) {
+                var tags = description.match(/#\w+/g)
+            }
             //tags=[#happy,#2]=>[id[#happy], id[#2]]
-            const Tags = tags.map(async (tag) => {
-                const value = await tagsSchema.findOne({ tags: tag })
-                if (!value) {
-                    const newTag = new tagsSchema({
-                        tags: tag,
-                    })
-                    newTag.save().then(async () => {
-                        console.log("new tag saved", newTag);
-                        await postSchema.findByIdAndUpdate(post?._id, {
-                            $push: { tags: newTag._id }
+            if(tags){
+                const Tags = tags.map(async (tag) => {
+                    const value = await tagsSchema.findOne({ tags: tag })
+                    if (!value) {
+                        const newTag = new tagsSchema({
+                            tags: tag,
                         })
-                    })
-                } else {
-                    await postSchema.findByIdAndUpdate(post?._id, {
-                        $push: { tags: value._id }
-                    })
-                }
-            })
+                        newTag.save().then(async () => {
+                            console.log("new tag saved", newTag);
+                            await postSchema.findByIdAndUpdate(post?._id, {
+                                $push: { tags: newTag._id }
+                            })
+                        })
+                    } else {
+                        await postSchema.findByIdAndUpdate(post?._id, {
+                            $push: { tags: value._id }
+                        })
+                    }
+                })
+            }
             const post = new postSchema({
                 userId: UserId,
                 description: description,

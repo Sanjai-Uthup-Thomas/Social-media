@@ -7,7 +7,6 @@ const Posts = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
     },
     tags: {
         type: Array

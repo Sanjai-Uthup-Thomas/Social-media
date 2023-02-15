@@ -13,13 +13,13 @@ const auth = async(req, res, next) => {
         if (!verified)
             return res.status(401).json({ msg: "Token verification failed, access denied" })
     const block=await userHelpers.checkBlock(req.user)
-    console.log(block);
+    // console.log(block);
         if(!block){
             return res.status(401).json({ msg: "You are blocked, access denied" })
         }
         next()
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({ error: err.message }) 
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import './newPost.css'
 import { useDispatch, } from 'react-redux';
 import { createPost, getTag } from '../../api/userApi';
@@ -21,8 +21,6 @@ const NewPost = ({ open, onClose }) => {
         geocodeByAddress(newAddress)
             .then((results) => getLatLng(results[0]))
             .then((latLng) => {
-
-                console.log("Success", newAddress)
                 setForm({
                     ...form,
                     Location: newAddress
@@ -45,6 +43,7 @@ const NewPost = ({ open, onClose }) => {
         description: "",
         postImage: ""
     })
+    const inputRef = useRef(null);
     function handleSuggestionClick(suggestion) {
         const value = tagsInText.split(" ")
         const pop = value.pop()
@@ -52,8 +51,18 @@ const NewPost = ({ open, onClose }) => {
         const something = value.join(' ')
         setTagsInText(something)
         setTags('')
+        inputRef.current.focus();
+        inputRef.current.value = something
+        let obj={
+            target:{
+                name:'description',
+                value:something
+            }
+        } 
+        handleChange(obj)
     }
     const handleChange = (e) => {
+        console.log(e);
         const { name, value } = e.target
         setTagsInText(value)
         function test(words) {
@@ -71,10 +80,9 @@ const NewPost = ({ open, onClose }) => {
         } else {
             setTags([])
         }
-        console.log("tagsInText", tagsInText);
         setForm({
             ...form,
-            [name]: tagsInText
+            [name]: e.target.value
         })
     }
     const fileUpload = (e) => {
@@ -117,13 +125,25 @@ const NewPost = ({ open, onClose }) => {
         description = tagsInText
         console.log(description, "description");
         console.log(Posts);
-        if (description && Posts && !error) {
+        if (Posts && !error) {
             console.log(form);
             createPost(Data).then((response) => {
                 onClose()
                 dispatch(control())
 
             })
+        }else{
+            toast.warn('Please select a image', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+            });
+
         }
 
     }
@@ -200,6 +220,7 @@ const NewPost = ({ open, onClose }) => {
                                         name='description'
                                         onChange={handleChange}
                                         value={tagsInText}
+                                        ref={inputRef}
                                     />
                                     {tags.length > 0 &&
                                         <div className='py-2 hashTags'>{tags.map((res) => {
