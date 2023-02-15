@@ -11,6 +11,7 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 
 const NewPost = ({ open, onClose }) => {
+    const [img,setImg]=useState(false)
     //place api
     const [address, setAddress] = useState("");
     const handleChangeAddress = (newAddress) => {
@@ -62,7 +63,6 @@ const NewPost = ({ open, onClose }) => {
         handleChange(obj)
     }
     const handleChange = (e) => {
-        console.log(e);
         const { name, value } = e.target
         setTagsInText(value)
         function test(words) {
@@ -88,7 +88,8 @@ const NewPost = ({ open, onClose }) => {
     const fileUpload = (e) => {
         const img = e.target.files[0]
         if (!img?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
-            console.log('Please select valid image JPG,JPEG,PNG');
+            setImg(false)
+            setError(true)
             setError(true)
             form.Posts = null
             toast.warn('Please select valid image', {
@@ -103,33 +104,30 @@ const NewPost = ({ open, onClose }) => {
             });
             // onClose()
         } else {
-            console.log(img);
+            setImg(true) 
             setError(false)
+            setForm({
+                ...form,
+                Posts: img
+            })
         }
-        setForm({
-            ...form,
-            Posts: img
-        })
     }
     const submit = async (e) => {
         e.preventDefault()
-        if (error) {
-            return false
-        }
         const Data = new FormData()
         for (let key in form) {
             Data.append(key, form[key])
         }
-        console.log(form);
+        
         let { description, Posts } = form
         description = tagsInText
-        console.log(description, "description");
-        console.log(Posts);
-        if (Posts && !error) {
-            console.log(form);
+       
+        if (form.Posts!==null && !error) {
+            
             createPost(Data).then((response) => {
                 onClose()
                 dispatch(control())
+                setImg(false)
 
             })
         }else{
@@ -150,14 +148,15 @@ const NewPost = ({ open, onClose }) => {
     if (!open) { return null } else {
         return (
             <div className='fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center z-50'>
-                <div className='w-[400px] flex flex-col'>
+                <div className='w-[380px] flex flex-col'>
                     <button className='text-white text-xl place-self-end'
-                        onClick={() => onClose()}>X</button>
+                        onClick={() => {onClose() 
+                        setImg(false)}}>X</button> 
                     <div className='bg-white p-2 h-auto text-black rounded text-center'> <div>
                         <p className='text-black'>Create New Post</p>
                         <div >
                             <form onSubmit={submit} encType="multipart/form-data">
-                                <div >{form.Posts!==null ?
+                                <div >{img ?
                                     <img className='w-full h-80' src={URL.createObjectURL(form.Posts)} />
                                     : <img className='pl-14' src='https://cdn.iconscout.com/icon/free/png-256/cloud-upload-1912186-1617655.png' />}
 
@@ -173,7 +172,7 @@ const NewPost = ({ open, onClose }) => {
                                                 <input
                                                     {...getInputProps({
                                                         placeholder: "Add location",
-                                                        className: "location-search-input p-1 w-full outline-0 h-30 border-2 rounded-md"
+                                                        className: "location-search-input p-1 w-[380px] outline-0 h-30 border-2 rounded-md"
                                                     })}
                                                 />
                                                 <div className="autocomplete-dropdown-container"
@@ -215,7 +214,7 @@ const NewPost = ({ open, onClose }) => {
                                 <div>
                                     <textarea
                                         type="text"
-                                        className="p-1 w-full outline-0 h-30 border-2 rounded-md addOn"
+                                        className="p-1 outline-0 h-30 border-2 rounded-md addOn"
                                         placeholder="Write a caption..."
                                         name='description'
                                         onChange={handleChange}
@@ -225,7 +224,7 @@ const NewPost = ({ open, onClose }) => {
                                     {tags.length > 0 &&
                                         <div className='py-2 hashTags'>{tags.map((res) => {
                                             return (
-                                                <div className='' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
+                                                <div className='tags' onClick={() => handleSuggestionClick(res?.HashTag)}>{res?.HashTag}</div>
                                             )
                                         })}</div>}
                                     <label for="file-upload" className="text-[18px] text-center p-1 bg-gray-500 w-20 rounded-md text-white">

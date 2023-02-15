@@ -20,9 +20,9 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
 
 
     const fetchData = () => {
-        console.log(data);
+       
         getComments(data).then((response) => {
-            console.log(response)
+           
             setComments(response.data)
         }
         )
@@ -58,7 +58,6 @@ const CommentsModal = ({ open, onClose, postId,userId,currentId }) => {
                                       <a
                                     className="cursor-pointer"
                                     onClick={()=>{
-                                        console.log(userId+"three dot"+user.id);
                                         setShowReport(true)
                                     }}
                                

@@ -20,7 +20,7 @@ const ChangeDP = ({ open, onClose }) => {
     const fileUpload = (e) => {
         const DP = e.target.files[0]
         if (!DP?.name.match(/\.(jpg|jpeg|png|JPG|JPEG|PNG|gif)$/)) {
-            console.log('Please select valid image JPG,JPEG,PNG');
+            
             form.DP=false
             setError(true)
             toast.warn('Please select valid image', {
@@ -47,14 +47,14 @@ const ChangeDP = ({ open, onClose }) => {
         e.preventDefault()
         const Data = new FormData()
         for (let key in form) {
-            // console.log(`key, form[key] ${key, form[key]}`);
+           
             Data.append(key, form[key])
         }
-        console.log(form);
+        
         const { DP } = form
-        console.log(DP); 
+        
         if (DP && !error) {
-            console.log(`data ${Data}`);
+            
             changeDp(Data).then((response) => {
                 toast.success('Profile Photo changed', {
                     position: "top-center",

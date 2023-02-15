@@ -116,24 +116,22 @@ useEffect(() => {
 
       try {
         const res = await sendMessage(message)
-        console.log([...Messages, res.data[0]]);
         setToSocket(res.data)
         setMessages([...Messages, res.data[0]]);
-        console.log(Messages);
+        
         setNewMessage('');
       } catch (e) {
-        console.log(e);
+        
       }
       const receiverId = currentChat.users.find(member => member !== user.id)
-      console.log("receiverId", receiverId);
+      
       socket?.emit("sendMessage", {
         senderId: user.id,
         receiverId,
         text: newMessage,
         userDP: user.profilePhoto
       })
-      console.log("sending message");
-      console.log(socket); 
+      
     }
 
   }
@@ -142,9 +140,9 @@ useEffect(() => {
   }, [Messages])
   const handelCreateChat = async (id) => {
     setResponsive(true)
-    console.log(id);
+    
     const { data } = await createChat(id)
-    // console.log(data);
+    
     setCurrentChat(data)
   }
   const handelSelectChat = (item) => {
@@ -198,7 +196,7 @@ useEffect(() => {
             </div>
             {currentChat ?
               <div className={`${responsive ? '' : 'hidden'} lg:col-span-2 lg:block`}>
-                <div className="w-full">
+                <div className="w-full ">
                   <div className="relative flex items-center p-3 border-b border-gray-300">
                     <button className="inline-flex items-center justify-center w-8 h-8 mr-2 text-gray-700 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-gray-200 lg:hidden"
                       onClick={() => setResponsive(false)}>
@@ -217,7 +215,7 @@ useEffect(() => {
                     {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
                     </span> */}
                   </div>
-                  <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
+                  <div className="relative w-full p-6 overflow-y-auto h-screen">
                     <div className="space-y-2">
                       {Messages?.map((m) => (
                         <div ref={scrollRef}>
@@ -227,7 +225,7 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
+                  <div className="flex items-center justify-between w-full p-3 border-t border-gray-300 mb-12 lg:mb-0">
                     {/* <button>
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">

@@ -10,14 +10,14 @@ function ChatList({chat,currentUser}) {
     const [user,setUser]=useState(null)
     useEffect(()=>{
         // const friendId = chat.user.find((m)=> m!==currentUser)
-        // console.log(friendId);
+       
         const getUser=async()=>{
             try{
                 const res= await getChatList(chat._id)
-                // console.log(res.data);
+               
                 setUser(res.data[0])
             }catch(err){
-                console.log(err)
+               
             }
         }
         getUser()
